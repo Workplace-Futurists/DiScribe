@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TranscribeAgent
+namespace Futurists.TranscribeAgent
 {
     class Program
     {
