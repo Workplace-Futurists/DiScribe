@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Futurists.TranscribeAgent
+namespace FuturistTranscriber.TranscribeAgent
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Creating transcript...");
         }
     }
 }
