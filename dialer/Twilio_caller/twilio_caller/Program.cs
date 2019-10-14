@@ -35,17 +35,24 @@ namespace twilio_caller
             // Tried using the SIP of a webex meeting and it fails. probably because this isn't an async method
             //var to = new PhoneNumber("sip:628353018@cs319-futurists-test01.my.webex.com");
 
+            // this is the webex call vancouver toll number
+            var to = new PhoneNumber("+12268289662");
             // This will work if you call a verified phone number (currently has mine)
-            var to = new PhoneNumber("+7786886112");
+            //var to = new PhoneNumber("+17786886112");
+
             // This is the twilio number linked to our account
             var from = new PhoneNumber("+17787444195");
 
             // makes the call resource to send
             var call = CallResource.Create(to, from,
-                // I think this is a default message that plays from the url?
-                url: new Uri("http://demo.twilio.com/docs/voice.xml"),
+                //method: Twilio.Http.HttpMethod.Get,
+                //sendDigits: "ww1#ww626858398##",
+                sendDigits: "wwwwwwwwww1ww#wwww6w2w6w8w5w8w3w9w8w#wwwwww#",
                 // Records the outgoing call
-                record: true);
+                record: true,
+                // I think this is a default message that plays from the url?
+                url: new Uri("http://demo.twilio.com/docs/voice.xml")
+             );
 
             Console.WriteLine(call.Sid);
         }
