@@ -37,6 +37,11 @@ namespace FuturistTranscriber.TranscribeAgent
         /// <returns>SortedList of <see cref="AudioSegment"/> instances</returns>
         public SortedList<int, AudioSegment> SplitAudio()
         {
+            var tempList = new SortedList<int, AudioSegment>();
+            tempList.Add
+
+
+
             return new SortedList<int, AudioSegment>();
         }
 
@@ -45,9 +50,9 @@ namespace FuturistTranscriber.TranscribeAgent
         /// 
         /// </summary>
         /// <returns></returns>
-        private SortedList<int, AudioSegment> IdentifySpeakers()
+        private SortedList<AudioSegment, AudioSegment> IdentifySpeakers()
         {
-            return new SortedList<int, AudioSegment>();
+            return new SortedList<AudioSegment, AudioSegment>();
         }
     }
 }

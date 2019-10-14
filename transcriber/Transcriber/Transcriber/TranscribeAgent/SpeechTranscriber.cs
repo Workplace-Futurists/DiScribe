@@ -13,7 +13,7 @@ namespace FuturistTranscriber.TranscribeAgent
     /// </summary>
     class SpeechTranscriber
     {
-        public SpeechTranscriber(SortedList<int, AudioSegment> audioSegments)
+        public SpeechTranscriber(SortedList<AudioSegment, AudioSegment> audioSegments)
         {
             AudioSegments = audioSegments;
         }
@@ -22,7 +22,7 @@ namespace FuturistTranscriber.TranscribeAgent
         /// SortedList where the the AudioSegments are sorted by their Offset property. 
         /// This supports transcription in the correct order.
         /// </summary>
-        public SortedList<int, AudioSegment> AudioSegments { get; set; }
+        public SortedList<AudioSegment, AudioSegment> AudioSegments { get; set; }
 
 
         /// <summary>
