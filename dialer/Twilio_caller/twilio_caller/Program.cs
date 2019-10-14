@@ -47,7 +47,7 @@ namespace twilio_caller
             var call = CallResource.Create(to, from,
                 //method: Twilio.Http.HttpMethod.Get,
                 //sendDigits: "ww1#ww626858398##",
-                sendDigits: "wwwwwwwwww1ww#wwww6w2w6w8w5w8w3w9w8w#wwwwww#",
+                sendDigits: "wwwwwwwwww1ww#wwww6w2w6w8w5w8w3w8w9w#wwwww#",
                 // Records the outgoing call
                 record: true,
                 // I think this is a default message that plays from the url?
