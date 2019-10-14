@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\twilio_caller\\twilio_caller\\twilio_caller.csproj": {}
+    "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\twilio_caller.csproj": {}
   },
   "projects": {
-    "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\twilio_caller\\twilio_caller\\twilio_caller.csproj": {
+    "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\twilio_caller.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\twilio_caller\\twilio_caller\\twilio_caller.csproj",
+        "projectUniqueName": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\twilio_caller.csproj",
         "projectName": "twilio_caller",
-        "projectPath": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\twilio_caller\\twilio_caller\\twilio_caller.csproj",
+        "projectPath": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\twilio_caller.csproj",
         "packagesPath": "C:\\Users\\heyyou\\.nuget\\packages\\",
-        "outputPath": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\twilio_caller\\twilio_caller\\obj\\",
+        "outputPath": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -40,6 +40,12 @@
       },
       "frameworks": {
         "netcoreapp3.0": {
+          "dependencies": {
+            "Twilio": {
+              "target": "Package",
+              "version": "[5.33.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
