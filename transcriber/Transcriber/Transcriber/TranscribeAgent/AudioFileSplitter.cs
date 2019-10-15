@@ -38,7 +38,7 @@ namespace FuturistTranscriber.TranscribeAgent
         public SortedList<int, AudioSegment> SplitAudio()
         {
             var tempList = new SortedList<int, AudioSegment>();
-            tempList.Add
+            //tempList.Add
 
 
 
