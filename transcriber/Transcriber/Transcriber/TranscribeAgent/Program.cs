@@ -3,13 +3,105 @@ using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
+using System.IO;
 
 namespace FuturistTranscriber.TranscribeAgent
 {
     class Program
     {
+        public static PushAudioInputStream theStream;
 
-        // Continuous intent recognition using file input.
+        public static async Task RecognitionWithPushAudioStreamAsync()
+        {
+            // Creates an instance of a speech config with specified subscription key and service region.
+            // Replace with your own subscription key and service region (e.g., "westus").
+            var config = SpeechConfig.FromSubscription("c9b69428770c48bc871e23ae97490a63", "centralus");
+
+            var stopRecognition = new TaskCompletionSource<int>();
+
+            // Create a push stream
+            //using (var pushStream = AudioInputStream.CreatePushStream())
+            //{
+               using (var audioInput = AudioConfig.FromStreamInput(theStream))
+               {
+                    // Creates a speech recognizer using audio stream input.
+                    using (var recognizer = new SpeechRecognizer(config, audioInput))
+                    {
+                        // Subscribes to events.
+                        recognizer.Recognizing += (s, e) =>
+                        {
+                            //Console.WriteLine($"RECOGNIZING: Text={e.Result.Text}");
+                        };
+
+                        recognizer.Recognized += (s, e) =>
+                        {
+                            if (e.Result.Reason == ResultReason.RecognizedSpeech)
+                            {
+                                Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
+                            }
+                            else if (e.Result.Reason == ResultReason.NoMatch)
+                            {
+                                Console.WriteLine($"NOMATCH: Speech could not be recognized.");
+                            }
+                        };
+
+                        recognizer.Canceled += (s, e) =>
+                        {
+                            Console.WriteLine($"CANCELED: Reason={e.Reason}");
+
+                            if (e.Reason == CancellationReason.Error)
+                            {
+                                Console.WriteLine($"CANCELED: ErrorCode={e.ErrorCode}");
+                                Console.WriteLine($"CANCELED: ErrorDetails={e.ErrorDetails}");
+                                Console.WriteLine($"CANCELED: Did you update the subscription info?");
+                            }
+
+                            stopRecognition.TrySetResult(0);
+                        };
+
+                        recognizer.SessionStarted += (s, e) =>
+                        {
+                            Console.WriteLine("\nSession started event.");
+                        };
+
+                        recognizer.SessionStopped += (s, e) =>
+                        {
+                            Console.WriteLine("\nSession stopped event.");
+                            Console.WriteLine("\nStop recognition.");
+                            stopRecognition.TrySetResult(0);
+                        };
+
+                        // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
+                        await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
+
+                        // open and read the wave file and push the buffers into the recognizer
+                        //using (BinaryAudioStreamReader reader = Helper.CreateWavReader(@"whatstheweatherlike.wav"))
+                        //{
+                        //    byte[] buffer = new byte[1000];
+                        //    while (true)
+                        //    {
+                        //        var readSamples = reader.Read(buffer, (uint)buffer.Length);
+                        //        if (readSamples == 0)
+                        //        {
+                        //            break;
+                        //        }
+                        //        pushStream.Write(buffer, readSamples);
+                        //    }
+                        //}
+                        //pushStream.Close();
+
+                        // Waits for completion.
+                        // Use Task.WaitAny to keep the task rooted.
+                        Task.WaitAny(new[] { stopRecognition.Task });
+
+                        // Stops recognition.
+                        await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                    }
+                }
+            //}
+        }
+
+
         public static async Task ContinuousRecognitionWithFileAsync()
         {
             // <intentContinuousRecognitionWithFile>
@@ -39,7 +131,7 @@ namespace FuturistTranscriber.TranscribeAgent
                     string text = "";
                     // Subscribes to events.
                     recognizer.Recognizing += (s, e) => {
-                        //Console.WriteLine($"RECOGNIZING: Text={e.Result.Text}");
+                        Console.WriteLine($"RECOGNIZING: Text={e.Result.Text}");
                         text = e.Result.Text;
                     };
 
@@ -147,12 +239,21 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             Console.WriteLine("Creating transcript...");
 
-            ContinuousRecognitionWithFileAsync().Wait();
+            FileInfo test = new FileInfo("C:\\record\\test_meeting.wav");
+            var x = new AudioFileSplitter(null, test);
+            var list = x.SplitAudio();
+            var segment = list[list.Keys[0]];
+            theStream = segment.AudioStream;
+
+            
+            RecognitionWithPushAudioStreamAsync().Wait();
+
+            //ContinuousRecognitionWithFileAsync().Wait();
 
             //RecognizeSpeechAsync().Wait();
 
-            Console.WriteLine("Please press <Return> to continue.");
-            Console.ReadLine();
+            //Console.WriteLine("Please press <Return> to continue.");
+            //Console.ReadLine();
         }
     }
 }
