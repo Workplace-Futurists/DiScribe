@@ -13,7 +13,7 @@ namespace FuturistTranscriber.TranscribeAgent
     /// Provides meeting audio file splitting. An audio file is split into <see cref="TranscribeAgent.AudioSegment"></see>
     /// instances.
     /// Splitting is performed by determining when speakers change. Only speakers with a known
-    /// voice profile <see cref="Data.Voiceprint"></see> will be identified.    
+    /// voice profile <see cref="Data.Voiceprint"></see> will be identified.
     /// <para>Uses Speaker Recognition API in <see cref="Microsoft.CognitiveServices.Speech"/> for speaker recognition.</para>
     /// </summary>
     class AudioFileSplitter
@@ -24,7 +24,7 @@ namespace FuturistTranscriber.TranscribeAgent
             ConvertWavFile(audioFile);              //Convert audio file into correct format and set AudioFile for access to this file.
         }
 
-        
+
         public const int SAMPLE_RATE = 16000;
         public const int BITS_PER_SAMPLE = 16;
         public const int CHANNELS = 1;
@@ -39,11 +39,11 @@ namespace FuturistTranscriber.TranscribeAgent
         /// </summary>
         public FileInfo AudioFile { get; set; }
 
-        
+
 
         /// <summary>
         /// FOR DEMO: Will only return a sorted list with a single <see cref="AudioSegment"/>.
-        ///  
+        ///
         /// <para>Creates a SortedList of <see cref="AudioSegment"/> instances which are sorted according
         /// to their offset from the beginning of the audio file.
         /// The audio is segmented by identifying the speaker. Each time the speaker changes,
@@ -68,16 +68,16 @@ namespace FuturistTranscriber.TranscribeAgent
 
             //Read raw audio into from file into buffer and write to audioStream. Note file header is removed.
             byte[] audioData = ReadWavFileRemoveHeader(AudioFile);
-            audioStream.Write(audioData);                                                                                                                                    
+            audioStream.Write(audioData);
 
             AudioSegment segment = new AudioSegment(audioStream, offset, participant);
-            tempList.Add(segment, segment);                   
+            tempList.Add(segment, segment);
 
             return tempList;
         }
 
 
-        
+
         /// <summary>
         /// Create a set of AudioSegments corresponding to each time the speaker
         /// in the audio changes.
@@ -100,7 +100,7 @@ namespace FuturistTranscriber.TranscribeAgent
             using (var inputReader = new WaveFileReader(inFile.FullName))
             {
                 outData = new byte[inputReader.Length];                      //Buffer size is size of data section in wav file.
-                inputReader.Read(outData, 0, (int)(inputReader.Length));     //Read entire data section of file into buffer. 
+                inputReader.Read(outData, 0, (int)(inputReader.Length));     //Read entire data section of file into buffer.
             }
 
             return outData;
@@ -108,7 +108,7 @@ namespace FuturistTranscriber.TranscribeAgent
 
 
         /// <summary>
-        /// Converts WAV file to a new WAV file with the required sample rate, bit rate, and # channels, 
+        /// Converts WAV file to a new WAV file with the required sample rate, bit rate, and # channels,
         /// and then and sets AudioFile property to point to the converted file.
         /// </summary>
         /// <param name="originalFile" ></param>
@@ -117,8 +117,8 @@ namespace FuturistTranscriber.TranscribeAgent
         /// <param name="channels"></param>
         private void ConvertWavFile(FileInfo originalFile, int sampleRate = SAMPLE_RATE, int bitPerSample = BITS_PER_SAMPLE, int channels = CHANNELS)
         {
-            string outFilePath = originalFile.FullName + "_converted.wav";                    //Full absolute path of output file. 
-            
+            string outFilePath = originalFile.FullName + "_converted.wav";                    //Full absolute path of output file.
+
             /*Convert the file using NAudio library */
             using (var inputReader = new AudioFileReader(originalFile.FullName))
             {
@@ -126,7 +126,7 @@ namespace FuturistTranscriber.TranscribeAgent
                 mono.LeftVolume = 0.5f;
                 mono.RightVolume = 0.5f;                                                       //Equal volume for left and right channels from stereo source
 
-                var outFormat = new WaveFormat(sampleRate, channels);                          
+                var outFormat = new WaveFormat(sampleRate, channels);
                 var resampler = new MediaFoundationResampler(mono.ToWaveProvider(), outFormat);
                 resampler.ResamplerQuality = 60;                                               //Use highest quality. Range is 1-60.
 
