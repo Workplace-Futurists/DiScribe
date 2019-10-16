@@ -239,11 +239,11 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             Console.WriteLine("Creating transcript...");
 
-            FileInfo test = new FileInfo("C:\\record\\test_meeting.wav");
-            var x = new AudioFileSplitter(null, test);
-            var list = x.SplitAudio();
-            var segment = list[list.Keys[0]];
-            theStream = segment.AudioStream;
+            FileInfo test = new FileInfo("../../../Record/test_meeting.wav");
+            //var x = new AudioFileSplitter(null, test);
+            //var list = x.SplitAudio();
+            //var segment = list[list.Keys[0]];
+            //theStream = segment.AudioStream;
 
             
             RecognitionWithPushAudioStreamAsync().Wait();
