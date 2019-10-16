@@ -51,7 +51,7 @@ namespace twilio_caller
                 // Records the outgoing call
                 record: true,
                 // I think this is a default message that plays from the url?
-                url: new Uri("http://demo.twilio.com/docs/voice.xml")
+                url: new Uri("http://lonelycompany.ca/test.xml")
              );
 
             Console.WriteLine(call.Sid);
