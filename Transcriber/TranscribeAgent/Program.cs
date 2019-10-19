@@ -101,6 +101,173 @@ namespace FuturistTranscriber.TranscribeAgent
             //}
         }
 
+        public static async Task RecognitionWithPullAudioStreamAsync()
+        {
+            // Creates an instance of a speech config with specified subscription key and service region.
+            // Replace with your own subscription key and service region (e.g., "westus").
+            var config = SpeechConfig.FromSubscription("c9b69428770c48bc871e23ae97490a63", "centralus");
+
+            var stopRecognition = new TaskCompletionSource<int>();
+
+            // Create an audio stream from a wav file.
+            // Replace with your own audio file name.
+            using (var audioInput = Helper.OpenWavFile(@"C:\record\test_meeting_02.wav"))
+            {
+                // Creates a speech recognizer using audio stream input.
+                using (var recognizer = new SpeechRecognizer(config, audioInput))
+                {
+                    // Subscribes to events.
+                    recognizer.Recognizing += (s, e) =>
+                    {
+                        //Console.WriteLine($"RECOGNIZING: Text={e.Result.Text}");
+                    };
+
+                    recognizer.Recognized += (s, e) =>
+                    {
+                        if (e.Result.Reason == ResultReason.RecognizedSpeech)
+                        {
+                            Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
+                        }
+                        else if (e.Result.Reason == ResultReason.NoMatch)
+                        {
+                            Console.WriteLine($"NOMATCH: Speech could not be recognized.");
+                        }
+                    };
+
+                    recognizer.Canceled += (s, e) =>
+                    {
+                        Console.WriteLine($"CANCELED: Reason={e.Reason}");
+
+                        if (e.Reason == CancellationReason.Error)
+                        {
+                            Console.WriteLine($"CANCELED: ErrorCode={e.ErrorCode}");
+                            Console.WriteLine($"CANCELED: ErrorDetails={e.ErrorDetails}");
+                            Console.WriteLine($"CANCELED: Did you update the subscription info?");
+                        }
+
+                        stopRecognition.TrySetResult(0);
+                    };
+
+                    recognizer.SessionStarted += (s, e) =>
+                    {
+                        Console.WriteLine("\nSession started event.");
+                    };
+
+                    recognizer.SessionStopped += (s, e) =>
+                    {
+                        Console.WriteLine("\nSession stopped event.");
+                        Console.WriteLine("\nStop recognition.");
+                        stopRecognition.TrySetResult(0);
+                    };
+
+                    // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
+                    await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
+
+                    // Waits for completion.
+                    // Use Task.WaitAny to keep the task rooted.
+                    Task.WaitAny(new[] { stopRecognition.Task });
+
+                    // Stops recognition.
+                    await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+
+        public static async Task RecognitionWithPushAudioStreamAsync2()
+        {
+            // Creates an instance of a speech config with specified subscription key and service region.
+            // Replace with your own subscription key and service region (e.g., "westus").
+            var config = SpeechConfig.FromSubscription("c9b69428770c48bc871e23ae97490a63", "centralus");
+
+            var stopRecognition = new TaskCompletionSource<int>();
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\record\minute.txt", true))
+            {
+                // Create a push stream
+                using (var pushStream = AudioInputStream.CreatePushStream())
+                {
+                    using (var audioInput = AudioConfig.FromStreamInput(pushStream))
+                    {
+                        // Creates a speech recognizer using audio stream input.
+                        using (var recognizer = new SpeechRecognizer(config, audioInput))
+                        {
+                            // Subscribes to events.
+                            recognizer.Recognizing += (s, e) =>
+                            {
+                            //Console.WriteLine($"RECOGNIZING: Text={e.Result.Text}");
+                        };
+
+                            recognizer.Recognized += (s, e) =>
+                            {
+                                if (e.Result.Reason == ResultReason.RecognizedSpeech)
+                                {
+                                    Console.WriteLine($"Speaker: Text={e.Result.Text}");
+                                    file.WriteLine($"Speaker: Text={e.Result.Text}");
+                                }
+                                else if (e.Result.Reason == ResultReason.NoMatch)
+                                {
+                                    Console.WriteLine($"NOMATCH: Speech could not be recognized.");
+                                }
+                            };
+
+                            recognizer.Canceled += (s, e) =>
+                            {
+                                Console.WriteLine($"CANCELED: Reason={e.Reason}");
+
+                                if (e.Reason == CancellationReason.Error)
+                                {
+                                    Console.WriteLine($"CANCELED: ErrorCode={e.ErrorCode}");
+                                    Console.WriteLine($"CANCELED: ErrorDetails={e.ErrorDetails}");
+                                    Console.WriteLine($"CANCELED: Did you update the subscription info?");
+                                }
+
+                                stopRecognition.TrySetResult(0);
+                            };
+
+                            recognizer.SessionStarted += (s, e) =>
+                            {
+                                Console.WriteLine("\nSession started event.");
+                            };
+
+                            recognizer.SessionStopped += (s, e) =>
+                            {
+                                Console.WriteLine("\nSession stopped event.");
+                                Console.WriteLine("\nStop recognition.");
+                                stopRecognition.TrySetResult(0);
+                            };
+
+                            // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
+                            await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
+
+                            // open and read the wave file and push the buffers into the recognizer
+                            using (BinaryAudioStreamReader reader = Helper.CreateWavReader(@"C:\record\test_meeting_02.wav"))
+                            {
+                                byte[] buffer = new byte[1000];
+                                while (true)
+                                {
+                                    var readSamples = reader.Read(buffer, (uint)buffer.Length);
+                                    if (readSamples == 0)
+                                    {
+                                        break;
+                                    }
+                                    pushStream.Write(buffer, readSamples);
+                                }
+                            }
+                            pushStream.Close();
+
+                            // Waits for completion.
+                            // Use Task.WaitAny to keep the task rooted.
+                            Task.WaitAny(new[] { stopRecognition.Task });
+
+                            // Stops recognition.
+                            await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+        }
+
+
 
         public static async Task ContinuousRecognitionWithFileAsync()
         {
@@ -239,14 +406,16 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             Console.WriteLine("Creating transcript...");
 
-            FileInfo test = new FileInfo("../../../Record/test_meeting.wav");
+            //FileInfo test = new FileInfo("../../../Record/test_meeting.wav");
             //var x = new AudioFileSplitter(null, test);
             //var list = x.SplitAudio();
             //var segment = list[list.Keys[0]];
             //theStream = segment.AudioStream;
 
-            
-            RecognitionWithPushAudioStreamAsync().Wait();
+            RecognitionWithPullAudioStreamAsync().Wait();
+
+            //RecognitionWithPushAudioStreamAsync2().Wait();
+            //RecognitionWithPushAudioStreamAsync().Wait();
 
             //ContinuousRecognitionWithFileAsync().Wait();
 
