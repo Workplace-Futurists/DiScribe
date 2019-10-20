@@ -13,15 +13,25 @@ namespace FuturistTranscriber.TranscribeAgent
     /// Provides meeting audio file splitting. An audio file is split into <see cref="TranscribeAgent.AudioSegment"></see>
     /// instances.
     /// Splitting is performed by determining when speakers change. Only speakers with a known
-    /// voice profile <see cref="Data.Voiceprint"></see> will be identified.
+    /// voice profile <see cref="Data.Voiceprint"></see> will be identified.    
     /// <para>Uses Speaker Recognition API in <see cref="Microsoft.CognitiveServices.Speech"/> for speaker recognition.</para>
+    /// <para>Note that audio file must be a WAV file with the following characteristics: PCM/WAV mono with 16kHz sampling rate and 16 bits per sample. </para>
     /// </summary>
     class AudioFileSplitter
     {
+
+        /// <summary>
+        /// Create an AudioFileSplitter instance which uses a List of voiceprints for speaker recognition to
+        /// divide an audio file. Allows the divided audio segment data to be accessed via streams.
+        /// </summary>
+        /// <param name="voiceprints"><see cref="List{Voiceprint}"/>List of <see cref="Voiceprint"/> instances used for speaker recognition</param>
+        /// <param name="audioFile"><see cref="FileInfo"/> instance with absolute path to audio file. File must be a WAV file
+        /// with mono audio, 16kHz sampling rate, and 16 bits per sample.</param>
         public AudioFileSplitter(List<Voiceprint> voiceprints, FileInfo audioFile)
         {
             Voiceprints = voiceprints;
-            ConvertWavFile(audioFile);              //Convert audio file into correct format and set AudioFile for access to this file.
+            AudioFile = audioFile;
+            ProcessWavFile(audioFile);
         }
 
 
@@ -39,11 +49,11 @@ namespace FuturistTranscriber.TranscribeAgent
         /// </summary>
         public FileInfo AudioFile { get; set; }
 
-
+        public byte[] AudioData {get; set;}
 
         /// <summary>
         /// FOR DEMO: Will only return a sorted list with a single <see cref="AudioSegment"/>.
-        ///
+        ///  
         /// <para>Creates a SortedList of <see cref="AudioSegment"/> instances which are sorted according
         /// to their offset from the beginning of the audio file.
         /// The audio is segmented by identifying the speaker. Each time the speaker changes,
@@ -57,20 +67,14 @@ namespace FuturistTranscriber.TranscribeAgent
             /*TODO: Divide audio file using recognition here.
               Get offset from beginning of file (start of meeting).
               Also determine who the speaker is and get a matching User object.
-
-              FOR DEMO: Entire audio file is included, offset is 0, and user is a test user.
             */
-
-            AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS);   //Set up audio stream.
-            PushAudioInputStream audioStream = AudioInputStream.CreatePushStream(streamFormat);
+            
+            /*FOR TESTING */
+            MemoryStream stream = new MemoryStream(AudioData);                              //Set up the internal stream with AudioData as backing buffer.
             int offset = 0;
             User participant = new User("Some person", "someone@example.com");
 
-            //Read raw audio into from file into buffer and write to audioStream. Note file header is removed.
-            byte[] audioData = ReadWavFileRemoveHeader(AudioFile);
-            audioStream.Write(audioData);
-
-            AudioSegment segment = new AudioSegment(audioStream, offset, participant);
+            AudioSegment segment = CreateAudioSegment(stream, offset, participant);
             tempList.Add(segment, segment);
 
             return tempList;
@@ -89,51 +93,60 @@ namespace FuturistTranscriber.TranscribeAgent
         }
 
 
+        
         /// <summary>
         /// Creates buffer with file data. File header is removed.
         /// </summary>
         /// <param name="inFile"></param>
         /// <returns>Byte[] containing raw audio data, without header.</returns>
-        private static byte[] ReadWavFileRemoveHeader(FileInfo inFile)
+        private void ReadWavFileRemoveHeader(FileInfo inFile)
         {
             byte[] outData;
             using (var inputReader = new WaveFileReader(inFile.FullName))
             {
                 outData = new byte[inputReader.Length];                      //Buffer size is size of data section in wav file.
-                inputReader.Read(outData, 0, (int)(inputReader.Length));     //Read entire data section of file into buffer.
+                inputReader.Read(outData, 0, (int)(inputReader.Length));     //Read entire data section of file into buffer. 
             }
 
-            return outData;
+            AudioData = outData;
         }
 
 
+
         /// <summary>
-        /// Converts WAV file to a new WAV file with the required sample rate, bit rate, and # channels,
-        /// and then and sets AudioFile property to point to the converted file.
+        /// Converts data in Wav file into the specified format and reads data section of file (no header) into AudioData buffer.
         /// </summary>
         /// <param name="originalFile" ></param>
         /// <param name="sampleRate"></param>
         /// <param name="bitRate"></param>
         /// <param name="channels"></param>
-        private void ConvertWavFile(FileInfo originalFile, int sampleRate = SAMPLE_RATE, int bitPerSample = BITS_PER_SAMPLE, int channels = CHANNELS)
+        private void ProcessWavFile(FileInfo originalFile, int sampleRate = SAMPLE_RATE, int channels = CHANNELS, int bitPerSample = BITS_PER_SAMPLE)
         {
-            string outFilePath = originalFile.FullName + "_converted.wav";                    //Full absolute path of output file.
-
             /*Convert the file using NAudio library */
-            using (var inputReader = new AudioFileReader(originalFile.FullName))
+            using (var inputReader = new WaveFileReader(originalFile.FullName))
             {
-                var mono = new StereoToMonoSampleProvider(inputReader);                        //convert our stereo ISampleProvider (inputReader) to mono
-                mono.LeftVolume = 0.5f;
-                mono.RightVolume = 0.5f;                                                       //Equal volume for left and right channels from stereo source
-
+                
                 var outFormat = new WaveFormat(sampleRate, channels);
-                var resampler = new MediaFoundationResampler(mono.ToWaveProvider(), outFormat);
-                resampler.ResamplerQuality = 60;                                               //Use highest quality. Range is 1-60.
+                var resampler = new MediaFoundationResampler(inputReader, outFormat);
+                
+                resampler.ResamplerQuality = 60;                                           //Use highest quality. Range is 1-60.
 
-                WaveFileWriter.CreateWaveFile(outFilePath, resampler);                        //Write the resampled mono wave file.
-             }
-
-            AudioFile = new FileInfo(outFilePath);                                           //Set AudioFile property to provide access to output file.
+                AudioData = new byte[inputReader.Length];
+                resampler.Read(AudioData, 0, (int)(inputReader.Length));                  //Read transformed WAV data into buffer WavData (header is removed).
+                
+            }
+                   
         }
+
+        private static AudioSegment CreateAudioSegment(Stream stream, int offset, User participant)
+        {
+            AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS);   //Set up audio stream.
+            PullAudioInputStream audioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(stream), streamFormat);
+
+            return new AudioSegment(audioStream, offset, participant);
+    }
     }
 }
+
+
+    

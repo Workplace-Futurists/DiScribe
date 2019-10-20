@@ -26,12 +26,12 @@ namespace FuturistTranscriber.TranscribeAgent
 
 
         /// <summary>
-        /// Creates an audio transcript formatted text file. The transcript contains speaker names,
+        /// Creates an audio transcript text file. The transcript contains speaker names,
         /// timestamps, and the contents of what each speaker said.
         /// 
-        /// <para>AudioSegments is sorted by the Offset property of each AudioSegment. 
-        /// The transcription follows this order so that the speech for each speaker
-        /// is in the correct order. </para>
+        /// <para> The transcription follows the the correct order, so that
+        /// the beginning of the meeting is at the start of the file, and the last
+        /// speech around the end of the meeting is at the end of the file.</para>
         /// </summary>
         /// <returns>FileInfo object for the transcription output text file.</returns>
         public FileInfo CreateTranscription()

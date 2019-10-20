@@ -11,7 +11,7 @@ namespace FuturistTranscriber.TranscribeAgent
     /// </summary>
     class AudioSegment : System.IComparable
     {
-        public AudioSegment(PushAudioInputStream audioStream, int offset, User speakerInfo)
+        public AudioSegment(PullAudioInputStream audioStream, int offset, User speakerInfo)
         {
             AudioStream = audioStream;
             Offset = offset;
@@ -22,7 +22,7 @@ namespace FuturistTranscriber.TranscribeAgent
         /// <summary>
         /// Stream providing access to the audio data for this instance.
         /// </summary>
-        public PushAudioInputStream AudioStream { get; set; }
+        public PullAudioInputStream AudioStream { get; set; }
 
         /// <summary>
         /// Offset of audio segment from the beginning of the recording.
