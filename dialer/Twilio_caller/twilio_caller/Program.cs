@@ -47,12 +47,12 @@ namespace twilio_caller
             // makes the call resource to send
             var call = CallResource.Create(to, from,
                 //method: Twilio.Http.HttpMethod.Get,
-                //sendDigits: "ww1#ww626858398##",
-                sendDigits: "wwwwwwwwww1ww#wwww6w2w6w8w5w8w3w8w9w#wwwww#",
+                //sendDigits: "ww1#ww628079791##",
+                sendDigits: "wwwwwwwwww1ww#wwww6w2w8w0w7w9w7w9w1w#wwwww#",
                 // Records the outgoing call
                 record: true,
                 // I think this is a default message that plays from the url?
-                url: new Uri("http://demo.twilio.com/docs/voice.xml")
+                url: new Uri("http://lonelycompany.ca/test.xml")
              );
 
             Console.WriteLine(call.Sid);
