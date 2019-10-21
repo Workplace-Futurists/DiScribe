@@ -21,8 +21,9 @@ namespace twilio_caller
 
             // Taken straight from the Twilio C# quickstart
             // Find your Account Sid and Auth Token at twilio.com/console
-            const string accountSid = "AC5869733a59d586bbcaf5d27249d7ff2f";
-            const string authToken = "312b3283121fd9bd80ca6a8fb8ea847c";
+            // see https://www.twilio.com/docs/usage/secure-credentials to set up your env variables
+            var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
+            var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
             TwilioClient.Init(accountSid, authToken);
 
             // From the Twilio SIP guide
