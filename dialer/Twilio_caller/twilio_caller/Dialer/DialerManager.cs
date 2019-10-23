@@ -10,18 +10,18 @@ namespace twilio_caller.Dialer
 {
     public class DialerManager
     {
-        // TODO: can't reference class in main program due to static referencing when 
-        // instantiating call to methods need to fix before this can be encapsuled
-        private string meetingNum { get; set; }
+        //// TODO: can't reference class in main program due to static referencing when 
+        //// instantiating call to methods need to fix before this can be encapsuled
+        //private string meetingNum { get; set; }
 
-        public DialerManager(string mnum)
-        {
-            meetingNum = mnum;
-        }
+        //public DialerManager(string mnum)
+        //{
+        //    meetingNum = mnum;
+        //}
 
         // a function to add pauses ('w' characters) between meeting call in numbers and extensions
         // ex. 628079791
-        private static string formatDigits(string meetingNum)
+        private string formatDigits(string meetingNum)
         {
             // TODO: assert length of meeting number 
 
@@ -41,7 +41,7 @@ namespace twilio_caller.Dialer
             return result;
         }
 
-        public static string CallMeeting(string mNum)
+        public string CallMeeting(string mNum)
         {
             var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
             var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");

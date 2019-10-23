@@ -23,7 +23,7 @@ namespace twilio_caller.Dialer
         }
 
         // TODO given an rid, download a recording
-        public static async void DownloadRecordingHandler(string rid)
+        public async void DownloadRecordingHandler(string rid)
         {
             using (var httpClient = new HttpClient())
             {
