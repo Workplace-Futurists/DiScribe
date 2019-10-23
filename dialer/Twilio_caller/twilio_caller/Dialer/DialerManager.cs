@@ -1,23 +1,27 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Twilio;
-using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
-using twilio_caller.Dialer;
+using Twilio.Rest.Api.V2010.Account;
 
-namespace twilio_caller
+namespace twilio_caller.Dialer
 {
-    class Program
+    public class DialerManager
     {
+        // TODO: can't reference class in main program due to static referencing when 
+        // instantiating call to methods need to fix before this can be encapsuled
+        private string meetingNum { get; set; }
+
+        public DialerManager(string mnum)
+        {
+            meetingNum = mnum;
+        }
+
         // a function to add pauses ('w' characters) between meeting call in numbers and extensions
         // ex. 628079791
-        static string formatDigits(string meetingNum)
+        private static string formatDigits(string meetingNum)
         {
             // TODO: assert length of meeting number 
 
@@ -36,15 +40,9 @@ namespace twilio_caller
             // return the result after concat
             return result;
         }
-        // main program
-        static void Main(string[] args)
+
+        public static string CallMeeting(string mNum)
         {
-
-            // TODO: Adjust the code so that it prompts user to enter their phone# for the demo
-
-            // Taken straight from the Twilio C# quickstart
-            // Find your Account Sid and Auth Token at twilio.com/console
-            // see https://www.twilio.com/docs/usage/secure-credentials to set up your env variables
             var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
             var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
             TwilioClient.Init(accountSid, authToken);
@@ -61,7 +59,7 @@ namespace twilio_caller
 
             const string vancouverTollNum = "+12268289662";
             const string twilioAccNum = "+17787444195";
-            string meetingNum = "628079791";
+            //string meetingNum = "628079791";
 
             // this is the webex call vancouver toll number
             var to = new PhoneNumber(vancouverTollNum);
@@ -74,16 +72,16 @@ namespace twilio_caller
             // makes the call resource to send
             var call = CallResource.Create(to, from,
                 //method: Twilio.Http.HttpMethod.Get,
-                //sendDigits: "ww1#ww628079791##",
-                sendDigits: formatDigits(meetingNum),
+                sendDigits: formatDigits(mNum),
                 // Records the outgoing call
                 record: true,
                 // I think this is a default message that plays from the url?
-                url: new Uri("http://lonelycompany.ca/test.xml")
+                //url: new Uri("http://lonelycompany.ca/test.xml")
+                // default demo uri
+                url: new Uri("http://demo.twilio.com/docs/voice.xml")
              );
 
-            Console.WriteLine(call.Sid);
+            return call.Sid;
         }
-
     }
 }
