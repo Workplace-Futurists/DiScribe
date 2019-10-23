@@ -14,6 +14,28 @@ namespace twilio_caller
 {
     class Program
     {
+
+    	// a function to add pauses ('w' characters) between meeting call in numbers and extensions
+    	// ex. 628079791
+    	static string formatDigits(string meetingNum) {
+    		// TODO: assert length of meeting number 
+
+    		// add necessary digits and pauses ('w') for send digits
+    		var result = "wwwwwwwwww1ww#wwww" + 
+				meetingNum[0] + "w" +
+				meetingNum[1] + "w" +
+				meetingNum[2] + "w" +
+				meetingNum[3] + "w" +
+				meetingNum[4] + "w" +
+				meetingNum[5] + "w" +
+				meetingNum[6] + "w" +
+				meetingNum[7] + "w" +
+				meetingNum[8] + "w#wwwww#";
+
+			// return the result after concat
+    		return result;
+    	}
+    	// main program
         static void Main(string[] args)
         {
 
@@ -36,19 +58,23 @@ namespace twilio_caller
             // Tried using the SIP of a webex meeting and it fails. probably because this isn't an async method
             //var to = new PhoneNumber("sip:628353018@cs319-futurists-test01.my.webex.com");
 
+            const string vancouverTollNum = "+12268289662";
+            const string twilioAccNum = "+17787444195";
+            var string meetingNum = "628079791";
+
             // this is the webex call vancouver toll number
-            var to = new PhoneNumber("+12268289662");
+            var to = new PhoneNumber(vancouverTollNum);
             // This will work if you call a verified phone number (currently has mine)
             //var to = new PhoneNumber("+17786886112");
 
             // This is the twilio number linked to our account
-            var from = new PhoneNumber("+17787444195");
+            var from = new PhoneNumber(twilioAccNum);
 
             // makes the call resource to send
             var call = CallResource.Create(to, from,
                 //method: Twilio.Http.HttpMethod.Get,
                 //sendDigits: "ww1#ww628079791##",
-                sendDigits: "wwwwwwwwww1ww#wwww6w2w8w0w7w9w7w9w1w#wwwww#",
+                sendDigits: formatDigits(meetingNum),
                 // Records the outgoing call
                 record: true,
                 // I think this is a default message that plays from the url?
