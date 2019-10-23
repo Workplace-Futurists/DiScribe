@@ -15,7 +15,9 @@ namespace SendEmailCsharp
 
         static async Task Execute()
         {
-            var apiKey = Environment.GetEnvironmentVariable("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");
+            // Set Environment Variable before calling them
+            Environment.SetEnvironmentVariable("SENDGRID_API_KEY", "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");
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             var client = new SendGridClient(apiKey);
 
             // email address and the name of the sender and receiver
