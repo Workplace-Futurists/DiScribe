@@ -1,0 +1,14 @@
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/SendEmailCsharp
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/SendEmailCsharp.deps.json
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/SendEmailCsharp.runtimeconfig.json
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/SendEmailCsharp.runtimeconfig.dev.json
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/SendEmailCsharp.dll
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/SendEmailCsharp.pdb
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/Newtonsoft.Json.dll
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/bin/Debug/netcoreapp3.0/SendGrid.dll
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/obj/Debug/netcoreapp3.0/SendEmailCsharp.csprojAssemblyReference.cache
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/obj/Debug/netcoreapp3.0/SendEmailCsharp.AssemblyInfoInputs.cache
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/obj/Debug/netcoreapp3.0/SendEmailCsharp.AssemblyInfo.cs
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/obj/Debug/netcoreapp3.0/SendEmailCsharp.csproj.CopyComplete
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/obj/Debug/netcoreapp3.0/SendEmailCsharp.dll
+/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/obj/Debug/netcoreapp3.0/SendEmailCsharp.pdb
