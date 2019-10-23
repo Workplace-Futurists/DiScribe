@@ -4256,30 +4256,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\heyyou\\.nuget\\packages\\": {},
-    "C:\\program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "/Users/goke/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\twilio_caller.csproj",
+      "projectUniqueName": "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/Twilio_caller/twilio_caller/twilio_caller.csproj",
       "projectName": "twilio_caller",
-      "projectPath": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\twilio_caller.csproj",
-      "packagesPath": "C:\\Users\\heyyou\\.nuget\\packages\\",
-      "outputPath": "D:\\Documents\\School Stuff\\CPSC 319\\Project\\cs319-2019w1-hsbc\\dialer\\Twilio_caller\\twilio_caller\\obj\\",
+      "projectPath": "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/Twilio_caller/twilio_caller/twilio_caller.csproj",
+      "packagesPath": "/Users/goke/.nuget/packages/",
+      "outputPath": "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/Twilio_caller/twilio_caller/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\heyyou\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/goke/.config/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -4319,7 +4313,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
       }
     }
   }
