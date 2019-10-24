@@ -9,7 +9,7 @@ namespace FuturistTranscriber.TranscribeAgent
 {
     class Program
     {
-        
+
 
         public static async Task RecognitionWithPullAudioStreamAsync(PullAudioInputStream theStream)
         {
@@ -19,68 +19,73 @@ namespace FuturistTranscriber.TranscribeAgent
 
             var stopRecognition = new TaskCompletionSource<int>();
 
-                   
-            using (var audioInput = AudioConfig.FromStreamInput(theStream))
+            using (System.IO.StreamWriter file =
+            new System.IO.StreamWriter(@"record\minutes.txt", true))
             {
-                // Creates a speech recognizer using audio stream input.
-                using (var recognizer = new SpeechRecognizer(config, audioInput))
+                using (var audioInput = AudioConfig.FromStreamInput(theStream))
                 {
-                    // Subscribes to events.
-                    recognizer.Recognizing += (s, e) =>
+                    // Creates a speech recognizer using audio stream input.
+                    using (var recognizer = new SpeechRecognizer(config, audioInput))
                     {
-                        //
-                    };
-                    recognizer.Recognized += (s, e) =>
-                    {
-                        if (e.Result.Reason == ResultReason.RecognizedSpeech)
+                        // Subscribes to events.
+                        recognizer.Recognizing += (s, e) =>
                         {
-                            Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
-                        }
-                        else if (e.Result.Reason == ResultReason.NoMatch)
+                            //
+                        };
+                        recognizer.Recognized += (s, e) =>
                         {
-                            Console.WriteLine($"NOMATCH: Speech could not be recognized.");
-                        }
-                    };
+                            if (e.Result.Reason == ResultReason.RecognizedSpeech)
+                            {
+                                Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
+                                file.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
+                            }
+                            else if (e.Result.Reason == ResultReason.NoMatch)
+                            {
+                                Console.WriteLine($"NOMATCH: Speech could not be recognized.");
+                                file.WriteLine($"NOMATCH: Speech could not be recognized.");
+                            }
+                        };
 
-                    recognizer.Canceled += (s, e) =>
-                    {
-                        Console.WriteLine($"CANCELED: Reason={e.Reason}");
-
-                        if (e.Reason == CancellationReason.Error)
+                        recognizer.Canceled += (s, e) =>
                         {
-                            Console.WriteLine($"CANCELED: ErrorCode={e.ErrorCode}");
-                            Console.WriteLine($"CANCELED: ErrorDetails={e.ErrorDetails}");
-                            Console.WriteLine($"CANCELED: Did you update the subscription info?");
-                        }
+                            Console.WriteLine($"CANCELED: Reason={e.Reason}");
 
-                        stopRecognition.TrySetResult(0);
-                    };
+                            if (e.Reason == CancellationReason.Error)
+                            {
+                                Console.WriteLine($"CANCELED: ErrorCode={e.ErrorCode}");
+                                Console.WriteLine($"CANCELED: ErrorDetails={e.ErrorDetails}");
+                                Console.WriteLine($"CANCELED: Did you update the subscription info?");
+                            }
 
-                    recognizer.SessionStarted += (s, e) =>
-                    {
-                        Console.WriteLine("\nSession started event.");
-                    };
+                            stopRecognition.TrySetResult(0);
+                        };
 
-                    recognizer.SessionStopped += (s, e) =>
-                    {
-                        Console.WriteLine("\nSession stopped event.");
-                        Console.WriteLine("\nStop recognition.");
-                        stopRecognition.TrySetResult(0);
-                    };
+                        recognizer.SessionStarted += (s, e) =>
+                        {
+                            Console.WriteLine("\nSession started event.");
+                        };
 
-                    Console.Write("Awaiting recognition completeion");
-                    // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
-                    await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
-                    
-                    // Waits for completion.
-                    // Use Task.WaitAny to keep the task rooted.
-                    Task.WaitAny(new[] { stopRecognition.Task });
+                        recognizer.SessionStopped += (s, e) =>
+                        {
+                            Console.WriteLine("\nSession stopped event.");
+                            Console.WriteLine("\nStop recognition.");
+                            stopRecognition.TrySetResult(0);
+                        };
 
-                    Console.Write("Awaiting recogniotion stop");
-                    // Stops recognition.
-                    await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                        Console.Write("Awaiting recognition completeion");
+                        // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
+                        await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
+
+                        // Waits for completion.
+                        // Use Task.WaitAny to keep the task rooted.
+                        Task.WaitAny(new[] { stopRecognition.Task });
+
+                        Console.Write("Awaiting recogniotion stop");
+                        // Stops recognition.
+                        await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                    }
                 }
-            }
+        }
             
         }
 
@@ -93,7 +98,8 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             Console.WriteLine("Creating transcript...");
 
-            string path = @"..\..\..\record\test_meeting_02.wav";
+            //string path = @"..\..\..\record\test_meeting_02.wav";
+            string path = @"record\test_meeting_02.wav";
             FileInfo test = new FileInfo(path);
             var x = new AudioFileSplitter(null, test);
 
