@@ -93,7 +93,7 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             Console.WriteLine("Creating transcript...");
 
-            string path = @"..\..\..\record\test_meeting_02.wav";
+            string path = @"..\record\FakeMeeting.wav";
             FileInfo test = new FileInfo(path);
             var x = new AudioFileSplitter(null, test);
 
