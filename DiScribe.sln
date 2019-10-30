@@ -1,0 +1,35 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transcriber", "Transcriber\Transcriber.csproj", "{E593E36D-0217-4C91-8AA0-B18F37B4AF42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twilio_caller", "Dialer\Twilio_caller\twilio_caller.csproj", "{4F0A6A15-F02F-44C4-B35F-B086C6A4A643}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendEmailCsharp", "Dialer\Twilio_SendGrid\SendEmailCsharp\SendEmailCsharp.csproj", "{7AA13659-F1D3-443A-B02F-5EEF8A0B1451}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dialer_01", "Dialer\wip_link_dialer\dialer_01\dialer_01.csproj", "{17A5CA00-B6B2-4247-80D9-8F5703BFB575}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|anycpu = Debug|anycpu
+		Release|anycpu = Release|anycpu
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E593E36D-0217-4C91-8AA0-B18F37B4AF42}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{E593E36D-0217-4C91-8AA0-B18F37B4AF42}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{E593E36D-0217-4C91-8AA0-B18F37B4AF42}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{E593E36D-0217-4C91-8AA0-B18F37B4AF42}.Release|anycpu.Build.0 = Release|Any CPU
+		{4F0A6A15-F02F-44C4-B35F-B086C6A4A643}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{4F0A6A15-F02F-44C4-B35F-B086C6A4A643}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{4F0A6A15-F02F-44C4-B35F-B086C6A4A643}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{4F0A6A15-F02F-44C4-B35F-B086C6A4A643}.Release|anycpu.Build.0 = Release|Any CPU
+		{7AA13659-F1D3-443A-B02F-5EEF8A0B1451}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{7AA13659-F1D3-443A-B02F-5EEF8A0B1451}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{7AA13659-F1D3-443A-B02F-5EEF8A0B1451}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{7AA13659-F1D3-443A-B02F-5EEF8A0B1451}.Release|anycpu.Build.0 = Release|Any CPU
+		{17A5CA00-B6B2-4247-80D9-8F5703BFB575}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{17A5CA00-B6B2-4247-80D9-8F5703BFB575}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{17A5CA00-B6B2-4247-80D9-8F5703BFB575}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{17A5CA00-B6B2-4247-80D9-8F5703BFB575}.Release|anycpu.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

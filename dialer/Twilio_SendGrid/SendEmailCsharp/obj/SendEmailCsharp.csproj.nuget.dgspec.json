@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/SendEmailCsharp.csproj": {}
+    "/Users/Jin/Documents/UBC/CPSC/CPSC319/cs319-2019w1-hsbc/Dialer/Twilio_SendGrid/SendEmailCsharp/SendEmailCsharp.csproj": {}
   },
   "projects": {
-    "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/SendEmailCsharp.csproj": {
+    "/Users/Jin/Documents/UBC/CPSC/CPSC319/cs319-2019w1-hsbc/Dialer/Twilio_SendGrid/SendEmailCsharp/SendEmailCsharp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/SendEmailCsharp.csproj",
+        "projectUniqueName": "/Users/Jin/Documents/UBC/CPSC/CPSC319/cs319-2019w1-hsbc/Dialer/Twilio_SendGrid/SendEmailCsharp/SendEmailCsharp.csproj",
         "projectName": "SendEmailCsharp",
-        "projectPath": "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/SendEmailCsharp.csproj",
-        "packagesPath": "/Users/goke/.nuget/packages/",
-        "outputPath": "/Users/goke/visualStudio/HSBC/cs319-2019w1-hsbc/dialer/SendEmailCsharp/obj/",
+        "projectPath": "/Users/Jin/Documents/UBC/CPSC/CPSC319/cs319-2019w1-hsbc/Dialer/Twilio_SendGrid/SendEmailCsharp/SendEmailCsharp.csproj",
+        "packagesPath": "/Users/Jin/.nuget/packages/",
+        "outputPath": "/Users/Jin/Documents/UBC/CPSC/CPSC319/cs319-2019w1-hsbc/Dialer/Twilio_SendGrid/SendEmailCsharp/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/goke/.nuget/NuGet/NuGet.Config"
+          "/Users/Jin/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
