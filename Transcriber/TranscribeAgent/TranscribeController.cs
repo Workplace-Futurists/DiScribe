@@ -1,10 +1,10 @@
-﻿using FuturistTranscriber.Data;
+﻿using Transcriber.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     class TranscribeController
     {

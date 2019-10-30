@@ -1,8 +1,8 @@
 ﻿using System;
-using FuturistTranscriber.Data;
+using Transcriber.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     /// <summary>
     /// Represents a segment of an audio recording which has an offset in seconds from the beginning

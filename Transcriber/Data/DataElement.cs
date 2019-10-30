@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FuturistTranscriber.Data
+namespace Transcriber.Data
 {
     /// <summary>
     /// Abstract class representing a generic data element. Mainly used as a container for database connection.
