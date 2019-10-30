@@ -22,7 +22,7 @@ namespace FuturistTranscriber.TranscribeAgent
 
         public static AudioConfig OpenWavFile(BinaryReader reader)
         {
-            AudioStreamFormat format = readWaveHeader(reader);
+            AudioStreamFormat format = ReadWaveHeader(reader);
             return AudioConfig.FromStreamInput(new BinaryAudioStreamReader(reader), format);
         }
 
@@ -30,11 +30,11 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             BinaryReader reader = new BinaryReader(File.OpenRead(filename));
             // read the wave header so that it won't get into the in the following readings
-            AudioStreamFormat format = readWaveHeader(reader);
+            AudioStreamFormat format = ReadWaveHeader(reader);
             return new BinaryAudioStreamReader(reader);
         }
 
-        public static AudioStreamFormat readWaveHeader(BinaryReader reader)
+        public static AudioStreamFormat ReadWaveHeader(BinaryReader reader)
         {
             // Tag "RIFF"
             char[] data = new char[4];
