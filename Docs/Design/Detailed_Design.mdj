@@ -87,7 +87,7 @@
 											"height": 24,
 											"autoResize": false,
 											"underline": false,
-											"text": "FuturistTranscriber.Data",
+											"text": "Transcriber.Data",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -273,7 +273,7 @@
 											"height": 24,
 											"autoResize": false,
 											"underline": false,
-											"text": "FuturistTranscriber.MeetingBot",
+											"text": "Transcriber.MeetingBot",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -459,7 +459,7 @@
 											"height": 24,
 											"autoResize": false,
 											"underline": false,
-											"text": "FuturistTranscriber.TranscribeAgent",
+											"text": "Transcriber.TranscribeAgent",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -654,7 +654,7 @@
 											"height": 24,
 											"autoResize": false,
 											"underline": false,
-											"text": "FuturistTranscriber.VoiceRegistrationAgent",
+											"text": "Transcriber.VoiceRegistrationAgent",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -866,7 +866,7 @@
 											"height": 20,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.TranscribeAgent)",
+											"text": "(from Transcriber.TranscribeAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -1277,7 +1277,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.MeetingBot)",
+											"text": "(from Transcriber.MeetingBot)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -1568,7 +1568,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.Data)",
+											"text": "(from Transcriber.Data)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -2035,7 +2035,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.Data)",
+											"text": "(from Transcriber.Data)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -2560,7 +2560,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.VoiceRegistrationAgent)",
+											"text": "(from Transcriber.VoiceRegistrationAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -2851,7 +2851,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.VoiceRegistrationAgent)",
+											"text": "(from Transcriber.VoiceRegistrationAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -3173,7 +3173,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.Data)",
+											"text": "(from Transcriber.Data)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -3924,7 +3924,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.VoiceRegistrationAgent)",
+											"text": "(from Transcriber.VoiceRegistrationAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -5057,7 +5057,7 @@
 											"height": 20,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.TranscribeAgent)",
+											"text": "(from Transcriber.TranscribeAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -5468,7 +5468,7 @@
 											"height": 20,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.TranscribeAgent)",
+											"text": "(from Transcriber.TranscribeAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -5966,7 +5966,7 @@
 											"height": 20,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.TranscribeAgent)",
+											"text": "(from Transcriber.TranscribeAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -6908,7 +6908,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.MeetingBot)",
+											"text": "(from Transcriber.MeetingBot)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -7199,7 +7199,7 @@
 											"height": 18,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.MeetingBot)",
+											"text": "(from Transcriber.MeetingBot)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -9878,7 +9878,7 @@
 											"height": 20,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.TranscribeAgent)",
+											"text": "(from Transcriber.TranscribeAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -10400,7 +10400,7 @@
 											"height": 20,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.TranscribeAgent)",
+											"text": "(from Transcriber.TranscribeAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -11217,7 +11217,7 @@
 											"height": 20,
 											"autoResize": false,
 											"underline": false,
-											"text": "(from FuturistTranscriber.TranscribeAgent)",
+											"text": "(from Transcriber.TranscribeAgent)",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5,
 											"wordWrap": false
@@ -14888,7 +14888,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "FuturistTranscriber.MeetingBot",
+					"name": "Transcriber.MeetingBot",
 					"ownedElements": [
 						{
 							"_type": "UMLClass",
@@ -15138,7 +15138,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "FuturistTranscriber.TranscribeAgent",
+					"name": "Transcriber.TranscribeAgent",
 					"ownedElements": [
 						{
 							"_type": "UMLClass",
@@ -16835,7 +16835,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "FuturistTranscriber.VoiceRegistrationAgent",
+					"name": "Transcriber.VoiceRegistrationAgent",
 					"ownedElements": [
 						{
 							"_type": "UMLClass",
@@ -17058,7 +17058,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "FuturistTranscriber.Data",
+					"name": "Transcriber.Data",
 					"ownedElements": [
 						{
 							"_type": "UMLClass",

@@ -7,7 +7,7 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     /// <summary>
     /// Provides transcription of a set of AudioSegments to create a formatted text file. 

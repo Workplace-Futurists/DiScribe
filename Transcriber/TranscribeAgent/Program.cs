@@ -4,9 +4,9 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
-using FuturistTranscriber.TranscribeAgent;
+using Transcriber.TranscribeAgent;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     class Program
     {
@@ -15,7 +15,7 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             Console.WriteLine("Creating transcript...");
 
-            string path = @"record\meeting.wav";
+            string path = @"../../../record/test_meeting.wav";
             FileInfo test = new FileInfo(path);
             var x = new AudioFileSplitter(null, test);
 

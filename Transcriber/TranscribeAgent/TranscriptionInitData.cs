@@ -1,10 +1,10 @@
-﻿using FuturistTranscriber.Data;
+﻿using Transcriber.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     /// <summary>
     /// Contains data required to begin the transcription process.

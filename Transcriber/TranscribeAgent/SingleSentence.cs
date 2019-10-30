@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     class SingleSentence
     {

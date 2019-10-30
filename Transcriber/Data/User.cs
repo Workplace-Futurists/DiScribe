@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FuturistTranscriber.Data
+namespace Transcriber.Data
 {
     /// <summary>
     /// Represents a user who is a meeting participant. Contains attributes for user name, email address, and user ID.
