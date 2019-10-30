@@ -26,7 +26,6 @@ namespace FuturistTranscriber.TranscribeAgent
 
         public List<Voiceprint> Voiceprints{ get; set;}
 
-
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
         /// Creates a formatted text output file holding the transcription.
@@ -37,13 +36,9 @@ namespace FuturistTranscriber.TranscribeAgent
             return new FileInfo("");
         }
 
-
         public static void SendEmail(FileInfo transcript, string targetEmail, string body = "", string subject = "")
         {
 
         }
-
-
-
     }
 }
