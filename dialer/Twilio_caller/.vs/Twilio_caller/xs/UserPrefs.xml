@@ -1,0 +1,23 @@
+﻿<Properties StartupConfiguration="{6B7D58AB-D8BD-4B34-B143-F40CE84B37BD}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="twilio_caller/Program.cs">
+    <Files>
+      <File FileName="twilio_caller/Program.cs" Line="46" Column="9" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="twilio_caller" expanded="True" selected="True">
+            <Node name="twilio_caller" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.twilio__caller PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
