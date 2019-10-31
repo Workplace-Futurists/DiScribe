@@ -114,7 +114,7 @@ namespace FuturistTranscriber.TranscribeAgent
 
 
         /// <summary>
-        /// Converts data in Wav file into the specified format and reads data section of file (no header) into AudioData buffer.
+        /// Converts data in Wav file into the specified format and reads data section of file (removes header) into AudioData buffer.
         /// </summary>
         /// <param name="originalFile" ></param>
         /// <param name="sampleRate"></param>
@@ -135,16 +135,26 @@ namespace FuturistTranscriber.TranscribeAgent
                 resampler.Read(AudioData, 0, (int)(inputReader.Length));                  //Read transformed WAV data into buffer WavData (header is removed).
                 
             }
-                   
         }
 
+        /// <summary>
+        /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/> 
+        /// wrapper. The stream has the specified int offset, and associated <see cref="Data.User"/> who
+        /// is the person speaking.
+        /// </summary>
+        /// <param name="stream">Stream to access raw PCM audio data</param>
+        /// <param name="offset">Offset in seconds from beginning of audio at 0</param>
+        /// <param name="participant">The person who is speaking</param>
+        /// <returns></returns>
         private static AudioSegment CreateAudioSegment(Stream stream, int offset, User participant)
         {
             AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS);   //Set up audio stream.
             PullAudioInputStream audioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(stream), streamFormat);
 
             return new AudioSegment(audioStream, offset, participant);
-    }
+        }
+
+
     }
 }
 

@@ -11,5 +11,6 @@ Instructions:
 1. Extract "transcriber.zip" into a single directory.
 2. Ensure that audio file "meeting.wav" is present in "record" directory. Must be PCM/WAV format. A sample file is provided for testing purposes.
 3. Navigate to the "publish" directory.
-3. Double click on "Transcriber.exe". Transcription will then begin. Output will be printed to the console.
+3. Double click on "Transcriber.exe". Transcription will then begin. 
+4. View transcription output in minutes.txt in the "record" directory.
 4. Close application.
