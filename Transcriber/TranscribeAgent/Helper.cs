@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace transcriber.TranscribeAgent
 {
     public class Helper
     {

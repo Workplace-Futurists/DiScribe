@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using FuturistTranscriber.Data;
+using transcriber.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace transcriber.TranscribeAgent
 {
     /// <summary>
     /// Provides meeting audio file splitting. An audio file is split into <see cref="TranscribeAgent.AudioSegment"></see>
