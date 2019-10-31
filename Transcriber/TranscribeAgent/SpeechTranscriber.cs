@@ -7,7 +7,7 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace transcriber.TranscribeAgent
 {
     /// <summary>
     /// Provides transcription of a set of AudioSegments to create a formatted text file. 
@@ -15,9 +15,9 @@ namespace FuturistTranscriber.TranscribeAgent
     /// <para>Uses the Microsoft Azure Cognitive Services Speech SDK to perform transcription of audio streams
     /// within each AudioSegment. </para>
     /// </summary>
-    class SpeechTranscriber
+    class Speechtranscriber
     {
-        public SpeechTranscriber(SortedList<AudioSegment, AudioSegment> audioSegments)
+        public Speechtranscriber(SortedList<AudioSegment, AudioSegment> audioSegments)
         {
             AudioSegments = audioSegments;
         }

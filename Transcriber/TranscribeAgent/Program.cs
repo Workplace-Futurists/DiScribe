@@ -4,9 +4,9 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
-using FuturistTranscriber.TranscribeAgent;
+using transcriber.TranscribeAgent;
 
-namespace FuturistTranscriber.TranscribeAgent
+namespace transcriber.TranscribeAgent
 {
     class Program
     {
@@ -15,7 +15,7 @@ namespace FuturistTranscriber.TranscribeAgent
         {
             Console.WriteLine("Creating transcript...");
 
-            string path = @"record\meeting.wav";
+            string path = @"../../../record/test_meeting.wav";
             FileInfo test = new FileInfo(path);
             var x = new AudioFileSplitter(null, test);
 
@@ -23,7 +23,7 @@ namespace FuturistTranscriber.TranscribeAgent
 
             var segment = list[list.Keys[0]];                            //Get the 1 segment.
 
-            SpeechTranscriber.RecognitionWithPullAudioStreamAsync(segment.AudioStream).Wait();
+            Speechtranscriber.RecognitionWithPullAudioStreamAsync(segment.AudioStream).Wait();
 
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();

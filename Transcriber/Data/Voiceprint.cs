@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FuturistTranscriber.Data
+namespace transcriber.Data
 {   
     /// <summary>
     /// Represents a Voiceprint associated with a specific user. Contains raw audio data, the time stamp
