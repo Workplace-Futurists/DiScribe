@@ -1,4 +1,4 @@
-# Transcriber Module
+# transcriber Module
 The purpose of this module is to
 
 1. Transcribe the meeting recording into text
