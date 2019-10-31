@@ -17,9 +17,10 @@ namespace FuturistTranscriber.TranscribeAgent
     /// </summary>
     class SpeechTranscriber
     {
-        public SpeechTranscriber(SortedList<AudioSegment, AudioSegment> audioSegments)
+        public SpeechTranscriber(SortedList<AudioSegment, AudioSegment> audioSegments, FileInfo outFile)
         {
             AudioSegments = audioSegments;
+            MeetingMinutes = outFile;
         }
 
         /// <summary>
@@ -27,6 +28,8 @@ namespace FuturistTranscriber.TranscribeAgent
         /// This supports transcription in the correct order.
         /// </summary>
         public SortedList<AudioSegment, AudioSegment> AudioSegments { get; set; }
+
+        public FileInfo MeetingMinutes { get; set; }
 
 
         /// <summary>
@@ -38,12 +41,17 @@ namespace FuturistTranscriber.TranscribeAgent
         /// speech around the end of the meeting is at the end of the file.</para>
         /// </summary>
         /// <returns>FileInfo object for the transcription output text file.</returns>
-        public FileInfo CreateTranscription()
+        public async void CreateTranscription()
         {
-            return new FileInfo("");
+            FileInfo outFile = new FileInfo(@"record\minutes.txt");
+
+            //foreach (var segment in AudioSegments)
+        
+            RecognitionWithPullAudioStreamAsync(AudioSegments[AudioSegments.Keys[0]].AudioStream, outFile).Wait();
+            
         }
 
-        public static async Task RecognitionWithPullAudioStreamAsync(PullAudioInputStream theStream)
+        public static async Task RecognitionWithPullAudioStreamAsync(PullAudioInputStream theStream, FileInfo outFile)
         {
             // Creates an instance of a speech config with specified subscription key and service region.
             // Replace with your own subscription key and service region (e.g., "westus").
@@ -52,7 +60,7 @@ namespace FuturistTranscriber.TranscribeAgent
             var stopRecognition = new TaskCompletionSource<int>();
 
             using (System.IO.StreamWriter file =
-            new System.IO.StreamWriter(@"record\minutes.txt", true))
+            new System.IO.StreamWriter(outFile.FullName, true))
             {
                 using (var audioInput = AudioConfig.FromStreamInput(theStream))
                 {
