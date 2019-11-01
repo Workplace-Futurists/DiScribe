@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Microsoft.CognitiveServices.Speech;
 
 namespace transcriber.TranscribeAgent
 {
@@ -15,11 +16,12 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo outFile)
+        public TranscribeController(SpeechConfig config, FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo outFile)
         {
             MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
             OutFile = outFile;
+            Config = config;
         }
 
         /// <summary>
@@ -33,6 +35,8 @@ namespace transcriber.TranscribeAgent
         public List<Voiceprint> Voiceprints{ get; set;}
 
         public FileInfo OutFile { get; set; }
+
+        SpeechConfig Config { get; set; }
 
         /// <summary>
         /// File details for text output file of meeting minutes.
@@ -61,7 +65,7 @@ namespace transcriber.TranscribeAgent
 
             try
             {
-                var transcriber = new SpeechTranscriber(audioSegments, OutFile);
+                var transcriber = new SpeechTranscriber(Config, audioSegments, OutFile);
                 transcriber.CreateTranscription();                 //Create transcription, update MeetingMinutes property with file location.
             }catch(Exception transcribeEx)
              {
