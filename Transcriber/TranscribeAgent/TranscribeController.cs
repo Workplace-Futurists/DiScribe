@@ -15,30 +15,72 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints)
+        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints, OutFile outFile)
         {
             MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
-
+            OutFile = outFile;
         }
 
+        /// <summary>
+        /// File details for audio file containing meeting recording.
+        /// </summary>
         public FileInfo MeetingRecording { get; set; }
 
+        /// <summary>
+        /// List of voiceprints for users involved in this meeting.
+        /// </summary>
         public List<Voiceprint> Voiceprints{ get; set;}
+
+        public FileInfo OutFile { get; set; }
+
+        /// <summary>
+        /// File details for text output file of meeting minutes.
+        /// </summary>
+        public FileInfo MeetingMinutes { get; private set; }
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
         /// Creates a formatted text output file holding the transcription.
         /// </summary>
         /// <returns>A FileInfo instance holding information about the transcript file that was created.</returns>
-        public FileInfo DoTranscription()
+        public Boolean DoTranscription()
         {
-            return new FileInfo("");
+            AudioFileSplitter splitter = new AudioFileSplitter(Voiceprints, MeetingRecording);
+            SortedList<AudioSegment, AudioSegment> audioSegments;
+            try
+            {
+                //Split audio using speaker recognition. List of AudioSegments is sorted by timestamp
+                audioSegments = splitter.SplitAudio();
+                            
+            } catch(Exception splitEx)
+              {
+                  Console.Error.WriteLine("Splitting meeting audio failed. \n" + splitEx.Message);
+                  return false;
+              }
+
+            try
+            {
+                var transcriber = new SpeechTranscriber(audioSegments, OutFile);
+                transcriber.CreateTranscription();                 //Create transcription, update MeetingMinutes property with file location.
+            }catch(Exception transcribeEx)
+             {
+                Console.Error.Write("Mission failed. No transcription could be created from audio segments.\n" + transcribeEx.Message);
+                return false;
+             }
+
+            return true;
         }
 
-        public static void SendEmail(FileInfo transcript, string targetEmail, string body = "", string subject = "")
+
+
+
+
+
+        public Boolean SendEmail(string targetEmail, string subject = "")
         {
 
+            return false;
         }
     }
 }
