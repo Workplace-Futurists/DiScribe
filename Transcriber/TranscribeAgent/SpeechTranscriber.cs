@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
+using transcriber.TranscribeAgent;
 
 namespace transcriber.TranscribeAgent
 {
@@ -15,7 +16,7 @@ namespace transcriber.TranscribeAgent
     /// <para>Uses the Microsoft Azure Cognitive Services Speech SDK to perform transcription of audio streams
     /// within each AudioSegment. </para>
     /// </summary>
-    class Speechtranscriber
+    class SpeechTranscriber
     {
         public SpeechTranscriber(SortedList<AudioSegment, AudioSegment> audioSegments, FileInfo outFile)
         {
