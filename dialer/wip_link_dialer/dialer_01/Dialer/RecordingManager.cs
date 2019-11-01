@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.IO;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
@@ -25,14 +26,38 @@ namespace dialer_01.dialer
         }
         
         // TODO given an rid, download a recording
-        public async void DownloadRecordingHandler(string rid)
+        public async Task DownloadRecordingHandlerAsync(string rid)
         {
             using (var httpClient = new HttpClient())
             {
+                // set url    
                 string recordingURL = recordingBaseURL + rid;
+                // make new uri with previous url
+                Uri recordingURI = new Uri(recordingURL);
                 Console.WriteLine(recordingURL);
-                var response = httpClient.GetAsync(new Uri(recordingURL)).Result;
-                Console.WriteLine(response);
+
+                // get response content from api
+                var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
+
+                // make sure request worked once headers are read
+                response.EnsureSuccessStatusCode();
+
+                // Save file to disk
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    // Define buffer and buffer size
+                    int bufferSize = 1024;
+                    byte[] buffer = new byte[bufferSize];
+                    int bytesRead = 0;
+                    // Read from response and write to file
+                    using (FileStream fileStream = File.Create("..\\..\\..\\Recordings\\test.wav"))
+                    {
+                        while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                        {
+                            await fileStream.WriteAsync(buffer, 0, bytesRead);
+                        } // end while
+                    }
+                }
             }
 
             //TwilioClient.Init(accountSid, authToken);
@@ -52,6 +77,7 @@ namespace dialer_01.dialer
             var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
             var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
             Twilio.TwilioClient.Init(accountSid, authToken);
+            
         }
     }
 }
