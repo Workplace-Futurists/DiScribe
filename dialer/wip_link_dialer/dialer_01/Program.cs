@@ -26,7 +26,7 @@ namespace twilio_caller
             // sets variable for meeting number
             //string mnum = "123456789";
             string mnum = Console.ReadLine();
-            
+
             // Call meeting
             // create object of type dialer
             dialer dialer = new dialer();
@@ -48,8 +48,17 @@ namespace twilio_caller
             // set recording id
             //string rid = "RE4250a08aac66a6a25f7147a3226e6376";
             string rid = Console.ReadLine();
-            // call helper to download recording
-            recManager.DownloadRecordingHandler(rid);
+
+            try
+            {
+                // call helper to download recording
+                recManager.DownloadRecordingHandlerAsync(rid).Wait();
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
         }
     }
 }
