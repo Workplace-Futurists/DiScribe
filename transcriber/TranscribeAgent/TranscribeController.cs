@@ -15,7 +15,7 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints, OutFile outFile)
+        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo outFile)
         {
             MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
