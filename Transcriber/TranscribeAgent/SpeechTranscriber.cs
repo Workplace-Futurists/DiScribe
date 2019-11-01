@@ -44,7 +44,7 @@ namespace transcriber.TranscribeAgent
         /// <returns>FileInfo object for the transcription output text file.</returns>
         public async void CreateTranscription()
         {
-            FileInfo outFile = new FileInfo(@"record\minutes.txt");
+            FileInfo outFile = new FileInfo(@"../../../transcript/minutes.txt");
 
             //foreach (var segment in AudioSegments)
 
