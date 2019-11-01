@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Transcriber\**" />
-    <EmbeddedResource Remove="Transcriber\**" />
-    <None Remove="Transcriber\**" />
+    <Compile Remove="transcriber\**" />
+    <EmbeddedResource Remove="transcriber\**" />
+    <None Remove="transcriber\**" />
   </ItemGroup>
 
   <ItemGroup>
