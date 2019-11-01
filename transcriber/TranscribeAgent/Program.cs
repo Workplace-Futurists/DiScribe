@@ -14,7 +14,7 @@ namespace transcriber.TranscribeAgent
 
         static void Main(string[] args)
         {
-            string path = @"record\meeting.wav";
+            string path = @"../../../record/test_meeting.wav";
             FileInfo testRecording = new FileInfo(path);
 
             /*This TranscriptionInitData instance will be received from the Dialer bot process 
