@@ -14,6 +14,10 @@ namespace transcriber.TranscribeAgent
 
         static void Main(string[] args)
         {
+            // Creates an instance of a speech config with specified subscription key and service region.
+            // Replace with your own subscription key and service region (e.g., "westus").
+            var config = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+
             string path = @"../../../record/test_meeting.wav";
             FileInfo testRecording = new FileInfo(path);
 
@@ -24,7 +28,7 @@ namespace transcriber.TranscribeAgent
             Console.WriteLine("Creating transcript...");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints, testRecording);
+            var controller = new TranscribeController(config, initData.MeetingRecording, initData.Voiceprints, testRecording);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             Boolean success = controller.DoTranscription();

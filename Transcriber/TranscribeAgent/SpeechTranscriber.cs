@@ -18,10 +18,11 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     class SpeechTranscriber
     {
-        public SpeechTranscriber(SortedList<AudioSegment, AudioSegment> audioSegments, FileInfo outFile)
+        public SpeechTranscriber(SpeechConfig config, SortedList<AudioSegment, AudioSegment> audioSegments, FileInfo outFile)
         {
             AudioSegments = audioSegments;
             MeetingMinutes = outFile;
+            Config = config;
         }
 
         /// <summary>
@@ -32,6 +33,7 @@ namespace transcriber.TranscribeAgent
 
         public FileInfo MeetingMinutes { get; set; }
 
+        public SpeechConfig Config { get; set; }
 
         /// <summary>
         /// Creates an audio transcript text file. The transcript contains speaker names,
@@ -46,17 +48,17 @@ namespace transcriber.TranscribeAgent
         {
             FileInfo outFile = new FileInfo(@"../../../transcript/minutes.txt");
 
+            
+
             //foreach (var segment in AudioSegments)
 
-            RecognitionWithPullAudioStreamAsync(AudioSegments[AudioSegments.Keys[0]].AudioStream, outFile).Wait();
+            RecognitionWithPullAudioStreamAsync(Config, AudioSegments[AudioSegments.Keys[0]].AudioStream, outFile).Wait();
 
         }
 
-        public static async Task RecognitionWithPullAudioStreamAsync(PullAudioInputStream theStream, FileInfo outFile)
+        public static async Task RecognitionWithPullAudioStreamAsync(SpeechConfig config, PullAudioInputStream theStream, FileInfo outFile)
         {
-            // Creates an instance of a speech config with specified subscription key and service region.
-            // Replace with your own subscription key and service region (e.g., "westus").
-            var config = SpeechConfig.FromSubscription("c9b69428770c48bc871e23ae97490a63", "centralus");
+            
 
             var stopRecognition = new TaskCompletionSource<int>();
 
