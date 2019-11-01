@@ -34,7 +34,7 @@ namespace dialer_01.dialer
                 string recordingURL = recordingBaseURL + rid;
                 // make new uri with previous url
                 Uri recordingURI = new Uri(recordingURL);
-                Console.WriteLine(recordingURL);
+                Console.WriteLine("The following rid will be downloaded " + rid);
 
                 // get response content from api
                 var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
@@ -49,8 +49,11 @@ namespace dialer_01.dialer
                     int bufferSize = 1024;
                     byte[] buffer = new byte[bufferSize];
                     int bytesRead = 0;
+
+                    string filePath = ("..\\..\\..\\Recordings\\" + rid + ".wav");
+
                     // Read from response and write to file
-                    using (FileStream fileStream = File.Create("..\\..\\..\\Recordings\\test.wav"))
+                    using (FileStream fileStream = File.Create(filePath))
                     {
                         while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
                         {
@@ -71,13 +74,26 @@ namespace dialer_01.dialer
         // TODO delete a recording given an SID
         // If successful, DELETE returns HTTP 204 (No Content) with no body
         // only event handlers should be void async methods
-        public async void DeleteRecordingAsync(string pathSid)
+        public async Task<HttpResponseMessage> DeleteRecordingAsync(string rid)
         {
-            // instantiate login info with twilio client
-            var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
-            var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
-            Twilio.TwilioClient.Init(accountSid, authToken);
-            
+            using (var httpClient = new HttpClient())
+            {
+                // set url    
+                string recordingURL = recordingBaseURL + rid + ".json";
+                // make new uri with previous url
+                Uri recordingURI = new Uri(recordingURL);
+                Console.WriteLine("The following rid will be deleted " + rid);
+
+                // get response content from api
+                var response = await httpClient.DeleteAsync(recordingURI);
+
+                // Check if it worked
+                response.EnsureSuccessStatusCode();
+
+                HttpResponseMessage result = new HttpResponseMessage(response.StatusCode);
+
+                return result;
+            }
         }
     }
 }
