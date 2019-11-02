@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.IO;
+using System.Diagnostics;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
@@ -25,7 +26,7 @@ namespace dialer_01.dialer
             return result;
         }
         
-        // TODO given an rid, download a recording
+        // given a string rid, download a recording to the Recordings File
         public async Task DownloadRecordingHandlerAsync(string rid)
         {
             using (var httpClient = new HttpClient())
@@ -71,29 +72,18 @@ namespace dialer_01.dialer
             //Console.WriteLine(recording);
         }
 
-        // TODO delete a recording given an SID
+        // delete a recording given an SID
         // If successful, DELETE returns HTTP 204 (No Content) with no body
-        // only event handlers should be void async methods
-        public async Task<HttpResponseMessage> DeleteRecordingAsync(string rid)
+        public async Task DeleteRecordingAsync(string rid)
         {
-            using (var httpClient = new HttpClient())
-            {
-                // set url    
-                string recordingURL = recordingBaseURL + rid + ".json";
-                // make new uri with previous url
-                Uri recordingURI = new Uri(recordingURL);
-                Console.WriteLine("The following rid will be deleted " + rid);
-
-                // get response content from api
-                var response = await httpClient.DeleteAsync(recordingURI);
-
-                // Check if it worked
-                response.EnsureSuccessStatusCode();
-
-                HttpResponseMessage result = new HttpResponseMessage(response.StatusCode);
-
-                return result;
-            }
+            // Start initiate a twilio client
+            TwilioClient.Init(accountSid, authToken);
+            Console.WriteLine("The following rid will be deleted " + rid);
+            // Deletes the recording resource with specified rid from Twilio cloud
+            var response = await RecordingResource.DeleteAsync(pathSid: rid);
+            // response should be true if recording was deleted
+            Debug.Assert(response == true);
+            Console.WriteLine(rid + " has been deleted.");
         }
     }
 }
