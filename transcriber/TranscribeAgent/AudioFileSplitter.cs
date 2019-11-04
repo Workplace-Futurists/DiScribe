@@ -49,7 +49,7 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         public FileInfo AudioFile { get; set; }
 
-        public byte[] AudioData {get; set;}
+        public byte[] AudioData { get; set; }
 
         /// <summary>
         /// FOR DEMO: Will only return a sorted list with a single <see cref="AudioSegment"/>.
@@ -68,7 +68,7 @@ namespace transcriber.TranscribeAgent
               Get offset from beginning of file (start of meeting).
               Also determine who the speaker is and get a matching User object.
             */
-            
+
             /*FOR TESTING */
             MemoryStream stream = new MemoryStream(AudioData);                              //Set up the internal stream with AudioData as backing buffer.
             int offset = 0;
@@ -80,8 +80,6 @@ namespace transcriber.TranscribeAgent
             return tempList;
         }
 
-
-
         /// <summary>
         /// Create a set of AudioSegments corresponding to each time the speaker
         /// in the audio changes.
@@ -92,8 +90,6 @@ namespace transcriber.TranscribeAgent
             return new SortedList<AudioSegment, AudioSegment>();
         }
 
-
-        
         /// <summary>
         /// Creates buffer with file data. File header is removed.
         /// </summary>
@@ -111,8 +107,6 @@ namespace transcriber.TranscribeAgent
             AudioData = outData;
         }
 
-
-
         /// <summary>
         /// Converts data in Wav file into the specified format and reads data section of file (removes header) into AudioData buffer.
         /// </summary>
@@ -125,15 +119,11 @@ namespace transcriber.TranscribeAgent
             /*Convert the file using NAudio library */
             using (var inputReader = new WaveFileReader(originalFile.FullName))
             {
-                
-                var outFormat = new WaveFormat(sampleRate, channels);
-                var resampler = new MediaFoundationResampler(inputReader, outFormat);
-                
-                resampler.ResamplerQuality = 60;                                           //Use highest quality. Range is 1-60.
-
+                var monoSampleProvider = new StereoToMonoSampleProvider(inputReader.ToSampleProvider());
+                var resampler = new WdlResamplingSampleProvider(monoSampleProvider, sampleRate);
+                var wav16provider = resampler.ToWaveProvider16();
                 AudioData = new byte[inputReader.Length];
-                resampler.Read(AudioData, 0, (int)(inputReader.Length));                  //Read transformed WAV data into buffer WavData (header is removed).
-                
+                wav16provider.Read(AudioData, 0, (int)(inputReader.Length));        //Read transformed WAV data into buffer WavData (header is removed).
             }
         }
 
@@ -153,10 +143,5 @@ namespace transcriber.TranscribeAgent
 
             return new AudioSegment(audioStream, offset, participant);
         }
-
-
     }
 }
-
-
-    

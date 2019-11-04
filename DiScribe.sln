@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendEmailCsharp", "dialer\T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twilio_caller", "dialer\Twilio_caller\twilio_caller.csproj", "{331C0A0F-DE99-493B-A532-4857DB2082F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "transcriber", "transcriber\transcriber.csproj", "{799D6680-F613-4E6C-B46B-6A806732A454}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "transcriber", "transcriber\transcriber.csproj", "{21D32E6A-BF4B-4B68-84D8-730E938BB614}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +27,9 @@ Global
 		{331C0A0F-DE99-493B-A532-4857DB2082F8}.Debug|anycpu.Build.0 = Debug|Any CPU
 		{331C0A0F-DE99-493B-A532-4857DB2082F8}.Release|anycpu.ActiveCfg = Release|Any CPU
 		{331C0A0F-DE99-493B-A532-4857DB2082F8}.Release|anycpu.Build.0 = Release|Any CPU
-		{799D6680-F613-4E6C-B46B-6A806732A454}.Debug|anycpu.ActiveCfg = Debug|Any CPU
-		{799D6680-F613-4E6C-B46B-6A806732A454}.Debug|anycpu.Build.0 = Debug|Any CPU
-		{799D6680-F613-4E6C-B46B-6A806732A454}.Release|anycpu.ActiveCfg = Release|Any CPU
-		{799D6680-F613-4E6C-B46B-6A806732A454}.Release|anycpu.Build.0 = Release|Any CPU
+		{21D32E6A-BF4B-4B68-84D8-730E938BB614}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{21D32E6A-BF4B-4B68-84D8-730E938BB614}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{21D32E6A-BF4B-4B68-84D8-730E938BB614}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{21D32E6A-BF4B-4B68-84D8-730E938BB614}.Release|anycpu.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
