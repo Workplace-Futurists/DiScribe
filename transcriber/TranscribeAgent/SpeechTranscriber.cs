@@ -35,38 +35,74 @@ namespace transcriber.TranscribeAgent
 
         public SpeechConfig Config { get; set; }
 
+
         /// <summary>
-        /// Creates an audio transcript text file. The transcript contains speaker names,
+        /// The transcript contains speaker names,
         /// timestamps, and the contents of what each speaker said.
         ///
         /// <para> The transcription follows the the correct order, so that
         /// the beginning of the meeting is at the start of the file, and the last
         /// speech around the end of the meeting is at the end of the file.</para>
         /// </summary>
-        /// <returns>FileInfo object for the transcription output text file.</returns>
-        public async void CreateTranscription()
+        /// <returns></returns>
+        public async Task CreateTranscription()
         {
-            FileInfo outFile = new FileInfo(@"../../../transcript/minutes.txt");
+            var transcriptionFinished = new TaskCompletionSource<int>();
 
+            SortedList<int, TranscriptionOutput> sharedList = new SortedList<int, TranscriptionOutput>();
+            await MakeTranscriptionOutputs(sharedList);                  //Transcribe all segments of audio to get TranscriptionOutput SortedList
+
+            /*Task failed if no TranscriptionOutput was added to sharedList*/
+            if (sharedList.Count == 0)
+                transcriptionFinished.SetException(new List<Exception> { new Exception("Transcription failed. Empty result.") });
+
+            else
+            {
+                using (System.IO.StreamWriter file = 
+                    new System.IO.StreamWriter(MeetingMinutes.FullName, true))
+                {
+                    /*Iterate over the list of TranscrtiptionOutputs in order and write output to MeetingMinutes file. 
+                     * Order is by start offset. Uses format set by TranscriptionOutput.ToString()*/
+                    foreach (var curNode in sharedList)
+                    {
+                        file.Write(curNode.Value.ToString());
+                    }
+                }
+
+            }
             
-
-            //foreach (var segment in AudioSegments)
-
-            RecognitionWithPullAudioStreamAsync(Config, AudioSegments[AudioSegments.Keys[0]].AudioStream, outFile).Wait();
 
         }
 
-        public static async Task RecognitionWithPullAudioStreamAsync(SpeechConfig config, PullAudioInputStream theStream, FileInfo outFile)
+
+        /// <summary>
+        /// Creates a set of TranscriptionOutput objects.
+        /// </summary>
+        /// <returns>FileInfo object for the transcription output text file.</returns>
+        private async Task MakeTranscriptionOutputs(SortedList<int, TranscriptionOutput> transcriptionOutputs)
         {
-            
+            FileInfo outFile = new FileInfo(@"../../../transcript/minutes.txt");
 
-            var stopRecognition = new TaskCompletionSource<int>();
-
+            /*Do transcription concurrently for each AudioSegment. */
             using (System.IO.StreamWriter file =
             new System.IO.StreamWriter(outFile.FullName, true))
             {
-                using (var audioInput = AudioConfig.FromStreamInput(theStream))
+                foreach (var curElem in AudioSegments)
                 {
+                    RecognitionWithPullAudioStreamAsync(Config, curElem.Value, transcriptionOutputs);
+                }
+            }
+
+        }
+
+        private static async Task RecognitionWithPullAudioStreamAsync(SpeechConfig config, AudioSegment segment, 
+            SortedList<int, TranscriptionOutput> transcriptionOutputs)
+        {
+            StringBuilder result = new StringBuilder();
+            var stopRecognition = new TaskCompletionSource<int>();
+
+           using (var audioInput = AudioConfig.FromStreamInput(segment.AudioStream))
+           {
                     // Creates a speech recognizer using audio stream input.
                     using (var recognizer = new SpeechRecognizer(config, audioInput))
                     {
@@ -80,12 +116,12 @@ namespace transcriber.TranscribeAgent
                             if (e.Result.Reason == ResultReason.RecognizedSpeech)
                             {
                                 Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
-                                file.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
+                                result.Append($"RECOGNIZED: Text={e.Result.Text}");                   //Write transcription text to result
                             }
                             else if (e.Result.Reason == ResultReason.NoMatch)
                             {
                                 Console.WriteLine($"NOMATCH: Speech could not be recognized.");
-                                file.WriteLine($"NOMATCH: Speech could not be recognized.");
+                                result.Append($"NOMATCH: Speech could not be recognized.");           //Write fail message to result
                             }
                         };
 
@@ -123,12 +159,15 @@ namespace transcriber.TranscribeAgent
                         // Use Task.WaitAny to keep the task rooted.
                         Task.WaitAny(new[] { stopRecognition.Task });
 
-                        Console.Write("Awaiting recogniotion stop");
+                       //Add the result to transcriptionOutputs wrapped in a TranscriptionOutput object.
+                        transcriptionOutputs.Add(segment.Offset, new TranscriptionOutput(result.ToString(), segment.SpeakerInfo, segment.Offset));
+                        Console.Write("Awaiting recognition stop");
+
                         // Stops recognition.
                         await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
                     }
                 }
             }
-        }
     }
+    
 }
