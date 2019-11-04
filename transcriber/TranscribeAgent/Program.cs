@@ -18,7 +18,7 @@ namespace transcriber.TranscribeAgent
             // Replace with your own subscription key and service region (e.g., "westus").
             var config = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
-            string path = @"../../../record/test_meeting.wav";
+            string path = @"../../../record/FakeMeeting.wav";
             FileInfo testRecording = new FileInfo(path);
 
             /*This TranscriptionInitData instance will be received from the Dialer bot process 
