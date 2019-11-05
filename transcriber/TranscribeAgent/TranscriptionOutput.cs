@@ -27,7 +27,7 @@ namespace transcriber.TranscribeAgent
 
         public override string ToString()
         {
-            return Speaker.Name + "\t" + formatTime(StartOffset) + Text;
+            return Speaker.Name + "\t" + formatTime(StartOffset) + "\t" + Text;
         }
 
         public static string formatTime(int offsetSeconds)

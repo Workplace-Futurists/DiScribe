@@ -6,6 +6,7 @@ using NAudio.Wave;
 using System.Collections;
 using Microsoft.Cognitive.SpeakerRecognition.Streaming.Result;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
+using NAudio.Wave.SampleProviders;
 
 namespace transcriber.TranscribeAgent
 {
@@ -78,10 +79,12 @@ namespace transcriber.TranscribeAgent
              *   Get the matching User object for each of the Voiceprint objects in Voiceprints that were matched
              *   Get a set of offsets (these are offsets from the beginning of the audio) for the time when each match occurred.
              *   Split MainStream into a List of AudioSegments using the offsets. 
+             *   
+             *   See method DoRecognition, which does the actual recognition. Also see GetUserFromResult() which
+             *   uses the GUID in a RecognitionResult object to look up the User.
             */
                                             
-
-            /*******For testing, just use 5 fake RecognitionResultWrapper objects
+            /*******For testing, just use fake RecognitionResultWrapper objects
              * which represent the results of the recognition process. ********/
             var outcomes = DoRecognition();                                    //RecognitionResultWrapper objects sorted by offset (keys are the offsets)
 
@@ -112,7 +115,10 @@ namespace transcriber.TranscribeAgent
             {
                 {0, new RecognitionResultWrapper(0, 10, fakeResult)},
                 {20, new RecognitionResultWrapper(15, 20, fakeResult)},
-                {30, new RecognitionResultWrapper(21, 30, fakeResult)}
+                {21, new RecognitionResultWrapper(21, 58, fakeResult)},
+                {60, new RecognitionResultWrapper(60, 80, fakeResult) },
+                {120, new RecognitionResultWrapper(120, 130, fakeResult) }
+
             };
         }
 
@@ -149,17 +155,14 @@ namespace transcriber.TranscribeAgent
             /*Convert the file using NAudio library */
             using (var inputReader = new WaveFileReader(originalFile.FullName))
             {
-                
-                var outFormat = new WaveFormat(sampleRate, channels);
-                var resampler = new MediaFoundationResampler(inputReader, outFormat);
-                
-                resampler.ResamplerQuality = 60;                                           //Use highest quality. Range is 1-60.
-
+                var monoSampleProvider = new StereoToMonoSampleProvider(inputReader.ToSampleProvider());
+                var resampler = new WdlResamplingSampleProvider(monoSampleProvider, sampleRate);
+                var wav16provider = resampler.ToWaveProvider16();
                 AudioData = new byte[inputReader.Length];
-                resampler.Read(AudioData, 0, (int)(inputReader.Length));                  //Read transformed WAV data into buffer WavData (header is removed).
-                
+                wav16provider.Read(AudioData, 0, (int)(inputReader.Length));        //Read transformed WAV data into buffer WavData (header is removed).
             }
         }
+
 
         /// <summary>
         /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/> 
@@ -202,12 +205,12 @@ namespace transcriber.TranscribeAgent
 
         /// <summary>
         /// Uses the GUID in the RecognitionResult to get a corresponding User object.
-        /// Returns a TEST user object currently.
+        /// Returns a TEST user object with random name currently.
         /// </summary>
         /// <param name="result"></param>
         private static User GetUserFromResult(RecognitionResult result)
         {
-            return new User("TEST", "TEST@EXAMPLE.COM", result.Value.IdentifiedProfileId);
+            return new User("USER_" + new System.Random().Next(), "TEST@EXAMPLE.COM", result.Value.IdentifiedProfileId);
         }
 
 
