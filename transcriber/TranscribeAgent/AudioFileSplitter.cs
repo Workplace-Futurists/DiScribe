@@ -97,8 +97,6 @@ namespace transcriber.TranscribeAgent
             return tempList;
         }
 
-
-
         /// <summary>
         /// Identifies all speakers in AudioFile using the participant voiceprints.
         /// Create a set of RecognitionResultWrapper corresponding to each time the speaker changes.
@@ -122,8 +120,6 @@ namespace transcriber.TranscribeAgent
             };
         }
 
-
-        
         /// <summary>
         /// Creates buffer with file data. File header is removed.
         /// </summary>
@@ -140,8 +136,6 @@ namespace transcriber.TranscribeAgent
 
             AudioData = outData;
         }
-
-
 
         /// <summary>
         /// Converts data in Wav file into the specified format and reads data section of file (removes header) into AudioData buffer.
@@ -230,6 +224,3 @@ namespace transcriber.TranscribeAgent
 
     }
 }
-
-
-    
