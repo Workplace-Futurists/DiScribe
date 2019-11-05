@@ -66,21 +66,19 @@ namespace transcriber.TranscribeAgent
             try
             {
                 var transcriber = new SpeechTranscriber(Config, audioSegments, OutFile);
-                transcriber.CreateTranscription();                 //Create transcription, update MeetingMinutes property with file location.
-            }catch(Exception transcribeEx)
-             {
-                Console.Error.Write("Mission failed. No transcription could be created from audio segments.\n" + transcribeEx.Message);
-                return false;
-             }
+                transcriber.CreateTranscription().Wait();                 //Wait synchronously for transcript to be finished and written to minutes file.
+                           
+            } catch (Exception transcribeEx)
+              {
+                  Console.Error.Write("Mission failed. No transcription could be created from audio segments. " + transcribeEx.Message);
+                  return false;
+              }
 
             return true;
         }
 
 
-
-
-
-
+                     
         public Boolean SendEmail(string targetEmail, string subject = "")
         {
 
