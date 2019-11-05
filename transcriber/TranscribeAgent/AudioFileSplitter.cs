@@ -117,7 +117,7 @@ namespace transcriber.TranscribeAgent
                 {20, new RecognitionResultWrapper(15, 20, fakeResult)},
                 {21, new RecognitionResultWrapper(21, 58, fakeResult)},
                 {60, new RecognitionResultWrapper(60, 80, fakeResult) },
-                {120, new RecognitionResultWrapper(120, 130, fakeResult) }
+                {120, new RecognitionResultWrapper(120, 150, fakeResult) }
 
             };
         }
@@ -155,12 +155,25 @@ namespace transcriber.TranscribeAgent
             /*Convert the file using NAudio library */
             using (var inputReader = new WaveFileReader(originalFile.FullName))
             {
-                var monoSampleProvider = new StereoToMonoSampleProvider(inputReader.ToSampleProvider());
-                var resampler = new WdlResamplingSampleProvider(monoSampleProvider, sampleRate);
+                WdlResamplingSampleProvider resampler;
+
+                /*Stereo source. Must convert to mono with StereoToMonoSampleProvider */
+                if (inputReader.WaveFormat.Channels == 2)
+                {
+                    var monoSampleProvider = new StereoToMonoSampleProvider(inputReader.ToSampleProvider());
+                    resampler = new WdlResamplingSampleProvider(monoSampleProvider, sampleRate);
+                }
+
+                else
+                {
+                    resampler = new WdlResamplingSampleProvider(inputReader.ToSampleProvider(), sampleRate);
+                }
+
                 var wav16provider = resampler.ToWaveProvider16();
                 AudioData = new byte[inputReader.Length];
                 wav16provider.Read(AudioData, 0, (int)(inputReader.Length));        //Read transformed WAV data into buffer WavData (header is removed).
             }
+            
         }
 
 
