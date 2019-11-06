@@ -35,6 +35,12 @@ namespace transcriber.TranscribeAgent
 
         public SpeechConfig Config { get; set; }
 
+        public List<Tuple<double, double>> valid_user_offsetList { get; set; }
+        public List<Tuple<double, double>> unrecognized_offsetList { get; set; }
+
+        private double curOffset = 0;
+
+        
         /// <summary>
         /// Creates an audio transcript text file. The transcript contains speaker names,
         /// timestamps, and the contents of what each speaker said.
@@ -48,15 +54,16 @@ namespace transcriber.TranscribeAgent
         {
             FileInfo outFile = new FileInfo(@"../../../transcript/minutes.txt");
 
-            
 
             //foreach (var segment in AudioSegments)
-
+            curOffset = 0;
+            valid_user_offsetList = new List<Tuple<double, double>>();
+            unrecognized_offsetList = new List<Tuple<double, double>>();
             RecognitionWithPullAudioStreamAsync(Config, AudioSegments[AudioSegments.Keys[0]].AudioStream, outFile).Wait();
 
         }
 
-        public static async Task RecognitionWithPullAudioStreamAsync(SpeechConfig config, PullAudioInputStream theStream, FileInfo outFile)
+        public async Task RecognitionWithPullAudioStreamAsync(SpeechConfig config, PullAudioInputStream theStream, FileInfo outFile)
         {
             
 
@@ -79,13 +86,33 @@ namespace transcriber.TranscribeAgent
                         {
                             if (e.Result.Reason == ResultReason.RecognizedSpeech)
                             {
+                                //string curID = recognizer.EndpointId;
+                                //Console.WriteLine($"AT Audio Timestamp: Text={e.Result.GetProperty(PropertyId.ConversationTranscribingService_DataBufferTimeStamp)}");
+                                double sentDuration = e.Result.Duration.TotalMilliseconds;
+                                double startOffset = curOffset+1;
+                                double endOffset = curOffset + sentDuration;
+                                Tuple<double, double> offsetTuple = new Tuple<double, double>(startOffset, endOffset);
+                                valid_user_offsetList.Add(offsetTuple);
+
+                                Console.WriteLine($"Sentence Duration: {sentDuration.ToString()} MilliSeconds.");
                                 Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
                                 file.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
+
+                                curOffset = endOffset;
                             }
                             else if (e.Result.Reason == ResultReason.NoMatch)
                             {
+                                double sentDuration = e.Result.Duration.TotalMilliseconds;
+                                double startOffset = curOffset + 1;
+                                double endOffset = curOffset + sentDuration;
+                                Tuple<double, double> offsetTuple = new Tuple<double, double>(startOffset, endOffset);
+                                unrecognized_offsetList.Add(offsetTuple);
+
+                                Console.WriteLine($"Unmatched Portion Duration: {sentDuration.ToString()} MilliSeconds.");
                                 Console.WriteLine($"NOMATCH: Speech could not be recognized.");
                                 file.WriteLine($"NOMATCH: Speech could not be recognized.");
+
+                                curOffset = endOffset; 
                             }
                         };
 

@@ -1,0 +1,8 @@
+RECOGNIZED: Text=Of.
+RECOGNIZED: Text=2 cats.
+RECOGNIZED: Text=Names.
+RECOGNIZED: Text=RNT and Scotty.
+RECOGNIZED: Text=Do you have pets?
+RECOGNIZED: Text=Unfortunately.
+RECOGNIZED: Text=What's a great meeting I agree?
+RECOGNIZED: Text=I buy.

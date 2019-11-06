@@ -71,10 +71,11 @@ namespace transcriber.TranscribeAgent
             
             /*FOR TESTING */
             MemoryStream stream = new MemoryStream(AudioData);                              //Set up the internal stream with AudioData as backing buffer.
-            int offset = 0;
+            double startOffset = 0;
+            double endOffset = 0;
             User participant = new User("Some person", "someone@example.com");
 
-            AudioSegment segment = CreateAudioSegment(stream, offset, participant);
+            AudioSegment segment = CreateAudioSegment(stream, startOffset, endOffset, participant);
             tempList.Add(segment, segment);
 
             return tempList;
@@ -146,12 +147,12 @@ namespace transcriber.TranscribeAgent
         /// <param name="offset">Offset in seconds from beginning of audio at 0</param>
         /// <param name="participant">The person who is speaking</param>
         /// <returns></returns>
-        private static AudioSegment CreateAudioSegment(Stream stream, int offset, User participant)
+        private static AudioSegment CreateAudioSegment(Stream stream, double startOffset, double endOffset, User participant)
         {
             AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS);   //Set up audio stream.
             PullAudioInputStream audioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(stream), streamFormat);
 
-            return new AudioSegment(audioStream, offset, participant);
+            return new AudioSegment(audioStream, startOffset, endOffset, participant);
         }
 
 
