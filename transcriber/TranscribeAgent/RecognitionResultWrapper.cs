@@ -15,13 +15,13 @@ namespace transcriber.TranscribeAgent
         }
 
         /// <summary>
-        /// Offset in seconds from the beginning of audio where the speaker
+        /// Offset in milliseconds from the beginning of audio where the speaker
         /// in this result started speaking.
         /// </summary>
         public int Start { get; set; }
 
         /// <summary>
-        /// Offset in seconds from the beginning of audio where the speaker
+        /// Offset in milliseconds from the beginning of audio where the speaker
         /// in this result stopped speaking.
         /// </summary>
         public int End { get; set; }
