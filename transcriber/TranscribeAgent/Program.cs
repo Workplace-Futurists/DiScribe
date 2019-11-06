@@ -17,6 +17,7 @@ namespace transcriber.TranscribeAgent
             // Creates an instance of a speech config with specified subscription key and service region.
             // Replace with your own subscription key and service region (e.g., "westus").
             var config = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+            //config.RequestWordLevelTimestamps(); //Kay: this is a useful method if want to track duration of each word, but not needed for now. 
 
             string path = @"../../../record/test_meeting.wav";
             FileInfo testRecording = new FileInfo(path);
