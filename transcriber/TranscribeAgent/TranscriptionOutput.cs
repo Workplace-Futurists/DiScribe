@@ -30,10 +30,15 @@ namespace transcriber.TranscribeAgent
             return Speaker.Name + "\t" + formatTime(StartOffset) + "\t" + Text;
         }
 
-        public static string formatTime(int offsetSeconds)
+        /// <summary>
+        /// Formats a time in milliseconds to format h:m:s
+        /// </summary>
+        /// <param name="offsetMS"></param>
+        /// <returns></returns>
+        public static string formatTime(int offsetMS)
         {
-            int hours = offsetSeconds / 3600;
-            int secondsLeft = offsetSeconds - hours * 3600;
+            int hours = offsetMS / 3600000;
+            int secondsLeft = offsetMS - hours * 3600000;
 
             int minutes = (secondsLeft > 0) ? secondsLeft / 60 : 0;
             secondsLeft = secondsLeft - minutes * 60;

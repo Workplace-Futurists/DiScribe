@@ -5,7 +5,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 namespace transcriber.TranscribeAgent
 {
     /// <summary>
-    /// Represents a segment of an audio recording which has an offset in seconds from the beginning
+    /// Represents a segment of an audio recording which has an offset in milliseconds from the beginning
     /// of the recording. Provides access to the audio data via an audio stream. Also includes a
     /// representation of the user who is speaking in the segment.
     /// </summary>
