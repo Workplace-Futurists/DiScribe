@@ -1,7 +1,0 @@
-[submodule "SpeakerRecognizer"]
-	path = SpeakerRecognizer
-	url = C:/Users/OCB/Documents/UBC/4th Year/CPSC 319/Project Local/cs319-2019w1-hsbc/SpeakerRecognizer
-[submodule "Cognitive-SpeakerRecognition-Windows"]
-	path = Cognitive-SpeakerRecognition-Windows
-	url = https://github.com/OCBier/Cognitive-SpeakerRecognition-Windows
-	branch = master
