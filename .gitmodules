@@ -1,4 +1,3 @@
 [submodule "SpeakerRecognizer"]
 	path = Cognitive-SpeakerRecognition-Windows
 	url = https://github.com/microsoft/Cognitive-SpeakerRecognition-Windows
-	branch = master

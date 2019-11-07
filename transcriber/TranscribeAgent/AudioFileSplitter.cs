@@ -111,11 +111,11 @@ namespace transcriber.TranscribeAgent
 
             return new SortedList<int, RecognitionResultWrapper>()
             {
-                {0, new RecognitionResultWrapper(0, 10, fakeResult)},
-                {20, new RecognitionResultWrapper(15, 20, fakeResult)},
-                {21, new RecognitionResultWrapper(21, 58, fakeResult)},
-                {60, new RecognitionResultWrapper(60, 80, fakeResult) },
-                {120, new RecognitionResultWrapper(120, 150, fakeResult) }
+                {0, new RecognitionResultWrapper(0, 10000, fakeResult)},
+                {20, new RecognitionResultWrapper(15000, 20000, fakeResult)},
+                {21, new RecognitionResultWrapper(21000, 58000, fakeResult)},
+                {60, new RecognitionResultWrapper(60000, 80000, fakeResult) },
+                {120, new RecognitionResultWrapper(120000, 150000, fakeResult) }
 
             };
         }
