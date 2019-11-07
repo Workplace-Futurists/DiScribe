@@ -19,17 +19,17 @@ namespace transcriber.TranscribeAgent
             var config = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
             //config.RequestWordLevelTimestamps(); //Kay: this is a useful method if want to track duration of each word, but not needed for now. 
 
-            string path = @"../../../record/test_meeting.wav";
-            FileInfo testRecording = new FileInfo(path);
+            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
+            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
 
-            /*This TranscriptionInitData instance will be received from the Dialer bot process 
-             * via a named pipe in when the two components are integrated. */
+            /*This TranscriptionInitData instance will be received from the Dialer in method call
+             * or pipe (if IPC is used)*/
             var initData = new TranscriptionInitData(testRecording, new List<Data.Voiceprint>(), "");
 
             Console.WriteLine("Creating transcript...");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(config, initData.MeetingRecording, initData.Voiceprints, testRecording);
+            var controller = new TranscribeController(config, initData.MeetingRecording, initData.Voiceprints, meetingMinutes);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             Boolean success = controller.DoTranscription();
@@ -38,7 +38,7 @@ namespace transcriber.TranscribeAgent
 
             if (success)
             {
-                Console.WriteLine("Transcription completed");
+                Console.WriteLine("\nTranscription completed");
 
                 string emailSubject = "Meeting minutes for " + DateTime.Now.ToLocalTime().ToString();
                 emailSent = controller.SendEmail(initData.TargetEmail, emailSubject);
