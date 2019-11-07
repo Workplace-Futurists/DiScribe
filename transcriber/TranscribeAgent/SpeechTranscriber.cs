@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
@@ -31,8 +32,14 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         public SortedList<AudioSegment, AudioSegment> AudioSegments { get; set; }
 
+        /// <summary>
+        /// The meeting minutes text output file.
+        /// </summary>
         public FileInfo MeetingMinutes { get; set; }
 
+        /// <summary>
+        /// Configuration for the Azure Cognitive Speech Services resource.
+        /// </summary>
         public SpeechConfig Config { get; set; }
 
         public List<Tuple<double, double>> valid_user_offsetList { get; set; }
@@ -42,42 +49,97 @@ namespace transcriber.TranscribeAgent
 
         
         /// <summary>
-        /// Creates an audio transcript text file. The transcript contains speaker names,
+        /// Lock object for synchronized access to transcription output collection.
+        /// </summary>
+        private static readonly object _lockObj = new object();
+
+
+        /// <summary>
+        /// The transcript contains speaker names,
         /// timestamps, and the contents of what each speaker said.
         ///
         /// <para> The transcription follows the the correct order, so that
         /// the beginning of the meeting is at the start of the file, and the last
         /// speech around the end of the meeting is at the end of the file.</para>
         /// </summary>
-        /// <returns>FileInfo object for the transcription output text file.</returns>
-        public async void CreateTranscription()
+        /// <returns></returns>
+        public async Task CreateTranscription(int lineLength = 120)
         {
-            FileInfo outFile = new FileInfo(@"../../../transcript/minutes.txt");
+             SortedList<int, TranscriptionOutput> sharedList = new SortedList<int, TranscriptionOutput>();
+            await MakeTranscriptionOutputs(sharedList);                  //Transcribe all segments of audio to get TranscriptionOutput SortedList in parallel
 
+            /*Task failed if no TranscriptionOutput was added to sharedList*/
+            if (sharedList.Count == 0)
+            {
+                throw new AggregateException(new List<Exception> { new Exception("Transcription failed. Empty result.") });
+            }
 
-            //foreach (var segment in AudioSegments)
-            curOffset = 0;
-            valid_user_offsetList = new List<Tuple<double, double>>();
-            unrecognized_offsetList = new List<Tuple<double, double>>();
-            RecognitionWithPullAudioStreamAsync(Config, AudioSegments[AudioSegments.Keys[0]].AudioStream, outFile).Wait();
+            else
+            {
+                StringBuilder output = new StringBuilder();
+                
+                /*Iterate over the list of TranscrtiptionOutputs in order and add them to
+                 * output that will be written to file.
+                 * Order is by start offset. 
+                 * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
+                 * if width goes over limit of chars per line.
+                 */
+                foreach (var curNode in sharedList)
+                {
+                    string curSegmentText = curNode.Value.ToString();
+                    if (curSegmentText.Length > lineLength)
+                    {
+                        curSegmentText = WrapText(curSegmentText, lineLength);
+                    }
+
+                    output.AppendLine( curSegmentText + "\n");
+                    
+                }
+
+                /*Overwrite any existing MeetingMinutes file with the same name.*/
+                using (System.IO.StreamWriter file =
+                    new System.IO.StreamWriter(MeetingMinutes.FullName, false))
+                {
+                    file.Write(output.ToString());
+                }
+                                
+            }
 
         }
 
-        public async Task RecognitionWithPullAudioStreamAsync(SpeechConfig config, PullAudioInputStream theStream, FileInfo outFile)
-        {
-            
 
+        /// <summary>
+        /// Creates a set of TranscriptionOutput objects.
+        /// </summary>
+        /// <returns>FileInfo object for the transcription output text file.</returns>
+        private async Task MakeTranscriptionOutputs(SortedList<int, TranscriptionOutput> transcriptionOutputs)
+        {
+            List<Task> taskList = new List<Task>();
+            
+            /*Do transcription concurrently for each AudioSegment. */
+            foreach (var curElem in AudioSegments)
+            {
+                Task curTask = RecognitionWithPullAudioStreamAsync(Config, curElem.Value, transcriptionOutputs);
+                taskList.Add(curTask);
+            }
+
+            await Task.WhenAll(taskList.ToArray());       //Asynchronously wait for all AudioSegments to be transcribed
+        }
+
+
+
+        private static async Task RecognitionWithPullAudioStreamAsync(SpeechConfig config, AudioSegment segment, 
+            SortedList<int, TranscriptionOutput> transcriptionOutputs)
+        {
+            StringBuilder result = new StringBuilder();
             var stopRecognition = new TaskCompletionSource<int>();
 
-            using (System.IO.StreamWriter file =
-            new System.IO.StreamWriter(outFile.FullName, true))
-            {
-                using (var audioInput = AudioConfig.FromStreamInput(theStream))
-                {
+           using (var audioInput = AudioConfig.FromStreamInput(segment.AudioStream))
+           {
                     // Creates a speech recognizer using audio stream input.
                     using (var recognizer = new SpeechRecognizer(config, audioInput))
                     {
-                        // Subscribes to events.
+                        // Subscribes to events. Subscription is important, otherwise recognition events aren't handled.
                         recognizer.Recognizing += (s, e) =>
                         {
                             //
@@ -96,9 +158,7 @@ namespace transcriber.TranscribeAgent
 
                                 Console.WriteLine($"Sentence Duration: {sentDuration.ToString()} MilliSeconds.");
                                 Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
-                                file.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
-
-                                curOffset = endOffset;
+                                result.Append(e.Result.Text);                                         //Write transcription text to result
                             }
                             else if (e.Result.Reason == ResultReason.NoMatch)
                             {
@@ -110,9 +170,7 @@ namespace transcriber.TranscribeAgent
 
                                 Console.WriteLine($"Unmatched Portion Duration: {sentDuration.ToString()} MilliSeconds.");
                                 Console.WriteLine($"NOMATCH: Speech could not be recognized.");
-                                file.WriteLine($"NOMATCH: Speech could not be recognized.");
-
-                                curOffset = endOffset; 
+                                result.Append($"NOMATCH: Speech could not be recognized.");           //Write fail message to result
                             }
                         };
 
@@ -150,12 +208,49 @@ namespace transcriber.TranscribeAgent
                         // Use Task.WaitAny to keep the task rooted.
                         Task.WaitAny(new[] { stopRecognition.Task });
 
-                        Console.Write("Awaiting recogniotion stop");
+                        //CRITICAL section. Add the result to (shared) transcriptionOutputs wrapped in a TranscriptionOutput object.
+                        lock (_lockObj)
+                        {
+                            transcriptionOutputs.Add(segment.Offset, new TranscriptionOutput(result.ToString(), segment.SpeakerInfo, segment.Offset));
+                        }//END CRITICAL section.
+
+                        Console.Write("Awaiting recognition stop");
+
                         // Stops recognition.
                         await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
                     }
                 }
             }
+
+
+        private static string WrapText(string text, int lineLength)
+        {
+            StringBuilder outcome = new StringBuilder();
+            
+            for (int i = lineLength; i < text.Length; i += lineLength)
+            {
+                int actualLength = lineLength;
+                Boolean foundSpace = false;
+
+                while (i < text.Length && !foundSpace)
+                {
+                    if (text[i] == ' ')               //Find a space and split there
+                    {
+                        foundSpace = true;
+                        outcome.AppendLine(text.Substring(i - actualLength, actualLength));
+                    }
+                    actualLength++;
+                    i++;
+                }
+              
+            }
+
+            return outcome.ToString();
+            
         }
+
+
     }
+
+    
 }
