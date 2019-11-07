@@ -77,10 +77,10 @@ namespace transcriber.TranscribeAgent
              * --------Logic------- 
              * 
              *   Get the matching User object for each of the Voiceprint objects in Voiceprints that were matched
-             *   Get a set of offsets (these are offsets from the beginning of the audio) for the time when each match occurred.
+             *   Get a set of start and end offsets (these are offsets from the beginning of the audio) for the time when each match occurred.
              *   Split MainStream into a List of AudioSegments using the offsets. 
              *   
-             *   See method DoRecognition, which does the actual recognition. Also see GetUserFromResult() which
+             *   See GetUserFromResult() which
              *   uses the GUID in a RecognitionResult object to look up the User.
             */
                                             
@@ -96,8 +96,6 @@ namespace transcriber.TranscribeAgent
                        
             return tempList;
         }
-
-
 
         /// <summary>
         /// Identifies all speakers in AudioFile using the participant voiceprints.
@@ -122,8 +120,6 @@ namespace transcriber.TranscribeAgent
             };
         }
 
-
-        
         /// <summary>
         /// Creates buffer with file data. File header is removed.
         /// </summary>
@@ -140,8 +136,6 @@ namespace transcriber.TranscribeAgent
 
             AudioData = outData;
         }
-
-
 
         /// <summary>
         /// Converts data in Wav file into the specified format and reads data section of file (removes header) into AudioData buffer.
@@ -182,8 +176,8 @@ namespace transcriber.TranscribeAgent
         /// wrapper. The stream has the specified int offset, and associated <see cref="Data.User"/> who
         /// is the person speaking.
         /// </summary>
-        /// <param name="start">Offset in seconds where this audio segment starts</param>
-        /// <param name="end">Offset in seconds where this audio segment ends</param>
+        /// <param name="start">Offset in ms where this audio segment starts</param>
+        /// <param name="end">Offset in ms where this audio segment ends</param>
         /// <param name="result">Outcome of the call to SpeakerRecognition API</param>
         /// <returns></returns>
         private AudioSegment CreateAudioSegment(RecognitionResultWrapper outcome)
@@ -191,9 +185,9 @@ namespace transcriber.TranscribeAgent
             const long BIT_RATE = SAMPLE_RATE * BITS_PER_SAMPLE;
             const long BYTES_PER_SECOND = BIT_RATE / 8;
 
-            /*Calc positions in stream in bytes, given start and end offsets in seconds */
-            long lowerIndex = outcome.Start * BYTES_PER_SECOND;
-            long upperIndex = outcome.End * BYTES_PER_SECOND;
+            /*Calc positions in stream in bytes, given start and end offsets in ms */
+            long lowerIndex = outcome.Start/1000 * BYTES_PER_SECOND;
+            long upperIndex = outcome.End/1000 * BYTES_PER_SECOND;
             long segmentLength = upperIndex - lowerIndex;
 
 
@@ -230,6 +224,3 @@ namespace transcriber.TranscribeAgent
 
     }
 }
-
-
-    
