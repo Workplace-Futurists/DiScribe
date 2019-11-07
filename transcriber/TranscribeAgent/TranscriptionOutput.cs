@@ -38,12 +38,10 @@ namespace transcriber.TranscribeAgent
         public static string formatTime(int offsetMS)
         {
             int hours = offsetMS / 3600000;
-            int secondsLeft = offsetMS - hours * 3600000;
-
-            int minutes = (secondsLeft > 0) ? secondsLeft / 60 : 0;
-            secondsLeft = secondsLeft - minutes * 60;
-
-            return $"{hours}:{minutes}:{secondsLeft}";
+            int minutes = (offsetMS / 6000) % 60;
+            int seconds = (offsetMS / 1000) % 60;
+            
+            return $"{hours}:{minutes}:{seconds}";
         }
 
 
