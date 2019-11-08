@@ -17,7 +17,7 @@ namespace transcriber.TranscribeAgent
     /// <para>Uses the Microsoft Azure Cognitive Services Speech SDK to perform transcription of audio streams
     /// within each AudioSegment. </para>
     /// </summary>
-    class SpeechTranscriber
+    public class SpeechTranscriber
     {
         public SpeechTranscriber(SpeechConfig config, SortedList<AudioSegment, AudioSegment> audioSegments, FileInfo outFile)
         {

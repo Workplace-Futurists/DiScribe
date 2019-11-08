@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cognitive-SpeakerRecognition-Windows\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj" />
+    <ProjectReference Include="..\Cognitive-SpeakerRecognition-Windows-master\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj" />
     <ProjectReference Include="..\SpeakerRecognizer\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj" />
   </ItemGroup>
 

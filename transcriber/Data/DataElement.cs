@@ -8,7 +8,7 @@ namespace transcriber.Data
     /// Abstract class representing a generic data element. Mainly used as a container for database connection.
     /// Entity classes corresponding to database tables will inherit from this class to access the database connection.
     /// </summary>
-    abstract class DataElement
+    public abstract class DataElement
     {
     }
 }

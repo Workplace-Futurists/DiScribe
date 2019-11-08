@@ -9,7 +9,7 @@ namespace transcriber.TranscribeAgent
     /// Provides emailing feature to send email with a transcription file as an attachment.
     /// Optionally allows custom e-mail body and subject to be specified.
     /// </summary>
-    class TranscriptionEmailer
+    public class TranscriptionEmailer
     {
         public TranscriptionEmailer(string organizerEmail, FileInfo transcript)
         {

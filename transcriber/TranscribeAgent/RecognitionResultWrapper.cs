@@ -5,7 +5,7 @@ using System.Text;
 
 namespace transcriber.TranscribeAgent
 {
-    class RecognitionResultWrapper
+    public class RecognitionResultWrapper
     {
         public RecognitionResultWrapper(int start, int end, RecognitionResult result)
         {

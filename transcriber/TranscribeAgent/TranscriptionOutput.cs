@@ -5,7 +5,7 @@ using transcriber.Data;
 
 namespace transcriber.TranscribeAgent
 {
-    class TranscriptionOutput : IComparable
+    public class TranscriptionOutput : IComparable
     {
         public TranscriptionOutput(string text, User speaker, int startOffset)
         {

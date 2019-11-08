@@ -18,7 +18,7 @@ namespace transcriber.TranscribeAgent
     /// <para>Uses Speaker Recognition API in <see cref="Microsoft.CognitiveServices.Speech"/> for speaker recognition.</para>
     /// <para>Note that audio file must be a WAV file with the following characteristics: PCM/WAV mono with 16kHz sampling rate and 16 bits per sample. </para>
     /// </summary>
-    class AudioFileSplitter
+    public class AudioFileSplitter
     {
 
         /// <summary>
