@@ -9,10 +9,10 @@ using System.Collections.Generic;
 
 namespace transcriber.TranscribeAgent
 {
-    class Program
+    public class Program
     {
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // Creates an instance of a speech config with specified subscription key and service region.
             // Replace with your own subscription key and service region (e.g., "westus").

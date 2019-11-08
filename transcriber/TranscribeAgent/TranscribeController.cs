@@ -7,7 +7,7 @@ using Microsoft.CognitiveServices.Speech;
 
 namespace transcriber.TranscribeAgent
 {
-    class TranscribeController
+    public class TranscribeController
     {
         /// <summary>
         /// Presents an interface to the speaker-recognition based transcription functionality.
