@@ -189,7 +189,7 @@ namespace transcriber.TranscribeAgent
                         //CRITICAL section. Add the result to (shared) transcriptionOutputs wrapped in a TranscriptionOutput object.
                         lock (_lockObj)
                         {
-                            transcriptionOutputs.Add(segment.Offset, new TranscriptionOutput(result.ToString(), segment.SpeakerInfo, segment.Offset));
+                            transcriptionOutputs.Add((int)segment.StartOffset, new TranscriptionOutput(result.ToString(), segment.SpeakerInfo, (int)segment.StartOffset));
                         }//END CRITICAL section.
 
                         Console.Write("Awaiting recognition stop");
