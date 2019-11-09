@@ -11,10 +11,11 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     public class AudioSegment : System.IComparable
     {
-        public AudioSegment(PullAudioInputStream audioStream, int offset, User speakerInfo)
+        public AudioSegment(PullAudioInputStream audioStream, double startOffset, double endOffset, User speakerInfo)
         {
             AudioStream = audioStream;
-            Offset = offset;
+            StartOffset = startOffset;
+            EndOffset = endOffset;
             SpeakerInfo = speakerInfo;
         }
 
@@ -27,7 +28,9 @@ namespace transcriber.TranscribeAgent
         /// <summary>
         /// Offset of audio segment from the beginning of the recording.
         /// </summary>
-        public int Offset { get; set; }
+        public double StartOffset { get; set; }
+
+        public double EndOffset { get; set; }
 
         /// <summary>
         /// Info about the speaker in this instance.
@@ -39,7 +42,7 @@ namespace transcriber.TranscribeAgent
         {
             AudioSegment otherSegment = obj as AudioSegment;
 
-            return Offset.CompareTo(otherSegment.Offset);
+            return StartOffset.CompareTo(otherSegment.StartOffset);
         }
     }
 }
