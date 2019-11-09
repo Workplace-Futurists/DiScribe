@@ -205,7 +205,7 @@ namespace transcriber.TranscribeAgent
 
             User speaker = GetUserFromResult(outcome.Result);                  //Get the User associated with the GUID in the RecognitionResult
 
-            return new AudioSegment(audioStream, outcome.Start, speaker);
+            return new AudioSegment(audioStream, outcome.Start, outcome.End, speaker);
         }
 
 
