@@ -10,6 +10,7 @@ using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 using twilio_caller.dialer;
+using System.IO;
 
 namespace twilio_caller
 {
@@ -18,24 +19,120 @@ namespace twilio_caller
         // main program
         static void Main(string[] args)
         {
-            // Call meeting
-            // create object of type dialer
-            dialerManager dialer = new dialerManager();
+            static IConfigurationRoot LoadAppSettings()
+            {
+                var appConfig = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", false, true)
+                    .Build();
 
-            // sets variable for meeting number
-            string mnum = "123456789";
-            // executes call to webex meeting
-            string callSid = dialer.CallMeeting(mnum);
+                // Check for required settings
+                if (string.IsNullOrEmpty(appConfig["appId"]) ||
+                    // Make sure there's at least one value in the scopes array
+                    string.IsNullOrEmpty(appConfig["scopes:0"]))
+                {
+                    return null;
+                }
 
-            Console.WriteLine(callSid);
+                return appConfig;
+            }
 
-            // TODO send Sid to another method to download the recording
-            // Download recording
-            RecordingManager recManager = new RecordingManager();
-            // set recording id
-            string rid = "RE4250a08aac66a6a25f7147a3226e6376";
-            // call helper to download recording
-            recManager.DownloadRecordingHandler(rid);
+            static string FormatDateTimeTimeZone(Microsoft.Graph.DateTimeTimeZone value)
+            {
+                // Get the timezone specified in the Graph value
+                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(value.TimeZone);
+                // Parse the date/time string from Graph into a DateTime
+                var dateTime = DateTime.Parse(value.DateTime);
+
+                // Create a DateTimeOffset in the specific timezone indicated by Graph
+                var dateTimeWithTZ = new DateTimeOffset(dateTime, timeZone.BaseUtcOffset)
+                    .ToLocalTime();
+
+                return dateTimeWithTZ.ToString("g");
+            }
+
+            static void ListCalendarEvents()
+            {
+                var events = Graph.GraphHelper.GetEventsAsync().Result;
+
+                Console.WriteLine("Events:");
+
+                foreach (var calendarEvent in events)
+                {
+                    Console.WriteLine($"Subject: {calendarEvent.Subject}");
+                    Console.WriteLine($"  Organizer: {calendarEvent.Organizer.EmailAddress.Name}");
+                    Console.WriteLine($"  Start: {FormatDateTimeTimeZone(calendarEvent.Start)}");
+                    Console.WriteLine($"  End: {FormatDateTimeTimeZone(calendarEvent.End)}");
+                }
+            }
+
+            static void Main(string[] args)
+            {
+                Console.WriteLine(".NET Core Graph Tutorial\n");
+
+                var appConfig = LoadAppSettings();
+
+                if (appConfig == null)
+                {
+                    Console.WriteLine("Missing or invalid appsettings.json...exiting");
+                    return;
+                }
+
+                var appId = appConfig["appId"];
+                var scopes = appConfig.GetSection("scopes").Get<string[]>();
+
+                // Initialize the auth provider with values from appsettings.json
+                var authProvider = new GraphAuthentication.DeviceCodeAuthProvider(appId, scopes);
+
+                // Request a token to sign in the user
+                var accessToken = authProvider.GetAccessToken().Result;
+
+                // Initialize Graph client
+                Graph.GraphHelper.Initialize(authProvider);
+
+                // Get signed in user
+                var user = Graph.GraphHelper.GetMeAsync().Result;
+                Console.WriteLine($"Welcome {user.DisplayName}!\n");
+
+                int choice = -1;
+
+                while (choice != 0)
+                {
+                    Console.WriteLine("Please choose one of the following options:");
+                    Console.WriteLine("0. Exit");
+                    Console.WriteLine("1. Display access token");
+                    Console.WriteLine("2. List calendar events");
+
+                    try
+                    {
+                        choice = int.Parse(Console.ReadLine());
+                    }
+                    catch (System.FormatException)
+                    {
+                        // Set to invalid value
+                        choice = -1;
+                    }
+
+                    switch (choice)
+                    {
+                        case 0:
+                            // Exit the program
+                            Console.WriteLine("Goodbye...");
+                            break;
+                        case 1:
+                            // Display access token
+                            Console.WriteLine($"Access token: {accessToken}\n");
+                            break;
+                        case 2:
+                            // List the calendar
+                            ListCalendarEvents();
+                            break;
+                        default:
+                            Console.WriteLine("Invalid choice! Please try again.");
+                            break;
+                    }
+                }
+            }
         }
 
     }
