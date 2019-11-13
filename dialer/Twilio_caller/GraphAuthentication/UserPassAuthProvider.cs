@@ -5,7 +5,7 @@ using System.Security;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-
+using System.Linq;
 namespace twilio_caller.GraphAuthentication
 {
     public class UserPassAuthProvider : IAuthenticationProvider
@@ -15,8 +15,10 @@ namespace twilio_caller.GraphAuthentication
         private IAccount _userAccount;
         private string _username;
         private SecureString _password;
+        AuthenticationResult result;
+        
 
-        public UserPassAuthProvider(string appId, string user, SecureString pass, string[] scopes)
+        public UserPassAuthProvider(string appId, string user, SecureString pass, string[] scopes,string tenantID)
         {
             _scopes = scopes;
             _username = user;
@@ -24,15 +26,22 @@ namespace twilio_caller.GraphAuthentication
 
             _msalClient = PublicClientApplicationBuilder
                 .Create(appId)
+                .WithRedirectUri("http://localhost")
                 // Set the tenant ID to "organizations" to disable personal accounts
                 // Azure OAuth does not support device code flow for personal accounts
                 // See https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-device-code
-                .WithTenantId("organizations")
+                .WithTenantId(tenantID)
                 .Build();
+
         }
 
         public async Task<string> GetAccessToken()
         {
+
+            _userAccount = await _msalClient.GetAccountAsync(_username);
+                
+            
+    
             // If there is no saved user account, the user must sign-in
             if (_userAccount == null)
             {
@@ -46,8 +55,9 @@ namespace twilio_caller.GraphAuthentication
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine($"Error getting access token: {exception.Message}");
-                    return null;
+                    var result = await _msalClient.AcquireTokenInteractive(_scopes)
+                                .ExecuteAsync();
+                    return result.AccessToken;
                 }
             }
             else
@@ -63,7 +73,7 @@ namespace twilio_caller.GraphAuthentication
                 return result.AccessToken;
             }
         }
-
+        
         // This is the required function to implement IAuthenticationProvider
         // The Graph SDK will call this function each time it makes a Graph
         // call.
