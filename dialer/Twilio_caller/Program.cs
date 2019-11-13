@@ -21,7 +21,7 @@ namespace twilio_caller
         {
             var appConfig = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("PrivateSettings.json", false, true)
+                .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
             // Check for required settings
@@ -84,14 +84,17 @@ namespace twilio_caller
             // add password from privatesettings.json into secure string
             foreach (char c in appConfig["password"])
             {
-                password.AppendChar(c);
+                 password.AppendChar(c);
             }
+            
 
             var scopes = appConfig.GetSection("scopes").Get<string[]>();
+            var tenantId = appConfig.GetSection("tenantId").Get<string>();
 
             // Initialize the auth provider with values from appsettings.json
-            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, username, password, scopes);
+            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, username, password, scopes,tenantId);
 
+           
             // Request a token to sign in the user
             var accessToken = authProvider.GetAccessToken().Result;
 
@@ -141,5 +144,6 @@ namespace twilio_caller
                 }
             }
         }
+        
     }
 }

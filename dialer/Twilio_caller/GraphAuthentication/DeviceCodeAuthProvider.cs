@@ -22,7 +22,7 @@ namespace twilio_caller.GraphAuthentication
                 // Set the tenant ID to "organizations" to disable personal accounts
                 // Azure OAuth does not support device code flow for personal accounts
                 // See https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-device-code
-                .WithTenantId("organizations")
+                .WithTenantId("common")
                 .Build();
         }
 
@@ -31,6 +31,7 @@ namespace twilio_caller.GraphAuthentication
             // If there is no saved user account, the user must sign-in
             if (_userAccount == null)
             {
+                Console.WriteLine("Executed");
                 try
                 {
                     // Invoke device code flow so user can sign-in with a browser
