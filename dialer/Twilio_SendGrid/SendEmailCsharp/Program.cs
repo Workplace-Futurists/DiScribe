@@ -1,54 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using SendGrid;
+﻿using SendGrid;
 using SendGrid.Helpers.Mail;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using static System.Environment;
 
-namespace SendEmailCsharp
+namespace Example
 {
-    class Program
+    internal class Example
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            // Console.WriteLine("Hello World!");
             Execute().Wait();
         }
 
         static async Task Execute()
         {
-            // Set Environment Variable before calling them
-            // Environment.SetEnvironmentVariable("SENDGRID_API_KEY_TEST", "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");
-            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY_TEST");
+            System.Environment.SetEnvironmentVariable("SENDGRID_API_KEY", "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");
+            var apiKey = System.Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+            Console.WriteLine(apiKey);
             var client = new SendGridClient(apiKey);
+            // var client = new SendGridClient("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");
 
-            // email address and the name of the sender and receiver
-            var from = new EmailAddress("seungwook.l95@gmail.com", "SenderKevin");
+            var from = new EmailAddress("tmdenddl@hanmail.net", "SenderKevin");
             var tos = new List<EmailAddress>
             {
-                new EmailAddress("seungwook.l95@gmail.com", "ReceiverKevin1"),
-                new EmailAddress("tmdenddl@hanmail.com", "ReceiverKevin2")
+                new EmailAddress("seungwook@gmail.com", "Receiver Kevin"),
+                new EmailAddress("tmdenddl@hanmail.net", "Receiver Kevin"),
             };
+            var subject = "Testing SendGrid";
+            var plainTextContent = "YAY! IT WORKED!";
+            var htmlContent = "<strong>NOW WORK ON INTEGRATION</strong>";
+            var showAllRecipients = false; // Set to true if you want the recipients to see each others email addresses
 
-            // Subject Line of the email
-            var subject = "Sending with Twilio SendGrid";
-
-            // Content of the email sent
-            var plainTextContent = "This is the conent of the trial version of email";
-
-            // Set to true if you want the recipients to see each others email addresses
-            var showAllRecipients = false;
-
-            // Don't really know what this is
-            var htmlContent = "<strong>C# was used for this</strong>";
-            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(
-                from,
-                tos,
-                subject,
-                plainTextContent,
-                htmlContent,
-                showAllRecipients
-                );
-
+            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from,
+                                                                       tos,
+                                                                       subject,
+                                                                       plainTextContent,
+                                                                       htmlContent,
+                                                                       showAllRecipients
+                                                                       );
             var response = await client.SendEmailAsync(msg);
         }
     }
