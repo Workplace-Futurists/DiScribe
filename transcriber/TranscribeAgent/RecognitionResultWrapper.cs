@@ -7,7 +7,7 @@ namespace transcriber.TranscribeAgent
 {
     public class RecognitionResultWrapper
     {
-        public RecognitionResultWrapper(int start, int end, RecognitionResult result)
+        public RecognitionResultWrapper(long start, long end, RecognitionResult result)
         {
             Start = start;
             End = end;
@@ -18,13 +18,13 @@ namespace transcriber.TranscribeAgent
         /// Offset in milliseconds from the beginning of audio where the speaker
         /// in this result started speaking.
         /// </summary>
-        public int Start { get; set; }
+        public long Start { get; set; }
 
         /// <summary>
         /// Offset in milliseconds from the beginning of audio where the speaker
         /// in this result stopped speaking.
         /// </summary>
-        public int End { get; set; }
+        public long End { get; set; }
 
         /// <summary>
         /// The <see cref="RecognitionResult"/> for the speaker that was recognized.

@@ -18,19 +18,18 @@ namespace transcriber.TranscribeAgent
             // Replace with your own subscription key and service region (e.g., "westus").
             var config = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
-            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
+            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeetingShorter.wav");
             FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call
              * or pipe (if IPC is used)*/
             var initData = new TranscriptionInitData(testRecording, new List<Data.Voiceprint>(), "");
 
-            Console.WriteLine("Creating transcript...");
-
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(config, initData.MeetingRecording, initData.Voiceprints, meetingMinutes);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
+            Console.WriteLine("Creating transcript...");
             Boolean success = controller.DoTranscription();
 
             Boolean emailSent = false;
