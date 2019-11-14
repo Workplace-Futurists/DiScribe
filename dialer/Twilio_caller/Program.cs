@@ -12,6 +12,9 @@ using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 using twilio_caller.dialer;
 using System.IO;
+using Microsoft.Graph;
+using HtmlAgilityPack;
+using System.Net;
 
 namespace twilio_caller
 {
@@ -20,7 +23,7 @@ namespace twilio_caller
         static IConfigurationRoot LoadAppSettings()
         {
             var appConfig = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
@@ -54,7 +57,6 @@ namespace twilio_caller
         static void ListCalendarEvents()
         {
             var events = Graph.GraphHelper.GetEventsAsync().Result;
-
             Console.WriteLine("Events:");
 
             foreach (var calendarEvent in events)
@@ -64,6 +66,21 @@ namespace twilio_caller
                 Console.WriteLine($"  Start: {FormatDateTimeTimeZone(calendarEvent.Start)}");
                 Console.WriteLine($"  End: {FormatDateTimeTimeZone(calendarEvent.End)}");
             }
+        }
+        static string parseEmail(string email)
+        {
+            return "";
+        }
+
+        static async Task<Message> getEmailAsync(GraphServiceClient graph)
+        {
+            var messages = await graph.Me.Messages
+                .Request()
+                .Select(e => new {
+                    e.Body
+                    })
+                .GetAsync();
+            return messages[0];
         }
 
         static void Main(string[] args)
@@ -107,13 +124,62 @@ namespace twilio_caller
 
             int choice = -1;
 
+            GraphServiceClient graphClient = new GraphServiceClient(authProvider);
+
+            var subscription = new Subscription
+            {
+                ChangeType = "created,updated",
+                NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/OutlookMessageWebhookCreator1?code=oCrAsapgfgt68ChnQMGBmkTsYOdRuEGT2KB3yogU0ML4rLgdgIWMkQ==",
+                Resource = "me/mailFolders('Inbox')/messages",
+                ExpirationDateTime = DateTimeOffset.Parse("2016-11-20T18:23:45.9356913Z"),
+                ClientState = "secretClientValue"
+            };
+
+     
+                try
+                {
+                    Task.Run(() => graphClient.Subscriptions
+                    .Request()
+                    .AddAsync(subscription));
+
+                    // Start a task - calling an async function in this example
+                    Task<Message> callTask = Task.Run(() => getEmailAsync(graphClient));
+                    // Wait for it to finish
+                    callTask.Wait();
+                    // Get the result
+                    Message message = callTask.Result;
+                    // Write it our
+
+                    string accessCode;
+                    string meetingStart;
+                    Boolean pm = false;
+                    string parsedEmail = message.Body.Content;
+                    parsedEmail = WebUtility.HtmlDecode(parsedEmail);
+                    HtmlDocument htmldoc = new HtmlDocument();
+                    htmldoc.LoadHtml(parsedEmail);
+                    //htmldoc.DocumentNode.SelectNodes("//comment()")?.Foreach(c => c.Remove());
+                    parsedEmail = htmldoc.DocumentNode.InnerText;
+                    accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
+                    accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
+                    accessCode = accessCode.Replace(" ", "");
+                   
+                }
+                catch (Exception ex)  //Exceptions here or in the function will be caught here
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                }
+                
+            
+
+           
+
             while (choice != 0)
             {
                 Console.WriteLine("Please choose one of the following options:");
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("1. Display access token");
                 Console.WriteLine("2. List calendar events");
-
+                
                 try
                 {
                     choice = int.Parse(Console.ReadLine());
