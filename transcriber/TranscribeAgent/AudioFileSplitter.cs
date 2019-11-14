@@ -4,8 +4,6 @@ using transcriber.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
 using System.Collections;
-using Microsoft.Cognitive.SpeakerRecognition.Streaming.Result;
-using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave.SampleProviders;
 
 namespace transcriber.TranscribeAgent
@@ -28,9 +26,8 @@ namespace transcriber.TranscribeAgent
         /// <param name="voiceprints"><see cref="List{Voiceprint}"/>List of <see cref="Voiceprint"/> instances used for speaker recognition</param>
         /// <param name="audioFile"><see cref="FileInfo"/> instance with absolute path to audio file. File must be a WAV file
         /// with mono audio, 16kHz sampling rate, and 16 bits per sample.</param>
-        public AudioFileSplitter(List<Voiceprint> voiceprints, FileInfo audioFile)
+        public AudioFileSplitter(FileInfo audioFile)
         {
-            Voiceprints = voiceprints;
             AudioFile = audioFile;
             ProcessWavFile(audioFile);                                          //Convert wav file to correct format and read data into buffer AudioData.
             MainStream = new MemoryStream(AudioData);                           //Set up the main stream with AudioData as backing buffer.
@@ -41,11 +38,7 @@ namespace transcriber.TranscribeAgent
         public const int BITS_PER_SAMPLE = 16;
         public const int CHANNELS = 1;
 
-        /// <summary>
-        /// List of Voiceprint instances used to identify users in the audio file.
-        /// </summary>
-        public List<Voiceprint> Voiceprints { get; set; }
-
+        
         /// <summary>
         /// Info for access to audio file which must be in correct format for Azure Cognitive Services Speech API.
         /// </summary>
@@ -61,41 +54,28 @@ namespace transcriber.TranscribeAgent
         
 
         /// <summary>
-        /// FOR DEMO: Will only return a sorted list with a single <see cref="AudioSegment"/>.
-        ///  
-        /// <para>Creates a SortedList of <see cref="AudioSegment"/> instances which are sorted according
-        /// to their offset from the beginning of the audio file.
-        /// The audio is segmented by identifying the speaker. Each time the speaker changes,
-        /// the <see cref="AudioSegment"/> is added to the SortedList. </para>
+        /// Creates an AudioSegment from this instance using the specified
+        /// start and end offsets. Note that if end offset > audio data length
+        /// for this instance, a segment up to the end will be created.
+        /// <throws>Exception if end offSet <= startOffset,
+        /// or startOffset > audio length.</throws>
         /// </summary>
         /// <returns>SortedList of <see cref="AudioSegment"/> instances</returns>
-        public SortedList<AudioSegment, AudioSegment> SplitAudio()
+        public AudioSegment SplitAudio(ulong startOffset, ulong endOffset)
         {
-            var tempList = new SortedList<AudioSegment, AudioSegment>();
-
-            /*TODO: Divide audio stream using speaker recognition
-             * --------Logic------- 
-             * 
-             *   Get the matching User object for each of the Voiceprint objects in Voiceprints that were matched
-             *   Get a set of start and end offsets (these are offsets from the beginning of the audio) for the time when each match occurred.
-             *   Split MainStream into a List of AudioSegments using the offsets. 
-             *   
-             *   See GetUserFromResult() which
-             *   uses the GUID in a RecognitionResult object to look up the User.
-            */
-                                            
-            /*******For testing, just use fake RecognitionResultWrapper objects
-             * which represent the results of the recognition process. ********/
-            var outcomes = DoRecognition();                                    //RecognitionResultWrapper objects sorted by offset (keys are the offsets)
-
-            foreach (var node in outcomes)
-            {
-                var segment = CreateAudioSegment(node.Value);
-                tempList.Add(segment, segment);
-            }
-                       
-            return tempList;
+            return CreateAudioSegment(startOffset, endOffset);
         }
+
+
+        /// <summary>
+        /// Get the entire audio managed by this instance as an AudioSegment
+        /// </summary>
+        /// <returns>The audio segment containing all audio data and a stream to access that data.</returns>
+        public AudioSegment GetEntireAudio()
+        {
+            return CreateAudioSegmentByteOffsets(0, (ulong)AudioData.Length);
+        }
+
 
         /// <summary>
         /// Identifies all speakers in AudioFile using the participant voiceprints.
@@ -104,21 +84,21 @@ namespace transcriber.TranscribeAgent
         /// For testing, just returns list of 5 fake RecognitionResultWrapper objects
         /// </summary>
         /// <returns><see cref="SortedList"/> List of RecognitionResultWrapper objects sorted by offset.</returns>
-        private SortedList<int, RecognitionResultWrapper> DoRecognition()
-        {
-            RecognitionResult fakeResult = new RecognitionResult(new Identification(), new System.Guid(), 0);
-            
+        //private SortedList<int, RecognitionResultWrapper> DoRecognition()
+        //{
+        //   RecognitionResult fakeResult = new RecognitionResult(new Identification(), new System.Guid(), 0);
 
-            return new SortedList<int, RecognitionResultWrapper>()
-            {
-                {0, new RecognitionResultWrapper(0, 10000, fakeResult)},
-                {20, new RecognitionResultWrapper(15000, 20000, fakeResult)},
-                {21, new RecognitionResultWrapper(21000, 58000, fakeResult)},
-                {60, new RecognitionResultWrapper(60000, 80000, fakeResult) },
-                {120, new RecognitionResultWrapper(120000, 150000, fakeResult) }
 
-            };
-        }
+        //   return new SortedList<int, RecognitionResultWrapper>()
+        // {
+        //   {0, new RecognitionResultWrapper(0, 10000, fakeResult)},
+        // {20, new RecognitionResultWrapper(15000, 20000, fakeResult)},
+        //{21, new RecognitionResultWrapper(21000, 58000, fakeResult)},
+        //{60//, new RecognitionResultWrapper(60000, 80000, fakeResult) },
+        //{120, new RecognitionResultWrapper(120000, 150000, fakeResult) }
+
+        //};
+        //}
 
         /// <summary>
         /// Creates buffer with file data. File header is removed.
@@ -170,25 +150,40 @@ namespace transcriber.TranscribeAgent
             
         }
 
+        /// <summary>
+        /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/> 
+        /// wrapper. The stream has the specified long offset.
+        /// </summary>
+        /// <param name="start">Offset in milliseconds where this audio segment starts</param>
+        /// <param name="end">Offset in milliseconds where this audio segment ends</param>
+        /// <param name="result">Outcome of the call to SpeakerRecognition API</param>
+        /// <returns></returns>
+        private AudioSegment CreateAudioSegment(ulong startOffset, ulong endOffset)
+        {
+            const long BIT_RATE = SAMPLE_RATE * BITS_PER_SAMPLE;
+            const long BYTES_PER_SECOND = BIT_RATE / 8L;
+
+            /*Calc positions in stream in bytes, given start and end offsets in milliseconds */
+            ulong lowerIndex = startOffset / 1000UL * BYTES_PER_SECOND;
+            ulong upperIndex = endOffset / 1000UL * BYTES_PER_SECOND;
+
+            return CreateAudioSegmentByteOffsets(lowerIndex, upperIndex);
+        }
+
+
 
         /// <summary>
         /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/> 
-        /// wrapper. The stream has the specified int offset, and associated <see cref="Data.User"/> who
-        /// is the person speaking.
+        /// wrapper. The stream has the specified int offset.
         /// </summary>
-        /// <param name="start">Offset in ms where this audio segment starts</param>
-        /// <param name="end">Offset in ms where this audio segment ends</param>
+        /// <param name="start">Offset in bytes where this audio segment starts</param>
+        /// <param name="end">Offset in bytes where this audio segment ends</param>
         /// <param name="result">Outcome of the call to SpeakerRecognition API</param>
         /// <returns></returns>
-        private AudioSegment CreateAudioSegment(RecognitionResultWrapper outcome)
+        private AudioSegment CreateAudioSegmentByteOffsets(ulong startOffset, ulong endOffset)
         {
-            const long BIT_RATE = SAMPLE_RATE * BITS_PER_SAMPLE;
-            const long BYTES_PER_SECOND = BIT_RATE / 8;
-
-            /*Calc positions in stream in bytes, given start and end offsets in ms */
-            long lowerIndex = outcome.Start/1000 * BYTES_PER_SECOND;
-            long upperIndex = outcome.End/1000 * BYTES_PER_SECOND;
-            long segmentLength = upperIndex - lowerIndex;
+           
+            ulong segmentLength = endOffset - startOffset;
 
 
             /*Setup the PullAudioInputStream for this AudioSegment 
@@ -196,29 +191,19 @@ namespace transcriber.TranscribeAgent
              * a MemoryStream to read from that buffer */
             byte[] buf = new byte[segmentLength];
             System.Span<byte> bufSpan = buf;
-            MainStream.Seek(lowerIndex, SeekOrigin.Begin);                                 //Seek to position in stream at start of segment
+            MainStream.Seek((long)startOffset, SeekOrigin.Begin);                           //Seek to position in stream at start of segment
             MainStream.Read(bufSpan);                                                      //Read bytes into buf (number of bytes read is segmentLength)
             MemoryStream stream = new MemoryStream(buf);
 
             AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS);   
             PullAudioInputStream audioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(stream), streamFormat);
 
-            User speaker = GetUserFromResult(outcome.Result);                  //Get the User associated with the GUID in the RecognitionResult
-
-            return new AudioSegment(audioStream, outcome.Start, outcome.End, speaker);
+            
+            return new AudioSegment(audioStream, (long)startOffset, (long)endOffset);
         }
 
 
 
-        /// <summary>
-        /// Uses the GUID in the RecognitionResult to get a corresponding User object.
-        /// Returns a TEST user object with random name currently.
-        /// </summary>
-        /// <param name="result"></param>
-        private static User GetUserFromResult(RecognitionResult result)
-        {
-            return new User("USER_" + new System.Random().Next(), "TEST@EXAMPLE.COM", result.Value.IdentifiedProfileId);
-        }
 
 
 
