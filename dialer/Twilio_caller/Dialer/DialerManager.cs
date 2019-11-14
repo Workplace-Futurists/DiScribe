@@ -10,15 +10,6 @@ namespace twilio_caller.dialer
 {
     public class dialerManager
     {
-        //// TODO: can't reference class in main program due to static referencing when 
-        //// instantiating call to methods need to fix before this can be encapsuled
-        //private string meetingNum { get; set; }
-
-        //public dialerManager(string mnum)
-        //{
-        //    meetingNum = mnum;
-        //}
-
         // a function to add pauses ('w' characters) between meeting call in numbers and extensions
         // ex. 628079791
         private string formatDigits(string meetingNum)

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.IO;
+using System.Diagnostics;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace twilio_caller.dialer
 {
@@ -27,10 +31,37 @@ namespace twilio_caller.dialer
         {
             using (var httpClient = new HttpClient())
             {
+                // set url    
                 string recordingURL = recordingBaseURL + rid;
-                Console.WriteLine(recordingURL);
-                var response = httpClient.GetAsync(new Uri(recordingURL)).Result;
-                Console.WriteLine(response);
+                // make new uri with previous url
+                Uri recordingURI = new Uri(recordingURL);
+                Console.WriteLine("The following rid will be downloaded " + rid);
+
+                // get response content from api
+                var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
+
+                // make sure request worked once headers are read
+                response.EnsureSuccessStatusCode();
+
+                // Save file to disk
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    // Define buffer and buffer size
+                    int bufferSize = 1024;
+                    byte[] buffer = new byte[bufferSize];
+                    int bytesRead = 0;
+
+                    string filePath = ("..\\..\\..\\Recordings\\" + rid + ".wav");
+
+                    // Read from response and write to file
+                    using (FileStream fileStream = File.Create(filePath))
+                    {
+                        while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                        {
+                            await fileStream.WriteAsync(buffer, 0, bytesRead);
+                        } // end while
+                    }
+                }
             }
 
             //TwilioClient.Init(accountSid, authToken);
@@ -41,15 +72,18 @@ namespace twilio_caller.dialer
             //Console.WriteLine(recording);
         }
 
-        // TODO delete a recording given an SID
+        // delete a recording given an SID
         // If successful, DELETE returns HTTP 204 (No Content) with no body
-        // only event handlers should be void async methods
-        public static async void DeleteRecordingAsync(string pathSid)
+        public async Task DeleteRecordingAsync(string rid)
         {
-            // instantiate login info with twilio client
-            var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
-            var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
-            Twilio.TwilioClient.Init(accountSid, authToken);
+            // Start initiate a twilio client
+            TwilioClient.Init(accountSid, authToken);
+            Console.WriteLine("The following rid will be deleted " + rid);
+            // Deletes the recording resource with specified rid from Twilio cloud
+            var response = await RecordingResource.DeleteAsync(pathSid: rid);
+            // response should be true if recording was deleted
+            Debug.Assert(response == true);
+            Console.WriteLine(rid + " has been deleted.");
         }
     }
 }
