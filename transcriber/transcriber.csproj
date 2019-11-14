@@ -1,13 +1,35 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="transcriber\**" />
+    <EmbeddedResource Remove="transcriber\**" />
+    <None Remove="transcriber\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21" />
     <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
+    <PackageReference Include="Microsoft.ProjectOxford.SpeakerRecognition" Version="1.2.0" />
     <PackageReference Include="NAudio" Version="1.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Record\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cognitive-SpeakerRecognition-Windows-master\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj" />
   </ItemGroup>
 
 </Project>
