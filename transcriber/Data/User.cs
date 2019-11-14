@@ -7,9 +7,9 @@ namespace transcriber.Data
     /// <summary>
     /// Represents a user who is a meeting participant. Contains attributes for user name, email address, and user ID.
     /// </summary>
-    class User : DataElement
+    public class User : DataElement
     {
-        public User(string name, string email, int userID = 0)
+        public User(string name, string email, Guid userID)
         {
             Name = name;
             Email = email;
@@ -20,7 +20,7 @@ namespace transcriber.Data
 
         public string Email { get; set; }
 
-        public int UserID { get; private set; }
+        public Guid UserID { get; private set; }
 
     }
 }

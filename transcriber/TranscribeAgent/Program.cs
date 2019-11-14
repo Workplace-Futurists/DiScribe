@@ -5,28 +5,47 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
 using transcriber.TranscribeAgent;
+using System.Collections.Generic;
 
 namespace transcriber.TranscribeAgent
 {
-    class Program
+    public class Program
     {
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            // Creates an instance of a speech config with specified subscription key and service region.
+            // Replace with your own subscription key and service region (e.g., "westus").
+            var config = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+
+            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
+            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
+
+            /*This TranscriptionInitData instance will be received from the Dialer in method call
+             * or pipe (if IPC is used)*/
+            var initData = new TranscriptionInitData(testRecording, new List<Data.Voiceprint>(), "");
+
             Console.WriteLine("Creating transcript...");
 
-            string path = @"../../../record/test_meeting.wav";
-            FileInfo test = new FileInfo(path);
-            var x = new AudioFileSplitter(null, test);
+            /*Setup the TranscribeController instance which manages the details of the transcription procedure */
+            var controller = new TranscribeController(config, initData.MeetingRecording, initData.Voiceprints, meetingMinutes);
 
-            var list = x.SplitAudio();                                   //Split audio into segments (only 1 in this case).
+            /*Start the transcription of all audio segments to produce the meeting minutes file*/
+            Boolean success = controller.DoTranscription();
 
-            var segment = list[list.Keys[0]];                            //Get the 1 segment.
+            Boolean emailSent = false;
 
-            Speechtranscriber.RecognitionWithPullAudioStreamAsync(segment.AudioStream).Wait();
+            if (success)
+            {
+                Console.WriteLine("\nTranscription completed");
+
+                string emailSubject = "Meeting minutes for " + DateTime.Now.ToLocalTime().ToString();
+                emailSent = controller.SendEmail(initData.TargetEmail, emailSubject);
+            }
 
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();
+
         }
 
     }
