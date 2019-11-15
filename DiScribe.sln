@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transcriber", "transcriber\
 		{8A58E960-8D3B-4DA7-A111-270AF62FE812} = {8A58E960-8D3B-4DA7-A111-270AF62FE812}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Cognitive.SpeakerRecognition.Streaming", "Cognitive-SpeakerRecognition-Windows\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj", "{8A58E960-8D3B-4DA7-A111-270AF62FE812}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transcriberTests", "transcriberTests\transcriberTests.csproj", "{F060B4E1-985E-4686-A2AD-587CA5B29064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Cognitive.SpeakerRecognition.Streaming", "Cognitive-SpeakerRecognition-Windows-master\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj", "{8A58E960-8D3B-4DA7-A111-270AF62FE812}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,14 @@ Global
 		{799D6680-F613-4E6C-B46B-6A806732A454}.Release|anycpu.Build.0 = Release|Any CPU
 		{799D6680-F613-4E6C-B46B-6A806732A454}.Release|x64.ActiveCfg = Release|x64
 		{799D6680-F613-4E6C-B46B-6A806732A454}.Release|x64.Build.0 = Release|x64
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Debug|x64.Build.0 = Debug|Any CPU
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Release|anycpu.Build.0 = Release|Any CPU
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Release|x64.ActiveCfg = Release|Any CPU
+		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Release|x64.Build.0 = Release|Any CPU
 		{8A58E960-8D3B-4DA7-A111-270AF62FE812}.Debug|anycpu.ActiveCfg = Debug|Any CPU
 		{8A58E960-8D3B-4DA7-A111-270AF62FE812}.Debug|anycpu.Build.0 = Debug|Any CPU
 		{8A58E960-8D3B-4DA7-A111-270AF62FE812}.Debug|x64.ActiveCfg = Debug|x64

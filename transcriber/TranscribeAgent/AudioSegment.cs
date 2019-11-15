@@ -9,13 +9,13 @@ namespace transcriber.TranscribeAgent
     /// of the recording. Provides access to the audio data via an audio stream. Also includes a
     /// representation of the user who is speaking in the segment.
     /// </summary>
-    class AudioSegment : System.IComparable
+    public class AudioSegment : System.IComparable
     {
-        public AudioSegment(PullAudioInputStream audioStream, int offset, User speakerInfo)
+        public AudioSegment(PullAudioInputStream audioStream, long startOffset, long endOffset)
         {
             AudioStream = audioStream;
-            Offset = offset;
-            SpeakerInfo = speakerInfo;
+            StartOffset = startOffset;
+            EndOffset = endOffset;
         }
 
 
@@ -27,7 +27,9 @@ namespace transcriber.TranscribeAgent
         /// <summary>
         /// Offset of audio segment from the beginning of the recording.
         /// </summary>
-        public int Offset { get; set; }
+        public long StartOffset { get; set; }
+
+        public long EndOffset { get; set; }
 
         /// <summary>
         /// Info about the speaker in this instance.
@@ -39,7 +41,7 @@ namespace transcriber.TranscribeAgent
         {
             AudioSegment otherSegment = obj as AudioSegment;
 
-            return Offset.CompareTo(otherSegment.Offset);
+            return StartOffset.CompareTo(otherSegment.StartOffset);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace twilio_caller
             // sets variable for meeting number
             //string mnum = "123456789";
             string mnum = Console.ReadLine();
-            
+
             // Call meeting
             // create object of type dialer
             dialer dialer = new dialer();
@@ -36,20 +36,43 @@ namespace twilio_caller
             // display CallSid to console
             Console.WriteLine("The call had the following Sid: " + callSid);
 
+            // makes recording manager to help manage recordings for this session
+            RecordingManager recManager = new RecordingManager();
+
             // prompt user for recording resource sid
             Console.WriteLine("Below is the start of code to download a recording.");
-            Console.WriteLine("Currently recordings are not saved.");
             Console.WriteLine("To test fetching a recording resource, feel free to use the following sid: RE4250a08aac66a6a25f7147a3226e6376");
-            Console.WriteLine("Enter the Recording Sid for the desired Twilio Recording Resource to fetch: ");
+            Console.WriteLine("Enter the Recording Sid for the desired Twilio Recording to fetch: ");
 
-            // TODO send Sid to another method to download the recording
-            // Download recording
-            RecordingManager recManager = new RecordingManager();
             // set recording id
             //string rid = "RE4250a08aac66a6a25f7147a3226e6376";
             string rid = Console.ReadLine();
-            // call helper to download recording
-            recManager.DownloadRecordingHandler(rid);
+
+            try
+            {
+                // Sends Sid to another method to download the recording
+                recManager.DownloadRecordingHandlerAsync(rid).Wait();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            // prompt user to delete a recording
+            Console.WriteLine("Below is the start of code to delete a recording.");
+            Console.WriteLine("Enter the Recording Sid for the desired Twilio Recording to delete: ");
+            // set recording id
+            string delete_rid = Console.ReadLine();
+
+            try
+            {
+                // Sends Sid to another method to download the recording
+                recManager.DeleteRecordingAsync(delete_rid).Wait();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }

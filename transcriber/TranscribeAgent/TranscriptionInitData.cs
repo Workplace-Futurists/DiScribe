@@ -11,7 +11,7 @@ namespace transcriber.TranscribeAgent
     /// This data gives access to the location of the meeting audio recording file, the set of participant voiceprints,
     /// and the target email to send the transcription.
     /// </summary>
-    class TranscriptionInitData
+    public class TranscriptionInitData
     {
         public TranscriptionInitData(FileInfo meetingRecording, List<Voiceprint> voiceprints, string targetEmail)
         {
