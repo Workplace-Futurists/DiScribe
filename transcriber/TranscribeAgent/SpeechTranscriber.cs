@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
+using Microsoft.ProjectOxford.SpeakerRecognition;
+using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using transcriber.Data;
 using transcriber.TranscribeAgent;
 
@@ -22,7 +24,7 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     public class SpeechTranscriber
     {
-        public SpeechTranscriber(SpeechConfig config, FileInfo audioFile, FileInfo outFile, List<Voiceprint> voiceprints)
+        public SpeechTranscriber(SpeechConfig config, string SpeakerIDKey, FileInfo audioFile, FileInfo outFile, List<Voiceprint> voiceprints)
         {
             FileSplitter = new AudioFileSplitter(audioFile);
             MeetingMinutes = outFile;
@@ -36,6 +38,8 @@ namespace transcriber.TranscribeAgent
         public AudioFileSplitter FileSplitter { get; private set; }
 
         public List<Voiceprint> Voiceprints { get; set; }
+
+        public String SpeakerIDKey { get; set; }
 
         /// <summary>
         /// Outputs created by transcription. Represents sentences of speech.
@@ -101,7 +105,6 @@ namespace transcriber.TranscribeAgent
             /*Do speaker recognition concurrently for each TranscriptionOutput. */
             await DoSpeakerRecognition();
 
-            //await Task.WhenAll(taskList.ToArray());       //Asynchronously wait for all speakers to be recognized
         }
 
 
@@ -211,17 +214,84 @@ namespace transcriber.TranscribeAgent
         /// set set their User property representing the speaker.
         /// </summary>
         /// <param name="transcription"></param>
-        private Task DoSpeakerRecognition()
+        private async Task DoSpeakerRecognition()
         {
             var recognitionComplete = new TaskCompletionSource<int>();
-            foreach (var curSentence in TranscriptionOutputs)
+
+            /*Create REST client for enrolling users */
+            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(SpeakerIDKey);
+
+            /*Dictionary for efficient voiceprint lookup */
+            Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();
+            Guid[] userIDs = new Guid[Voiceprints.Count];
+
+            /*Add all voiceprints to the dictionary*/
+            foreach (var voiceprint in Voiceprints)
             {
-                curSentence.Value.Speaker = RecognizeUser(curSentence.Value.Segment);
+                voiceprintDictionary.Add(voiceprint.UserGUID, voiceprint);
             }
+
+            voiceprintDictionary.Keys.CopyTo(userIDs, 0);
+
+
+            /*Iterate over each phrase and attempt to identify the user.
+             Passes the audio data as a stream and the user GUID associated with the
+             Azure SpeakerRecogniztion API profile to the API via the IdentifyAsync() method.*/
+            try
+            {
+                foreach (var curPhrase in TranscriptionOutputs)
+                {
+                    MemoryStream audioStream = FileSplitter.SplitAudioGetMemStream((ulong)curPhrase.Value.StartOffset, (ulong)curPhrase.Value.EndOffset);
+                    Task<OperationLocation> idTask = idClient.IdentifyAsync(audioStream, userIDs, true);
+
+                    await idTask;
+
+                    var resultLoc = idTask.Result;
+
+                    /*Continue to check task status until it is completed */
+                    Task<IdentificationOperation> idOutcomeCheck;
+                    Boolean done = false;
+                    do
+                    {
+                        idOutcomeCheck = idClient.CheckIdentificationStatusAsync(resultLoc);
+
+                        await idOutcomeCheck;
+
+                        done = (idOutcomeCheck.Result.Status == Status.Succeeded || idOutcomeCheck.Result.Status == Status.Failed);
+                    } while (!done);
+
+                    Guid profileID = idOutcomeCheck.Result.ProcessingResult.IdentifiedProfileId;           //Get profile ID for this identification.
+
+                    
+                    /*No user could be recognized */
+                    if (idOutcomeCheck.Result.Status == Status.Succeeded 
+                        && profileID.ToString() == "00000000-0000-0000-0000-000000000000") 
+                    {
+                        curPhrase.Value.Speaker = new User("Not recognized", "", -1);
+                    }
+
+                    else if (idOutcomeCheck.Result.Status == Status.Succeeded)
+                    {
+                        curPhrase.Value.Speaker = voiceprintDictionary[profileID].AssociatedUser;
+                    }
+
+                    else
+                    {
+                        Console.Error.WriteLine("Recognition operation failed");
+                    }
+
+                }
+
+            } catch (AggregateException ex)
+            {
+                Console.Error.WriteLine("Id failed: " + ex.Message);
+            }
+
+                                                  
 
             recognitionComplete.SetResult(0);
 
-            return recognitionComplete.Task;
+            
             
         }
 
@@ -312,16 +382,7 @@ namespace transcriber.TranscribeAgent
 
         
 
-        private User RecognizeUser(AudioSegment segment)
-        {
-            return new User("USER_" + new System.Random().Next(), "TEST@EXAMPLE.COM", new System.Guid());
-        }
-
-
-
-
-
-
+              
 
     }
 

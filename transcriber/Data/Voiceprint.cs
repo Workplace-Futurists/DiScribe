@@ -10,21 +10,29 @@ namespace transcriber.Data
     /// </summary>
     public class Voiceprint : DataElement
     {
-        public Voiceprint(byte[] audioSample, DateTime timeStamp = new DateTime(), int printID = 0, int userID = 0)
+        public Voiceprint(byte[] audioSample, System.Guid userGUID, User associatedUser = null, DateTime timeStamp = new DateTime())
         {
             AudioSample = audioSample;
             TimeStamp = timeStamp;
-            PrintID = printID;
-            UserID = UserID;
+          
+            AssociatedUser = associatedUser;
+            UserGUID = userGUID;
         }
 
             
+        public User AssociatedUser { get; set; }
+
+
         public byte [] AudioSample { get; set; }
+
 
         public DateTime TimeStamp { get; set; }
 
-        public int PrintID { get; private set; }
+        /// <summary>
+        /// Profile ID of this user obtained from SpeakerRecognition API profile enrollment.
+        /// </summary>
+        public System.Guid UserGUID { get; private set; }
 
-        public int UserID { get; private set; }
+     
     }
 }

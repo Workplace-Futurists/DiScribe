@@ -16,12 +16,13 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(SpeechConfig config, FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo meetingMinutes)
+        public TranscribeController(SpeechConfig speechConfig, string speakerIDKey, FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo meetingMinutes)
         {
             MeetingRecording = meetingRecording;
-            Voiceprints = voiceprints;
             MeetingMinutes = meetingMinutes;
-            Config = config;
+
+            Transcriber = new SpeechTranscriber(speechConfig, speakerIDKey, meetingRecording, meetingMinutes, voiceprints);
+
         }
 
         /// <summary>
@@ -29,18 +30,13 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         public FileInfo MeetingRecording { get; set; }
 
-        /// <summary>
-        /// List of voiceprints for users involved in this meeting.
-        /// </summary>
-        public List<Voiceprint> Voiceprints{ get; set;}
-
-       
-        SpeechConfig Config { get; set; }
-
+        public SpeechTranscriber Transcriber {get; private set;}
+        
         /// <summary>
         /// File details for text output file of meeting minutes.
         /// </summary>
         public FileInfo MeetingMinutes { get; private set; }
+
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
@@ -51,8 +47,7 @@ namespace transcriber.TranscribeAgent
         {
             try
             {
-                var transcriber = new SpeechTranscriber(Config, MeetingRecording, MeetingMinutes, Voiceprints);
-                transcriber.CreateTranscription().Wait();                 //Wait synchronously for transcript to be finished and written to minutes file.
+               Transcriber.CreateTranscription().Wait();                 //Wait synchronously for transcript to be finished and written to minutes file.
                            
             } catch (Exception transcribeEx)
               {
