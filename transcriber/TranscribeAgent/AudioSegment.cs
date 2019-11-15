@@ -16,6 +16,7 @@ namespace transcriber.TranscribeAgent
             AudioStream = audioStream;
             StartOffset = startOffset;
             EndOffset = endOffset;
+            
         }
 
 
