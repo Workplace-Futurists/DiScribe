@@ -5,20 +5,33 @@ using transcriber.Data;
 
 namespace transcriber.TranscribeAgent
 {
-    class TranscriptionOutput : IComparable
+    public class TranscriptionOutput : IComparable
     {
-        public TranscriptionOutput(string text, User speaker, int startOffset)
+        public TranscriptionOutput(string text, Boolean transcriptionSuccess, AudioSegment segment, User speaker = null)
         {
             Text = text;
+            StartOffset = (int)segment.StartOffset;
+            EndOffset = (int)segment.EndOffset;
+            TranscriptionSuccess = transcriptionSuccess;
+            Segment = segment;
             Speaker = speaker;
-            StartOffset = startOffset;
         }
+
+        
 
         public string Text { get; set; }
 
+        public long StartOffset { get; set; }
+
+        public long EndOffset { get; set; }
+
+        public AudioSegment Segment { get; set; }
+
         public User Speaker { get; set; }
 
-        public int StartOffset { get; set; }
+        public Boolean TranscriptionSuccess { get; set; }
+
+        
 
         public int CompareTo(object obj)
         {
@@ -27,7 +40,7 @@ namespace transcriber.TranscribeAgent
 
         public override string ToString()
         {
-            return Speaker.Name + "\t" + formatTime(StartOffset) + "\t" + Text;
+            return Speaker.Name + "\t" + FormatTime(StartOffset) + "\t" + Text;
         }
 
         /// <summary>
@@ -35,11 +48,11 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="offsetMS"></param>
         /// <returns></returns>
-        public static string formatTime(int offsetMS)
+        public static string FormatTime(long offsetMS)
         {
-            int hours = offsetMS / 3600000;
-            int minutes = (offsetMS / 6000) % 60;
-            int seconds = (offsetMS / 1000) % 60;
+            long hours = offsetMS / 3600000;
+            long minutes = (offsetMS / 6000) % 60;
+            long seconds = (offsetMS / 1000) % 60;
             
             return $"{hours}:{minutes}:{seconds}";
         }

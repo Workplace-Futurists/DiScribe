@@ -7,7 +7,7 @@ using Microsoft.CognitiveServices.Speech;
 
 namespace transcriber.TranscribeAgent
 {
-    class TranscribeController
+    public class TranscribeController
     {
         /// <summary>
         /// Presents an interface to the speaker-recognition based transcription functionality.
@@ -16,11 +16,11 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(SpeechConfig config, FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo outFile)
+        public TranscribeController(SpeechConfig config, FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo meetingMinutes)
         {
             MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
-            OutFile = outFile;
+            MeetingMinutes = meetingMinutes;
             Config = config;
         }
 
@@ -34,8 +34,7 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         public List<Voiceprint> Voiceprints{ get; set;}
 
-        public FileInfo OutFile { get; set; }
-
+       
         SpeechConfig Config { get; set; }
 
         /// <summary>
@@ -50,22 +49,9 @@ namespace transcriber.TranscribeAgent
         /// <returns>A FileInfo instance holding information about the transcript file that was created.</returns>
         public Boolean DoTranscription()
         {
-            AudioFileSplitter splitter = new AudioFileSplitter(Voiceprints, MeetingRecording);
-            SortedList<AudioSegment, AudioSegment> audioSegments;
             try
             {
-                //Split audio using speaker recognition. List of AudioSegments is sorted by timestamp
-                audioSegments = splitter.SplitAudio();
-                            
-            } catch(Exception splitEx)
-              {
-                  Console.Error.WriteLine("Splitting meeting audio failed. \n" + splitEx.Message);
-                  return false;
-              }
-
-            try
-            {
-                var transcriber = new SpeechTranscriber(Config, audioSegments, OutFile);
+                var transcriber = new SpeechTranscriber(Config, MeetingRecording, MeetingMinutes, Voiceprints);
                 transcriber.CreateTranscription().Wait();                 //Wait synchronously for transcript to be finished and written to minutes file.
                            
             } catch (Exception transcribeEx)
