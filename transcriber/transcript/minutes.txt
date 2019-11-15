@@ -1,44 +1,18 @@
-USER_2068116224	0:0:0	OK, well. Good morning, everyone. Thank you very much for being here on time. We've got a lot to do
-today to so let's get started now everyone scare apart from Jaun in facilities. But we have apologies from him as everyone
-got a copy of the agenda.
+USER_420226587	0:0:0	OK, well. Good morning, everyone. Thank you very much for being here on time. We've got a lot to do
 
 
-USER_1762579791	0:41:8	Good OK can I draw your attention to item 4? Where it says presentation of online survey results presentation
-is going to be given by Miss Patricia Reyes, who is a representative of the research company. We contracted to carry out
-the work in this race will arrive at 11:30. So I plan to break at about 11:15 to give her time to set up it may also mean
-that we need to interrupt.
+USER_147450169	0:2:15	As everyone got a copy of the agenda.Good.
+
+USER_39614096	0:3:21	Call your attention to item 4, where it says presentation of online survey results presentation is going
+to be given by Miss Patricia Reyes, who is a representative of the research company. We contracted to carry out the work
+in this race will arrive at 11:30. So I plan to break at about 11:15 to give her time to set up it may also mean that we
 
 
-USER_1136216832	0:21:8	The first few are gender items, but we'll come back to those an Darcy. I'd like to leave a little
-bit of time under any other business.
+USER_1166248556	0:10:0	To discuss whatever might come out of the presentation.OK, so.Item one is relocation and plans for
 
 
-USER_1306134730	0:25:32	No.
-
-USER_15422070	0:36:36	Maya I'm aware that flexible working hours has a particular impact on some of your team do you have
-any thoughts on that?
-
-
-USER_1660921865	0:24:24	Well, from my point of view? What Paul is proposing sounds fine. I am a bit concerned about working
+USER_850837620	0:20:0	No.Maya I'm aware that flexible working hours has a particular impact on some of your team do you have
+any thoughts on that?Well, from my point of view? What Paul is proposing sounds fine. I am a bit concerned about working
 with the system of core hours and then flexible hours. But I think we all need time to read through pause proposal in more
-detail before discussing it any further.
 
-
-USER_124157577	0:54:28	OK, that sounds reasonable and what do other people think and you agree with my are that we need to
-look through the proposal in more detail 1st.
-
-
-USER_591330000	0:53:20	Yes, OK well, I'm sure we can return to it at next month's meeting.
-
-USER_282983517	1:6:40	NOMATCH: Speech could not be recognized.
-
-USER_1837449680	1:26:40	NOMATCH: Speech could not be recognized.
-
-USER_49090265	1:46:40	NOMATCH: Speech could not be recognized.
-
-USER_1018929435	1:6:40	NOMATCH: Speech could not be recognized.
-
-USER_1858238982	1:26:40	NOMATCH: Speech could not be recognized.
-
-USER_605110273	1:46:40	NOMATCH: Speech could not be recognized.
 

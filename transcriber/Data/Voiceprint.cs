@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace transcriber.Data
@@ -10,20 +11,30 @@ namespace transcriber.Data
     /// </summary>
     public class Voiceprint : DataElement
     {
-        public Voiceprint(byte[] audioSample, System.Guid userGUID, User associatedUser = null, DateTime timeStamp = new DateTime())
+        public Voiceprint(byte[] audioSample, User associatedUser, Guid userGUID = new Guid(), DateTime timeStamp = new DateTime())
         {
-            AudioSample = audioSample;
             TimeStamp = timeStamp;
           
             AssociatedUser = associatedUser;
             UserGUID = userGUID;
+
+            AudioStream = new MemoryStream(audioSample);
         }
 
-            
+        public Voiceprint(MemoryStream stream, User associatedUser, Guid userGUID = new Guid(), DateTime timeStamp = new DateTime())
+        {
+            AudioStream = stream;
+            AssociatedUser = associatedUser;
+            UserGUID = userGUID;
+
+            TimeStamp = timeStamp;
+        }
+
+
         public User AssociatedUser { get; set; }
 
 
-        public byte [] AudioSample { get; set; }
+        public MemoryStream AudioStream { get; set; }
 
 
         public DateTime TimeStamp { get; set; }
@@ -31,7 +42,7 @@ namespace transcriber.Data
         /// <summary>
         /// Profile ID of this user obtained from SpeakerRecognition API profile enrollment.
         /// </summary>
-        public System.Guid UserGUID { get; private set; }
+        public System.Guid UserGUID { get; set; }
 
      
     }

@@ -27,17 +27,27 @@ namespace transcriber.TranscribeAgent
             FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
             FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
 
+            //Make two test audio samples for user 1 and user 2. Note that audio file header data must
+            //be present for SpeakerRecognition API (not for SpeechRecognition API).
+            List<MemoryStream> userAudioSampleStream =  MakeTestUserVoiceSamples(testRecording);
+
+            /*Set result with List<Voiceprint> containing both voiceprint objects */
+            User user1 = new User("Tom", "Tom@example.com", 1);
+            User user2 = new User("Maya", "Maya@example.com", 2);
+
 
             /////For testing, enroll 2 users to get speaker profiles directly from the audio.
-            var enrollTask = EnrollUsers(speakerIDKey, testRecording);
+            List<Voiceprint> voiceprints = new List<Voiceprint>()
+            {
+                new Voiceprint(userAudioSampleStream[0], user1),
+                new Voiceprint(userAudioSampleStream[1], user2)
+            };
+            var enrollTask = EnrollUsers(speakerIDKey, voiceprints);
 
-            enrollTask.Wait();
-
-            var enrollResult = enrollTask.Result;                               //List of enrolled Voiceprints
-                                   
+            enrollTask.Wait();                                               //Attempt enrolling the 2 users
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
-            var initData = new TranscriptionInitData(testRecording, enrollResult, "");
+            var initData = new TranscriptionInitData(testRecording, voiceprints, "");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(speechConfig, speakerIDKey, initData.MeetingRecording, initData.Voiceprints, meetingMinutes);
@@ -60,7 +70,6 @@ namespace transcriber.TranscribeAgent
 
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();
-
         }
 
 
@@ -71,9 +80,42 @@ namespace transcriber.TranscribeAgent
         /// <param name="speakerIDKey"></param>
         /// <param name="audioFile"></param>
         /// <returns></returns>
-        public static async Task<List<Voiceprint>> EnrollUsers(string speakerIDKey, FileInfo audioFile, string enrollmentLocale = "en-us")
+        public static async Task EnrollUsers(string speakerIDKey, List<Voiceprint> voiceprints, string enrollmentLocale = "en-us")
         {
-            TaskCompletionSource<List<Voiceprint>> taskCompletion = new TaskCompletionSource<List<Voiceprint>>();
+            /*Create REST client for enrolling users */
+            SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKey);
+
+            List<Task> taskList = new List<Task>();
+
+            /*Make profiles for each user*/
+            var profileTask1 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
+            var profileTask2 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
+
+
+            taskList.Add(profileTask1);
+            taskList.Add(profileTask2);        
+            await Task.WhenAll(taskList.ToArray());                                      //Asychronously wait for profiles to be created.
+
+            /*Get and set the GUID for each profile in the voiceprint objects*/
+            voiceprints[0].UserGUID = profileTask1.Result.ProfileId;
+            voiceprints[1].UserGUID = profileTask1.Result.ProfileId;
+
+
+            taskList.Add(enrollmentClient.EnrollAsync(voiceprints[0].AudioStream, voiceprints[0].UserGUID, true));
+            taskList.Add(enrollmentClient.EnrollAsync(voiceprints[1].AudioStream, voiceprints[1].UserGUID, true));
+            await Task.WhenAll(taskList.ToArray());                                       //Asynchronously wait for all speakers to be enrolled
+            
+
+        }
+
+
+        /// <summary>
+        /// Method for test purposes to get voice samples from a WAV file
+        /// </summary>
+        /// <param name="audioFile"></param>
+        /// <returns></returns>
+        private static List<MemoryStream> MakeTestUserVoiceSamples(FileInfo audioFile)
+        {
             AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
             List<Voiceprint> result = new List<Voiceprint>();
 
@@ -89,45 +131,13 @@ namespace transcriber.TranscribeAgent
             byte[] user2Audio = splitter.SplitAudioGetBuf(user2StartOffset, user2EndOffset);
 
 
-            /*Get memory streams for section of audio containing each user */
-            MemoryStream user1Stream = new MemoryStream(AudioFileSplitter.writeWavToBuf(user1Audio));
-            MemoryStream user2Stream = new MemoryStream(AudioFileSplitter.writeWavToBuf(user2Audio));
-
-            /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKey);
-
-            List<Task> taskList = new List<Task>();
+            /*Get memory streams for section of audio containing each user where audio stream begins
+             with WAV file RIFF header*/
+            return new List<MemoryStream>() { new MemoryStream(AudioFileSplitter.writeWavToBuf(user1Audio)),
+                                                new MemoryStream(AudioFileSplitter.writeWavToBuf(user2Audio)) };
 
 
-            /*Make profiles for each user*/
-            var profileTask1 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
-            var profileTask2 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
 
-
-            taskList.Add(profileTask1);
-            taskList.Add(profileTask2);        
-            await Task.WhenAll(taskList.ToArray());                                      //Asychronously wait for profiles to be created.
-
-            /*Get GUID for each profile */
-            Guid user1GUID = profileTask1.Result.ProfileId;
-            Guid user2GUID = profileTask2.Result.ProfileId;
-
-            taskList.Clear();
-
-            taskList.Add(enrollmentClient.EnrollAsync(user1Stream, user1GUID, true));
-            taskList.Add(enrollmentClient.EnrollAsync(user2Stream, user2GUID, true));
-            await Task.WhenAll(taskList.ToArray());                                       //Asynchronously wait for all speakers to be enrolled
-
-
-            /*Set result with List<Voiceprint> containing both voiceprint objects */
-            User user1 = new User("Tom", "Tom@example.com", 1);
-            User user2 = new User("Maya", "Maya@example.com", 2);
-
-            result.Add(new Voiceprint(user1Audio, user1GUID, user1));
-            result.Add(new Voiceprint(user2Audio, user2GUID, user2));
-            taskCompletion.SetResult(result);
-
-            return taskCompletion.Task.Result;
 
         }
 
