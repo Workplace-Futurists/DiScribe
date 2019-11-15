@@ -123,7 +123,7 @@ namespace transcriber.TranscribeAgent
             ulong user1StartOffset = 30 * 1000;
             ulong user1EndOffset = 60 * 1000;
             ulong user2StartOffset = 74 * 1000;
-            ulong user2EndOffset = 88 * 1000;
+            ulong user2EndOffset = 120 * 1000;
 
 
             /*Get byte[] for both users */
