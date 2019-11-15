@@ -19,7 +19,7 @@ namespace transcriber.TranscribeAgent
             var config = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
             FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeetingShorter.wav");
-            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
+            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call
              * or pipe (if IPC is used)*/
