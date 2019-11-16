@@ -18,7 +18,7 @@ namespace transcriber.TranscribeAgent
         {
             /* Creates an instance of a speech config with specified subscription key and service region
                for Azure Speech Recognition service */
-            
+
             var speechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
             /*Subscription key for Azure SpeakerRecognition service. */
@@ -29,7 +29,7 @@ namespace transcriber.TranscribeAgent
 
             //Make two test audio samples for user 1 and user 2. Note that audio file header data must
             //be present for SpeakerRecognition API (not for SpeechRecognition API).
-            List<MemoryStream> userAudioSampleStream =  MakeTestUserVoiceSamples(testRecording);
+            List<MemoryStream> userAudioSampleStream = MakeTestUserVoiceSamples(testRecording);
 
             /*Set result with List<Voiceprint> containing both voiceprint objects */
             User user1 = new User("Tom", "Tom@example.com", 1);
@@ -44,15 +44,13 @@ namespace transcriber.TranscribeAgent
             };
             var enrollTask = EnrollUsers(speakerIDKey, voiceprints);
 
-            enrollTask.Wait();                                               //Attempt enrolling the 2 users
+            enrollTask.Wait();  //Attempt enrolling the 2 users
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(speechConfig, speakerIDKey, initData.MeetingRecording, initData.Voiceprints, meetingMinutes);
-
-                                                               
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             Console.WriteLine("Creating transcript...");
@@ -65,13 +63,13 @@ namespace transcriber.TranscribeAgent
                 Console.WriteLine("\nTranscription completed");
 
                 string emailSubject = "Meeting minutes for " + DateTime.Now.ToLocalTime().ToString();
-                emailSent = controller.SendEmail(initData.TargetEmail, emailSubject);
+                var emailer = new TranscriptionEmailer("someone@ubc.ca", meetingMinutes);
+                emailSent = emailer.SendEmail(initData.TargetEmail, emailSubject);
             }
 
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();
         }
-
 
         /// <summary>
         /// Function which enrolls 2 users for testing purposes. In final system, enrollment will
@@ -91,23 +89,18 @@ namespace transcriber.TranscribeAgent
             var profileTask1 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
             var profileTask2 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
 
-
             taskList.Add(profileTask1);
-            taskList.Add(profileTask2);        
-            await Task.WhenAll(taskList.ToArray());                                      //Asychronously wait for profiles to be created.
+            taskList.Add(profileTask2);
+            await Task.WhenAll(taskList.ToArray()); //Asychronously wait for profiles to be created.
 
             /*Get and set the GUID for each profile in the voiceprint objects*/
             voiceprints[0].UserGUID = profileTask1.Result.ProfileId;
             voiceprints[1].UserGUID = profileTask1.Result.ProfileId;
 
-
             taskList.Add(enrollmentClient.EnrollAsync(voiceprints[0].AudioStream, voiceprints[0].UserGUID, true));
             taskList.Add(enrollmentClient.EnrollAsync(voiceprints[1].AudioStream, voiceprints[1].UserGUID, true));
-            await Task.WhenAll(taskList.ToArray());                                       //Asynchronously wait for all speakers to be enrolled
-            
-
+            await Task.WhenAll(taskList.ToArray()); //Asynchronously wait for all speakers to be enrolled
         }
-
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -130,17 +123,10 @@ namespace transcriber.TranscribeAgent
             byte[] user1Audio = splitter.SplitAudioGetBuf(user1StartOffset, user1EndOffset);
             byte[] user2Audio = splitter.SplitAudioGetBuf(user2StartOffset, user2EndOffset);
 
-
             /*Get memory streams for section of audio containing each user where audio stream begins
              with WAV file RIFF header*/
             return new List<MemoryStream>() { new MemoryStream(AudioFileSplitter.writeWavToBuf(user1Audio)),
                                                 new MemoryStream(AudioFileSplitter.writeWavToBuf(user2Audio)) };
-
-
-
-
         }
-
-
     }
 }

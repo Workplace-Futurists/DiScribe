@@ -16,13 +16,14 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(SpeechConfig speechConfig, string speakerIDKey, FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo meetingMinutes)
+        public TranscribeController(SpeechConfig speechConfig, string speakerIDKey,
+            FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo meetingMinutes)
         {
             MeetingRecording = meetingRecording;
             MeetingMinutes = meetingMinutes;
 
-            Transcriber = new SpeechTranscriber(speechConfig, speakerIDKey, meetingRecording, meetingMinutes, voiceprints);
-
+            Transcriber = new SpeechTranscriber(speechConfig, meetingRecording, meetingMinutes);
+            Recognizer = new Recognizer(meetingRecording, speakerIDKey, voiceprints);
         }
 
         /// <summary>
@@ -30,8 +31,10 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         public FileInfo MeetingRecording { get; set; }
 
-        public SpeechTranscriber Transcriber {get; private set;}
-        
+        public SpeechTranscriber Transcriber { get; private set; }
+
+        public Recognizer Recognizer { get; private set; }
+
         /// <summary>
         /// File details for text output file of meeting minutes.
         /// </summary>
@@ -47,23 +50,51 @@ namespace transcriber.TranscribeAgent
         {
             try
             {
-               Transcriber.CreateTranscription().Wait();                 //Wait synchronously for transcript to be finished and written to minutes file.
-                           
-            } catch (Exception transcribeEx)
-              {
-                  Console.Error.Write("Mission failed. No transcription could be created from audio segments. " + transcribeEx.Message);
-                  return false;
-              }
+                //Wait synchronously for transcript to be finished and written to minutes file.
+                Transcriber.CreateTranscription().Wait();
+                Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
+
+                /*Write transcription to text file */
+                WriteTranscriptionFile();
+            }
+            catch (Exception transcribeEx)
+            {
+                Console.Error.Write("Mission failed. No transcription could be created from audio segments. " + transcribeEx.Message);
+                return false;
+            }
 
             return true;
         }
 
-
-                     
-        public Boolean SendEmail(string targetEmail, string subject = "")
+        private void WriteTranscriptionFile(int lineLength = 120)
         {
+            StringBuilder output = new StringBuilder();
 
-            return false;
+            /*Iterate over the list of TranscrtiptionOutputs in order and add them to
+             * output that will be written to file.
+             * Order is by start offset. 
+             * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
+             * if width goes over limit of chars per line.
+             */
+            foreach (var curNode in Transcriber.TranscriptionOutputs)
+            {
+                string curSegmentText = curNode.Value.ToString();
+                if (curSegmentText.Length > lineLength)
+                {
+                    curSegmentText = Helper.WrapText(curSegmentText, lineLength);
+                }
+
+                output.AppendLine(curSegmentText + "\n");
+            }
+
+            /*Overwrite any existing MeetingMinutes file with the same name,
+             * else create file. Output results to text file.*/
+            using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(MeetingMinutes.FullName, false))
+            {
+                file.Write(output.ToString());
+            }
         }
+
     }
 }
