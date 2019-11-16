@@ -17,18 +17,12 @@ namespace transcriber.TranscribeAgent
 {
     public class Recognizer
     {
-        public Recognizer(FileInfo audioFile, string speakerIDKey, List<Voiceprint> voiceprints)
+        public Recognizer(TranscribeController controller)
         {
-            FileSplitter = new AudioFileSplitter(audioFile);
-            SpeakerIDKey = speakerIDKey;
-            Voiceprints = voiceprints;
+            Controller = controller;
         }
 
-        public AudioFileSplitter FileSplitter { get; private set; }
-
-        public String SpeakerIDKey { get; set; }
-
-        public List<Voiceprint> Voiceprints { get; set; }
+        private static TranscribeController Controller;
 
         /// <summary>
         /// Performs speaker recognition on TranscriberOutputs to set
@@ -41,14 +35,14 @@ namespace transcriber.TranscribeAgent
             var recognitionComplete = new TaskCompletionSource<int>();
 
             /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(SpeakerIDKey);
+            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(Controller.SpeakerIDKey);
 
             /*Dictionary for efficient voiceprint lookup */
             Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();
-            Guid[] userIDs = new Guid[Voiceprints.Count];
+            Guid[] userIDs = new Guid[Controller.Voiceprints.Count];
 
             /*Add all voiceprints to the dictionary*/
-            foreach (var voiceprint in Voiceprints)
+            foreach (var voiceprint in Controller.Voiceprints)
             {
                 voiceprintDictionary.Add(voiceprint.UserGUID, voiceprint);
             }
@@ -63,7 +57,7 @@ namespace transcriber.TranscribeAgent
             {
                 foreach (var curPhrase in TranscriptionOutputs)
                 {
-                    MemoryStream audioStream = FileSplitter.SplitAudioGetMemStream((ulong)curPhrase.Value.StartOffset, (ulong)curPhrase.Value.EndOffset);
+                    MemoryStream audioStream = Controller.FileSplitter.SplitAudioGetMemStream((ulong)curPhrase.Value.StartOffset, (ulong)curPhrase.Value.EndOffset);
                     Task<OperationLocation> idTask = idClient.IdentifyAsync(audioStream, userIDs, true);
 
                     await idTask;

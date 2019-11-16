@@ -24,15 +24,13 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     public class SpeechTranscriber
     {
-        public SpeechTranscriber(SpeechConfig config, FileInfo audioFile, FileInfo outFile)
+        public SpeechTranscriber(TranscribeController controller)
         {
-            FileSplitter = new AudioFileSplitter(audioFile);
-            MeetingMinutes = outFile;
-            Config = config;
+            Controller = controller;
             TranscriptionOutputs = new SortedList<long, TranscriptionOutput>();
         }
 
-        public AudioFileSplitter FileSplitter { get; private set; }
+        private static TranscribeController Controller;
 
         /// <summary>
         /// Outputs created by transcription. Represents sentences of speech.
@@ -41,20 +39,9 @@ namespace transcriber.TranscribeAgent
         public SortedList<long, TranscriptionOutput> TranscriptionOutputs { get; set; }
 
         /// <summary>
-        /// The meeting minutes text output file.
-        /// </summary>
-        public FileInfo MeetingMinutes { get; set; }
-
-        /// <summary>
-        /// Configuration for the Azure Cognitive Speech Services resource.
-        /// </summary>
-        public SpeechConfig Config { get; set; }
-
-        /// <summary>
         /// Lock object for synchronized access to transcription output collection.
         /// </summary>
         private static readonly object _lockObj = new object();
-
 
         /// <summary>
         /// The transcript contains speaker names,
@@ -94,12 +81,12 @@ namespace transcriber.TranscribeAgent
         private async Task RecognitionWithPullAudioStreamAsync()
         {
             var stopRecognition = new TaskCompletionSource<int>();
-            var entireAudio = FileSplitter.GetEntireAudio();
+            var entireAudio = Controller.FileSplitter.GetEntireAudio();
 
             using (var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream))
             {
                 // Creates a speech recognizer using audio stream input.
-                using (var recognizer = new SpeechRecognizer(Config, audioInput))
+                using (var recognizer = new SpeechRecognizer(Controller.Config, audioInput))
                 {
                     // Subscribes to events. Subscription is important, otherwise recognition events aren't handled.
                     recognizer.Recognizing += (s, e) =>
@@ -136,7 +123,7 @@ namespace transcriber.TranscribeAgent
                             long endOffset = startOffset + (long)e.Result.Duration.TotalMilliseconds;
 
                             /*Split the audio based on start and end offset of the identified phrase */
-                            AudioSegment segment = FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
+                            AudioSegment segment = Controller.FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
 
                             //CRITICAL section. Add the result to transcriptionOutputs wrapped in a TranscriptionOutput object.
                             lock (_lockObj)

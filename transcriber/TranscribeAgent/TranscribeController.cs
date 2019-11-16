@@ -19,27 +19,44 @@ namespace transcriber.TranscribeAgent
         public TranscribeController(SpeechConfig speechConfig, string speakerIDKey,
             FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo meetingMinutes)
         {
+            SpeechConfig = speechConfig;
+            SpeakerIDKey = speakerIDKey;
             MeetingRecording = meetingRecording;
+            Voiceprints = voiceprints;
             MeetingMinutes = meetingMinutes;
 
-            Transcriber = new SpeechTranscriber(speechConfig, meetingRecording, meetingMinutes);
-            Recognizer = new Recognizer(meetingRecording, speakerIDKey, voiceprints);
+            FileSplitter = new AudioFileSplitter(meetingRecording);
+
+            Transcriber = new SpeechTranscriber(this);
+            Recognizer = new Recognizer(this);
         }
+
+        public SpeechConfig SpeechConfig { get; set; }
 
         /// <summary>
         /// File details for audio file containing meeting recording.
         /// </summary>
         public FileInfo MeetingRecording { get; set; }
 
+        /// <summary>
+        /// The meeting minutes text output file.
+        /// </summary>
+        public FileInfo MeetingMinutes { get; set; }
+
+        public string SpeakerIDKey { get; set; }
+
+        public List<Voiceprint> Voiceprints { get; set; }
+
+        public AudioFileSplitter FileSplitter { get; private set; }
+
+        /// <summary>
+        /// Configuration for the Azure Cognitive Speech Services resource.
+        /// </summary>
+        public SpeechConfig Config { get; set; }
+
         public SpeechTranscriber Transcriber { get; private set; }
 
         public Recognizer Recognizer { get; private set; }
-
-        /// <summary>
-        /// File details for text output file of meeting minutes.
-        /// </summary>
-        public FileInfo MeetingMinutes { get; private set; }
-
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
