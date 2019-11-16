@@ -24,28 +24,21 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     public class SpeechTranscriber
     {
-        public SpeechTranscriber(SpeechConfig config, string SpeakerIDKey, FileInfo audioFile, FileInfo outFile, List<Voiceprint> voiceprints)
+        public SpeechTranscriber(SpeechConfig config, FileInfo audioFile, FileInfo outFile)
         {
             FileSplitter = new AudioFileSplitter(audioFile);
             MeetingMinutes = outFile;
             Config = config;
-            Voiceprints = voiceprints;
             TranscriptionOutputs = new SortedList<long, TranscriptionOutput>();
         }
 
-
-
         public AudioFileSplitter FileSplitter { get; private set; }
-
-        public List<Voiceprint> Voiceprints { get; set; }
-
-        public String SpeakerIDKey { get; set; }
 
         /// <summary>
         /// Outputs created by transcription. Represents sentences of speech.
         /// Includes data for transcription text and speaker.
         /// </summary>
-        SortedList<long, TranscriptionOutput> TranscriptionOutputs { get; set; }
+        public SortedList<long, TranscriptionOutput> TranscriptionOutputs { get; set; }
 
         /// <summary>
         /// The meeting minutes text output file.
@@ -72,24 +65,19 @@ namespace transcriber.TranscribeAgent
         /// speech around the end of the meeting is at the end of the file.</para>
         /// </summary>
         /// <returns></returns>
-        public async Task CreateTranscription(int lineLength = 120)
+        public async Task CreateTranscription()
         {
             /*Transcribe audio to create a set of TransciptionOutputs to represent sentences. 
              * with the speakers identified
              */
-            await MakeTranscriptionOutputs();       
+            await getTranscriptionOutputs();
 
             /*Task failed if no TranscriptionOutput was added to sharedList*/
             if (TranscriptionOutputs.Count == 0)
             {
                 throw new AggregateException(new List<Exception> { new Exception("Transcription failed. Empty result.") });
             }
-
-            /*Write transcription to text file */
-            WriteTranscriptionFile(lineLength);
-        
         }
-
 
         /// <summary>
         /// Creates a set of TranscriptionOutput objects which contain transcribed sentences
@@ -97,22 +85,16 @@ namespace transcriber.TranscribeAgent
         /// within each TranscriptionOutput.
         /// </summary>
         /// <returns>Task for transcription flow</returns>
-        private async Task MakeTranscriptionOutputs()
+        private async Task getTranscriptionOutputs()
         {
-           /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
+            /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
             await RecognitionWithPullAudioStreamAsync();
-
-            /*Do speaker recognition concurrently for each TranscriptionOutput. */
-            await DoSpeakerRecognition();
-
         }
-
-
 
         private async Task RecognitionWithPullAudioStreamAsync()
         {
-           var stopRecognition = new TaskCompletionSource<int>();
-           var entireAudio = FileSplitter.GetEntireAudio();
+            var stopRecognition = new TaskCompletionSource<int>();
+            var entireAudio = FileSplitter.GetEntireAudio();
 
             using (var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream))
             {
@@ -122,7 +104,7 @@ namespace transcriber.TranscribeAgent
                     // Subscribes to events. Subscription is important, otherwise recognition events aren't handled.
                     recognizer.Recognizing += (s, e) =>
                     {
-                            //
+                        //
                     };
                     recognizer.Recognized += (s, e) =>
                     {
@@ -130,7 +112,7 @@ namespace transcriber.TranscribeAgent
 
                         Boolean resultAvailable = false;
                         Boolean success = false;
-                        
+
 
                         if (e.Result.Reason == ResultReason.RecognizedSpeech)
                         {
@@ -150,7 +132,7 @@ namespace transcriber.TranscribeAgent
                         {
                             /*Start and end offsets in milliseconds from 0, which is beginning of audio. Note
                              * conversion from ticks to milliseconds.*/
-                            long startOffset = e.Result.OffsetInTicks/10000L;          
+                            long startOffset = e.Result.OffsetInTicks / 10000L;
                             long endOffset = startOffset + (long)e.Result.Duration.TotalMilliseconds;
 
                             /*Split the audio based on start and end offset of the identified phrase */
@@ -186,7 +168,7 @@ namespace transcriber.TranscribeAgent
 
                     recognizer.SessionStopped += (s, e) =>
                     {
-                        Console.WriteLine("\nSession stopped event."); 
+                        Console.WriteLine("\nSession stopped event.");
                         Console.WriteLine("\nStop recognition.");
                         stopRecognition.TrySetResult(0);
                     };
@@ -206,185 +188,5 @@ namespace transcriber.TranscribeAgent
                 }
             }
         }
-
-
-        /// <summary>
-        /// Performs speaker recognition on TranscriberOutputs to set
-        /// the Speaker property.
-        /// set set their User property representing the speaker.
-        /// </summary>
-        /// <param name="transcription"></param>
-        private async Task DoSpeakerRecognition()
-        {
-            var recognitionComplete = new TaskCompletionSource<int>();
-
-            /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(SpeakerIDKey);
-
-            /*Dictionary for efficient voiceprint lookup */
-            Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();
-            Guid[] userIDs = new Guid[Voiceprints.Count];
-
-            /*Add all voiceprints to the dictionary*/
-            foreach (var voiceprint in Voiceprints)
-            {
-                voiceprintDictionary.Add(voiceprint.UserGUID, voiceprint);
-            }
-
-            voiceprintDictionary.Keys.CopyTo(userIDs, 0);
-
-
-            /*Iterate over each phrase and attempt to identify the user.
-             Passes the audio data as a stream and the user GUID associated with the
-             Azure SpeakerRecogniztion API profile to the API via the IdentifyAsync() method.*/
-            try
-            {
-                foreach (var curPhrase in TranscriptionOutputs)
-                {
-                    MemoryStream audioStream = FileSplitter.SplitAudioGetMemStream((ulong)curPhrase.Value.StartOffset, (ulong)curPhrase.Value.EndOffset);
-                    Task<OperationLocation> idTask = idClient.IdentifyAsync(audioStream, userIDs, true);
-
-                    await idTask;
-
-                    var resultLoc = idTask.Result;
-
-                    /*Continue to check task status until it is completed */
-                    Task<IdentificationOperation> idOutcomeCheck;
-                    Boolean done = false;
-                    do
-                    {
-                        idOutcomeCheck = idClient.CheckIdentificationStatusAsync(resultLoc);
-
-                        await idOutcomeCheck;
-
-                        done = (idOutcomeCheck.Result.Status == Status.Succeeded || idOutcomeCheck.Result.Status == Status.Failed);
-                    } while (!done);
-
-                    Guid profileID = idOutcomeCheck.Result.ProcessingResult.IdentifiedProfileId;           //Get profile ID for this identification.
-
-                    
-                    /*No user could be recognized */
-                    if (idOutcomeCheck.Result.Status == Status.Succeeded 
-                        && profileID.ToString() == "00000000-0000-0000-0000-000000000000") 
-                    {
-                        curPhrase.Value.Speaker = new User("Not recognized", "", -1);
-                    }
-
-                    else if (idOutcomeCheck.Result.Status == Status.Succeeded)
-                    {
-                        curPhrase.Value.Speaker = voiceprintDictionary[profileID].AssociatedUser;
-                    }
-
-                    else
-                    {
-                        Console.Error.WriteLine("Recognition operation failed");
-                    }
-
-                }
-
-            } catch (AggregateException ex)
-            {
-                Console.Error.WriteLine("Id failed: " + ex.Message);
-            }
-
-                                                  
-
-            recognitionComplete.SetResult(0);
-
-            
-            
-        }
-
-
-
-        private void WriteTranscriptionFile(int lineLength = 120)
-        {
-            StringBuilder output = new StringBuilder();
-
-            /*Iterate over the list of TranscrtiptionOutputs in order and add them to
-             * output that will be written to file.
-             * Order is by start offset. 
-             * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
-             * if width goes over limit of chars per line.
-             */
-            foreach (var curNode in TranscriptionOutputs)
-            {
-                string curSegmentText = curNode.Value.ToString();
-                if (curSegmentText.Length > lineLength)
-                {
-                    curSegmentText = WrapText(curSegmentText, lineLength);
-                }
-
-                output.AppendLine(curSegmentText + "\n");
-
-            }
-
-            /*Overwrite any existing MeetingMinutes file with the same name,
-             * else create file. Output results to text file.*/
-            using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(MeetingMinutes.FullName, false))
-            {
-                file.Write(output.ToString());
-            }
-        }
-
-
-
-
-        private static string WrapText(string text, int lineLength)
-        {
-            if (text.Length < lineLength)
-                return text;
-
-            StringBuilder outcome = new StringBuilder();
-
-            int i;
-            int startingIndex = 0;
-            int lastSplitEnd = 0;
-            Boolean savedLastLine = false;
-
-
-            for (i = lineLength; i < text.Length; i += lineLength)
-            {
-                Boolean foundSpace = false;
-                startingIndex = i;                          //Starting index for this line.
-
-                while (i < text.Length && !foundSpace)
-                {
-                    if (text[i] == ' ')                        //Find a space and split there
-                    {
-                        foundSpace = true;
-                        outcome.AppendLine(text.Substring(startingIndex-lineLength, lineLength + (i-startingIndex)));
-                    }
-
-                    i++;
-                }
-
-                /*If we never found a space before reaching end of text, append line anyway,
-                 * otherwise it will be lost.*/
-                if (!foundSpace)
-                {
-                    outcome.AppendLine(text.Substring(startingIndex, text.Length - startingIndex));
-                    savedLastLine = true;
-                }
-
-                lastSplitEnd = i;
-            }
-
-            /*Ensure that remaining characters are also appended */
-            if (!savedLastLine && text.Length % lineLength != 0)
-            {
-                outcome.AppendLine(text.Substring(lastSplitEnd, text.Length - lastSplitEnd));
-            }
-
-            return outcome.ToString();
-       }
-
-        
-
-              
-
     }
-
-    
 }
