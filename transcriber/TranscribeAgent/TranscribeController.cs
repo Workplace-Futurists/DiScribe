@@ -17,13 +17,12 @@ namespace transcriber.TranscribeAgent
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
         public TranscribeController(SpeechConfig speechConfig, string speakerIDKey,
-            FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo meetingMinutes)
+            FileInfo meetingRecording, List<Voiceprint> voiceprints)
         {
             SpeechConfig = speechConfig;
             SpeakerIDKey = speakerIDKey;
             MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
-            MeetingMinutes = meetingMinutes;
 
             FileSplitter = new AudioFileSplitter(meetingRecording);
 
@@ -37,11 +36,6 @@ namespace transcriber.TranscribeAgent
         /// File details for audio file containing meeting recording.
         /// </summary>
         public FileInfo MeetingRecording { get; set; }
-
-        /// <summary>
-        /// The meeting minutes text output file.
-        /// </summary>
-        public FileInfo MeetingMinutes { get; set; }
 
         public string SpeakerIDKey { get; set; }
 
@@ -70,9 +64,6 @@ namespace transcriber.TranscribeAgent
                 //Wait synchronously for transcript to be finished and written to minutes file.
                 Transcriber.CreateTranscription().Wait();
                 Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
-
-                /*Write transcription to text file */
-                WriteTranscriptionFile();
             }
             catch (Exception transcribeEx)
             {
@@ -83,7 +74,7 @@ namespace transcriber.TranscribeAgent
             return true;
         }
 
-        private void WriteTranscriptionFile(int lineLength = 120)
+        public bool WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
         {
             StringBuilder output = new StringBuilder();
 
@@ -93,24 +84,33 @@ namespace transcriber.TranscribeAgent
              * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
              * if width goes over limit of chars per line.
              */
-            foreach (var curNode in Transcriber.TranscriptionOutputs)
+            try
             {
-                string curSegmentText = curNode.Value.ToString();
-                if (curSegmentText.Length > lineLength)
+                foreach (var curNode in Transcriber.TranscriptionOutputs)
                 {
-                    curSegmentText = Helper.WrapText(curSegmentText, lineLength);
+                    string curSegmentText = curNode.Value.ToString();
+                    if (curSegmentText.Length > lineLength)
+                    {
+                        curSegmentText = Helper.WrapText(curSegmentText, lineLength);
+                    }
+
+                    output.AppendLine(curSegmentText + "\n");
                 }
 
-                output.AppendLine(curSegmentText + "\n");
+                /*Overwrite any existing MeetingMinutes file with the same name,
+                 * else create file. Output results to text file.*/
+                using (System.IO.StreamWriter file =
+                    new System.IO.StreamWriter(meetingMinutes.FullName, false))
+                {
+                    file.Write(output.ToString());
+                }
             }
-
-            /*Overwrite any existing MeetingMinutes file with the same name,
-             * else create file. Output results to text file.*/
-            using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(MeetingMinutes.FullName, false))
+            catch (Exception WriteException)
             {
-                file.Write(output.ToString());
+                Console.Error.Write("Error occurred during Write" + WriteException.Message);
+                return false;
             }
+            return true;
         }
 
     }
