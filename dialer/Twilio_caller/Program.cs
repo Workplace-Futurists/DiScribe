@@ -29,10 +29,12 @@ namespace twilio_caller
 
             // Check for required settings
             if (string.IsNullOrEmpty(appConfig["appId"]) ||
-            string.IsNullOrEmpty(appConfig["username"]) ||
-            string.IsNullOrEmpty(appConfig["password"]) ||
-                // Make sure there's at least one value in the scopes array
-                string.IsNullOrEmpty(appConfig["scopes:0"]))
+            string.IsNullOrEmpty(appConfig["mailUser"]) ||
+            string.IsNullOrEmpty(appConfig["mailPass"]) ||
+            // Make sure there's at least one value in the scopes array
+            string.IsNullOrEmpty(appConfig["scopes:0"]) ||
+            string.IsNullOrEmpty(appConfig["TWILIO_ACCOUNT_SID"]) ||
+            string.IsNullOrEmpty(appConfig["TWILIO_AUTH_TOKEN"]))
             {
                 return null;
             }
@@ -40,7 +42,7 @@ namespace twilio_caller
             return appConfig;
         }
 
-        static string FormatDateTimeTimeZone(Microsoft.Graph.DateTimeTimeZone value)
+        static string FormatDateTimeTimeZone(DateTimeTimeZone value)
         {
             // Get the timezone specified in the Graph value
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(value.TimeZone);
@@ -72,45 +74,39 @@ namespace twilio_caller
             return "";
         }
 
-        static async Task<Message> getEmailAsync(GraphServiceClient graph)
-        {
-            var messages = await graph.Me.Messages
-                .Request()
-                .Select(e => new {
-                    e.Body
-                    })
-                .GetAsync();
-            return messages[0];
-        }
-
         static void Main(string[] args)
         {
-            Console.WriteLine(".NET Core Graph Tutorial\n");
+            Console.WriteLine("DiScribe Dialer\n");
 
+            // loads appsettings file
             var appConfig = LoadAppSettings();
 
+            // Throws warning if no appsettings.json exists
             if (appConfig == null)
             {
-                Console.WriteLine("Missing or invalid PrivateSettings.json...exiting");
+                Console.WriteLine("Missing or invalid appsettings.json...exiting");
                 return;
             }
 
+            // assign appsetting values to variables
             var appId = appConfig["appId"];
-            string username = appConfig["username"];
-            SecureString password = new SecureString();
+            // outlook 
+            string mailUser = appConfig["mailUser"];
             // add password from privatesettings.json into secure string
-            foreach (char c in appConfig["password"])
+            SecureString mailPass = new SecureString();
+            foreach (char c in appConfig["mailPass"])
             {
-                 password.AppendChar(c);
+                mailPass.AppendChar(c);
             }
-            
-
+            // add azure ad app scopes and tenant id
             var scopes = appConfig.GetSection("scopes").Get<string[]>();
-            var tenantId = appConfig.GetSection("tenantId").Get<string>();
+            var tenantId = appConfig["tenantId"];
+            // add twilio authentication values
+            string twilioSid = appConfig["TWILIO_ACCOUNT_SID"];
+            string twilioAuthToken = appConfig["TWILIO_AUTH_TOKEN"];
 
             // Initialize the auth provider with values from appsettings.json
-            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, username, password, scopes,tenantId);
-
+            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, mailUser, mailPass, scopes,tenantId);
            
             // Request a token to sign in the user
             var accessToken = authProvider.GetAccessToken().Result;
@@ -121,94 +117,56 @@ namespace twilio_caller
             // Get signed in user
             var user = Graph.GraphHelper.GetMeAsync().Result;
             Console.WriteLine($"Welcome {user.DisplayName}!\n");
-
-            int choice = -1;
-
-            GraphServiceClient graphClient = new GraphServiceClient(authProvider);
-
-            var subscription = new Subscription
-            {
-                ChangeType = "created,updated",
-                NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/OutlookMessageWebhookCreator1?code=oCrAsapgfgt68ChnQMGBmkTsYOdRuEGT2KB3yogU0ML4rLgdgIWMkQ==",
-                Resource = "me/mailFolders('Inbox')/messages",
-                ExpirationDateTime = DateTimeOffset.Parse("2016-11-20T18:23:45.9356913Z"),
-                ClientState = "secretClientValue"
-            };
-
      
-                try
-                {
-                    Task.Run(() => graphClient.Subscriptions
-                    .Request()
-                    .AddAsync(subscription));
-
-                    // Start a task - calling an async function in this example
-                    Task<Message> callTask = Task.Run(() => getEmailAsync(graphClient));
-                    // Wait for it to finish
-                    callTask.Wait();
-                    // Get the result
-                    Message message = callTask.Result;
-                    // Write it our
-
-                    string accessCode;
-                    string meetingStart;
-                    Boolean pm = false;
-                    string parsedEmail = message.Body.Content;
-                    parsedEmail = WebUtility.HtmlDecode(parsedEmail);
-                    HtmlDocument htmldoc = new HtmlDocument();
-                    htmldoc.LoadHtml(parsedEmail);
-                    //htmldoc.DocumentNode.SelectNodes("//comment()")?.Foreach(c => c.Remove());
-                    parsedEmail = htmldoc.DocumentNode.InnerText;
-                    accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
-                    accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
-                    accessCode = accessCode.Replace(" ", "");
-                   
-                }
-                catch (Exception ex)  //Exceptions here or in the function will be caught here
-                {
-                    Console.WriteLine("Exception: " + ex.Message);
-                }
-                
-            
-
-           
-
-            while (choice != 0)
+            // Get meeting number in email inbox
+            try
             {
-                Console.WriteLine("Please choose one of the following options:");
-                Console.WriteLine("0. Exit");
-                Console.WriteLine("1. Display access token");
-                Console.WriteLine("2. List calendar events");
-                
-                try
-                {
-                    choice = int.Parse(Console.ReadLine());
-                }
-                catch (System.FormatException)
-                {
-                    // Set to invalid value
-                    choice = -1;
-                }
-
-                switch (choice)
-                {
-                    case 0:
-                        // Exit the program
-                        Console.WriteLine("Goodbye...");
-                        break;
-                    case 1:
-                        // Display access token
-                        Console.WriteLine($"Access token: {accessToken}\n");
-                        break;
-                    case 2:
-                        // List the calendar
-                        ListCalendarEvents();
-                        break;
-                    default:
-                        Console.WriteLine("Invalid choice! Please try again.");
-                        break;
-                }
+                string meetingNum = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
+                Console.WriteLine($"The meeting number retrieved was {meetingNum};");
             }
+            catch (Exception ex)  //Exceptions here or in the function will be caught here
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+            }
+            
+            //int choice = -1;
+
+            //while (choice != 0)
+            //{
+            //    Console.WriteLine("Please choose one of the following options:");
+            //    Console.WriteLine("0. Exit");
+            //    Console.WriteLine("1. Display access token");
+            //    Console.WriteLine("2. List calendar events");
+                
+            //    try
+            //    {
+            //        choice = int.Parse(Console.ReadLine());
+            //    }
+            //    catch (System.FormatException)
+            //    {
+            //        // Set to invalid value
+            //        choice = -1;
+            //    }
+
+            //    switch (choice)
+            //    {
+            //        case 0:
+            //            // Exit the program
+            //            Console.WriteLine("Goodbye...");
+            //            break;
+            //        case 1:
+            //            // Display access token
+            //            Console.WriteLine($"Access token: {accessToken}\n");
+            //            break;
+            //        case 2:
+            //            // List the calendar
+            //            ListCalendarEvents();
+            //            break;
+            //        default:
+            //            Console.WriteLine("Invalid choice! Please try again.");
+            //            break;
+            //    }
+            //}
         }
         
     }

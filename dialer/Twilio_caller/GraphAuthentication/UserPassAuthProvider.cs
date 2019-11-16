@@ -37,10 +37,7 @@ namespace twilio_caller.GraphAuthentication
 
         public async Task<string> GetAccessToken()
         {
-
-            _userAccount = await _msalClient.GetAccountAsync(_username);
-                
-            
+            _userAccount = await _msalClient.GetAccountAsync(_username);          
     
             // If there is no saved user account, the user must sign-in
             if (_userAccount == null)
@@ -48,15 +45,15 @@ namespace twilio_caller.GraphAuthentication
                 try
                 {
                     // Invoke device code flow so user can sign-in with a browser
-                    var result = await _msalClient.AcquireTokenByUsernamePassword(_scopes, _username, _password).ExecuteAsync();
+                    var result = await _msalClient.AcquireTokenByUsernamePassword(_scopes, _username, _password)
+                        .ExecuteAsync();
 
                     _userAccount = result.Account;
                     return result.AccessToken;
                 }
                 catch (Exception exception)
                 {
-                    var result = await _msalClient.AcquireTokenInteractive(_scopes)
-                                .ExecuteAsync();
+                    Console.WriteLine($"Error getting access token: {exception.Message}");
                     return result.AccessToken;
                 }
             }
