@@ -25,7 +25,7 @@ namespace transcriber.TranscribeAgent
             var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
             FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
-            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
+            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
             //Make two test audio samples for user 1 and user 2. Note that audio file header data must
             //be present for SpeakerRecognition API (not for SpeechRecognition API).
@@ -34,7 +34,6 @@ namespace transcriber.TranscribeAgent
             /*Set result with List<Voiceprint> containing both voiceprint objects */
             User user1 = new User("Tom", "Tom@example.com", 1);
             User user2 = new User("Maya", "Maya@example.com", 2);
-
 
             /////For testing, enroll 2 users to get speaker profiles directly from the audio.
             List<Voiceprint> voiceprints = new List<Voiceprint>()
@@ -50,12 +49,12 @@ namespace transcriber.TranscribeAgent
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(speechConfig, speakerIDKey, initData.MeetingRecording, initData.Voiceprints, meetingMinutes);
+            var controller = new TranscribeController(speechConfig, speakerIDKey, initData.MeetingRecording, initData.Voiceprints);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             Console.WriteLine("Creating transcript...");
             Boolean success = controller.DoTranscription();
-
+            success = success && controller.WriteTranscriptionFile(meetingMinutes);
             Boolean emailSent = false;
 
             if (success)
