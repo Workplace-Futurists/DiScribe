@@ -35,7 +35,7 @@ namespace transcriber.TranscribeAgent
             var recognitionComplete = new TaskCompletionSource<int>();
 
             /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(Controller.SpeakerIDKey);
+            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(Program.SpeakerIDKey);
 
             /*Dictionary for efficient voiceprint lookup */
             Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();

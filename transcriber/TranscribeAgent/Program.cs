@@ -13,17 +13,16 @@ namespace transcriber.TranscribeAgent
 {
     public class Program
     {
+        /* Creates an instance of a speech config with specified subscription key and service region
+         * for Azure Speech Recognition service
+         */
+        public static SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+
+        /* Subscription key for Azure SpeakerRecognition service. */
+        public static string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
         public static void Main(string[] args)
         {
-            /* Creates an instance of a speech config with specified subscription key and service region
-               for Azure Speech Recognition service */
-
-            var speechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
-
-            /*Subscription key for Azure SpeakerRecognition service. */
-            var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
-
             FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
             FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
@@ -41,7 +40,7 @@ namespace transcriber.TranscribeAgent
                 new Voiceprint(userAudioSampleStream[0], user1),
                 new Voiceprint(userAudioSampleStream[1], user2)
             };
-            var enrollTask = EnrollUsers(speakerIDKey, voiceprints);
+            var enrollTask = EnrollUsers(SpeakerIDKey, voiceprints);
 
             enrollTask.Wait();  //Attempt enrolling the 2 users
 
@@ -49,7 +48,7 @@ namespace transcriber.TranscribeAgent
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(speechConfig, speakerIDKey, initData.MeetingRecording, initData.Voiceprints);
+            var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             Console.WriteLine("Creating transcript...");
