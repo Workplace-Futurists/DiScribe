@@ -24,17 +24,16 @@ namespace transcriber.TranscribeAgent
             /*Subscription key for Azure SpeakerRecognition service. */
             var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
-            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
-            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
+            FileInfo testRecording = new FileInfo(@"../../../Record/interview.wav");
+            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
             //Make two test audio samples for user 1 and user 2. Note that audio file header data must
             //be present for SpeakerRecognition API (not for SpeechRecognition API).
             List<MemoryStream> userAudioSampleStream =  MakeTestUserVoiceSamples(testRecording);
 
             /*Set result with List<Voiceprint> containing both voiceprint objects */
-            User user1 = new User("Tom", "Tom@example.com", 1);
-            User user2 = new User("Maya", "Maya@example.com", 2);
-
+            User user1 = new User("Savannah", "Savannah@example.com", 1);
+            User user2 = new User("Nikki", "Nikki@example.com", 2);
 
             /////For testing, enroll 2 users to get speaker profiles directly from the audio.
             List<Voiceprint> voiceprints = new List<Voiceprint>()
@@ -120,11 +119,10 @@ namespace transcriber.TranscribeAgent
             List<Voiceprint> result = new List<Voiceprint>();
 
             /*Offsets identifying times */
-            ulong user1StartOffset = 30 * 1000;
-            ulong user1EndOffset = 60 * 1000;
-            ulong user2StartOffset = 74 * 1000;
-            ulong user2EndOffset = 120 * 1000;
-
+            ulong user1StartOffset = 0 * 1000;
+            ulong user1EndOffset = 15 * 1000;
+            ulong user2StartOffset = 32 * 1000;
+            ulong user2EndOffset = 47 * 1000;
 
             /*Get byte[] for both users */
             byte[] user1Audio = splitter.SplitAudioGetBuf(user1StartOffset, user1EndOffset);
