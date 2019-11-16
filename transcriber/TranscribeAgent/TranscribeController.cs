@@ -16,28 +16,14 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(SpeechConfig speechConfig, string speakerIDKey,
-            FileInfo meetingRecording, List<Voiceprint> voiceprints)
+        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints)
         {
-            SpeechConfig = speechConfig;
-            SpeakerIDKey = speakerIDKey;
-            MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
-
             FileSplitter = new AudioFileSplitter(meetingRecording);
 
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
         }
-
-        public SpeechConfig SpeechConfig { get; set; }
-
-        /// <summary>
-        /// File details for audio file containing meeting recording.
-        /// </summary>
-        public FileInfo MeetingRecording { get; set; }
-
-        public string SpeakerIDKey { get; set; }
 
         public List<Voiceprint> Voiceprints { get; set; }
 
