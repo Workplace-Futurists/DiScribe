@@ -119,5 +119,43 @@ namespace twilio_caller.Graph
                 Console.WriteLine($"Received error: {ex.Message}");
             }
         }
+
+        // public static async Task sendMail() {
+        //     var message = new Message {
+        //         Subject = "Meeting minutes",
+        //         Body = new ItemBody
+        //         {
+        //             ContentType = BodyType.Text,
+        //             Content = "This is the meeting minute for WebEx Meeting"
+        //         },
+        //         ToRecipients = new List<Recipient>()
+        //         {
+        //             new Recipient
+        //             {
+        //                 EmailAddress = new EmailAddress
+        //                 {
+        //                     Address = "seungwook.l95@gmail.com"
+        //                 }
+        //             }
+        //         },
+        //         CcRecipients = new List<Recipient>()
+        //         {
+        //             new Recipient
+        //             {
+        //                 EmailAddress = new EmailAddress
+        //                 {
+        //                     Address = "workplace-futurists@hotmail.com"
+        //                 }
+        //             }
+        //         }
+        //     };
+
+        //     var saveToSentItems = true;
+
+        //     await _graphClient.Me
+        //         .SendMail(message,saveToSentItems)
+        //         .Request()
+        //         .PostAsync();
+        // }
     }
 }
