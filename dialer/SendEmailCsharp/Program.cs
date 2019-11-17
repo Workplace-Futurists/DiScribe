@@ -29,9 +29,11 @@ namespace SendEmailCsharp
                 new EmailAddress("seungwook.l95@gmail.com", "Gmail"),
                 new EmailAddress("tmdenddl@hanmail.net", "Hanmail")
             };
-            var subject = "Sending Twilio SendGrid";
+
+            // TODO: Change the subject and content to match the meeting information
+            var subject = "WebEx Meeting Minutes (Workplace-Futurists)";
             var plainTextContent = "Testing";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+            var htmlContent = "<strong>Meeting information</strong>";
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
 
             var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from,
@@ -42,26 +44,6 @@ namespace SendEmailCsharp
                                                                        showAllRecipients
                                                                        );
 
-            
-            /*
-            // add attachments to the email
-            msg.AddAttachment("balance_001.pdf",
-                              "base64 encoded string",
-                              "application/pdf",
-                              "attachment",
-                              "Balance Sheet");
-
-            var attachment = new Attachment() {
-                Content = "base64 encoded string",
-                Type = "base64 encoded string",
-                Filename = "banner.png",
-                Disposition = "inline",
-                ContentId = "Banner"
-            };
-            
-            msg.AddAttachment(attachment);
-            */
-
             // Add attachment as txt/plain
             byte[] byteData = Encoding.ASCII.GetBytes("file.txt");
             msg.Attachments = new List<SendGrid.Helpers.Mail.Attachment>
@@ -69,6 +51,7 @@ namespace SendEmailCsharp
                 new SendGrid.Helpers.Mail.Attachment
                 {
                     Content = Convert.ToBase64String(byteData),
+                    // TODO: Must change the name to match the meeting minutes
                     Filename = "file.txt",
                     Type = "txt/plain",
                     Disposition = "attachment"
