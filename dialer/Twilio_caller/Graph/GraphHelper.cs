@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc;
 
 namespace twilio_caller.Graph
 {
@@ -93,14 +94,17 @@ namespace twilio_caller.Graph
             }
         }
 
-        public static async Task AddMailSubscription(Subscription sub)
+        public static async Task<Subscription> AddMailSubscription()
         {
             try
             {
                 _mailSubscription = new Subscription
                 {
                     ChangeType = "created,updated",
-                    NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/OutlookMessageWebhookCreator1?code=oCrAsapgfgt68ChnQMGBmkTsYOdRuEGT2KB3yogU0ML4rLgdgIWMkQ==",
+                    //NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/OutlookMessageWebhookCreator1?code=oCrAsapgfgt68ChnQMGBmkTsYOdRuEGT2KB3yogU0ML4rLgdgIWMkQ==",
+                    NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/subCreatorTest?code=h74tSOzgvTGtYZQ6pql0gEPxR1gnmDjL2bD67/hdqzho86y3vMa3Ww==",
+                    //NotificationUrl = "http://localhost:7071/api/CreateSubscription",
+
                     Resource = "me/mailFolders('Inbox')/messages",
                     // This is the max expiration datetime for a mail subscription
                     ExpirationDateTime = DateTime.Now.AddMinutes(MAX_SUB_EXPIRATION_MINS),
@@ -109,14 +113,16 @@ namespace twilio_caller.Graph
 
                 var response = await _graphClient.Subscriptions
                     .Request()
-                    .AddAsync(sub);
+                    .AddAsync(_mailSubscription);
 
                 Console.WriteLine($"Returned response from add subscription: {response}");
+                return response;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding subscription: {sub}");
+                Console.WriteLine($"Error adding subscription: {_mailSubscription}");
                 Console.WriteLine($"Received error: {ex.Message}");
+                return null;
             }
         }
     }

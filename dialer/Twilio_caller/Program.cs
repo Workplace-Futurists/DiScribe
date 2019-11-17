@@ -118,17 +118,30 @@ namespace twilio_caller
             var user = Graph.GraphHelper.GetMeAsync().Result;
             Console.WriteLine($"Welcome {user.DisplayName}!\n");
      
-            // Get meeting number in email inbox
+            //// Get meeting number in email inbox
+            //try
+            //{
+            //    string meetingNum = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
+            //    Console.WriteLine($"The meeting number retrieved was {meetingNum};");
+            //}
+            //catch (Exception ex)  //Exceptions here or in the function will be caught here
+            //{
+            //    Console.WriteLine("Exception: " + ex.Message);
+
+            //}
+            // Try making subscription
             try
             {
-                string meetingNum = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
-                Console.WriteLine($"The meeting number retrieved was {meetingNum};");
+                Subscription subscription = Graph.GraphHelper.AddMailSubscription().Result;
+                Console.WriteLine($"The subscriptioncreated, change type {subscription.ChangeType};");
+                Console.WriteLine($"The subscription is subscribed to {subscription.Resource};");
+                Console.WriteLine($"The subscription retrieved will expire at {subscription.ExpirationDateTime};");
             }
             catch (Exception ex)  //Exceptions here or in the function will be caught here
             {
                 Console.WriteLine("Exception: " + ex.Message);
             }
-            
+           
             //int choice = -1;
 
             //while (choice != 0)
