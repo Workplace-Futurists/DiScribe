@@ -24,9 +24,10 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     public class SpeechTranscriber
     {
-        public SpeechTranscriber(SpeechConfig config, string SpeakerIDKey, FileInfo audioFile, FileInfo outFile, List<Voiceprint> voiceprints)
+        public SpeechTranscriber(SpeechConfig config, string speakerSubKey, FileInfo audioFile, FileInfo outFile, List<Voiceprint> voiceprints)
         {
             FileSplitter = new AudioFileSplitter(audioFile);
+            SpeakerSubKey = speakerSubKey;
             MeetingMinutes = outFile;
             Config = config;
             Voiceprints = voiceprints;
@@ -34,12 +35,20 @@ namespace transcriber.TranscribeAgent
         }
 
 
-
+        /// <summary>
+        /// FileSplitter to allow access to specific segments of audio.
+        /// </summary>
         public AudioFileSplitter FileSplitter { get; private set; }
 
+        /// <summary>
+        /// Voiceprints for users in this transcription
+        /// </summary>
         public List<Voiceprint> Voiceprints { get; set; }
 
-        public String SpeakerIDKey { get; set; }
+        /// <summary>
+        /// Subscription Key for the speaker recogniton API
+        /// </summary>
+        public String SpeakerSubKey { get; set; }
 
         /// <summary>
         /// Outputs created by transcription. Represents sentences of speech.
@@ -146,6 +155,7 @@ namespace transcriber.TranscribeAgent
                             transcribedText = $"NOMATCH: Speech could not be recognized.";        //Write fail message to result
                         }
 
+                        
                         if (resultAvailable)
                         {
                             /*Start and end offsets in milliseconds from 0, which is beginning of audio. Note
@@ -153,15 +163,16 @@ namespace transcriber.TranscribeAgent
                             long startOffset = e.Result.OffsetInTicks/10000L;          
                             long endOffset = startOffset + (long)e.Result.Duration.TotalMilliseconds;
 
-                            /*Split the audio based on start and end offset of the identified phrase */
-                            AudioSegment segment = FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
-
+                            
                             //CRITICAL section. Add the result to transcriptionOutputs wrapped in a TranscriptionOutput object.
                             lock (_lockObj)
                             {
+                                /*Split the audio based on start and end offset of the identified phrase. Note access to shared stream. */
+                                AudioSegment segment = FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
                                 TranscriptionOutputs.Add(startOffset, new TranscriptionOutput(transcribedText, success, segment));
                             }//END CRITICAL section.
                         }
+                        
 
                     };
 
@@ -208,20 +219,25 @@ namespace transcriber.TranscribeAgent
         }
 
 
+
         /// <summary>
         /// Performs speaker recognition on TranscriberOutputs to set
         /// the Speaker property.
         /// set set their User property representing the speaker.
+        /// 
+        /// Note that apiDelayInterval allows the time between API requests in MS to be set.
+        /// It is set to 3000 by default
         /// </summary>
         /// <param name="transcription"></param>
-        private async Task DoSpeakerRecognition()
+        /// <param name="apiDelayInterval"></param>
+        private async Task DoSpeakerRecognition(int apiDelayInterval = 3000)
         {
             var recognitionComplete = new TaskCompletionSource<int>();
 
             /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(SpeakerIDKey);
+            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(SpeakerSubKey);
 
-            /*Dictionary for efficient voiceprint lookup */
+            /*Dictionary for efficient voiceprint lookup by enrollment GUID*/
             Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();
             Guid[] userIDs = new Guid[Voiceprints.Count];
 
@@ -231,67 +247,89 @@ namespace transcriber.TranscribeAgent
                 voiceprintDictionary.Add(voiceprint.UserGUID, voiceprint);
             }
 
-            voiceprintDictionary.Keys.CopyTo(userIDs, 0);
+            voiceprintDictionary.Keys.CopyTo(userIDs, 0);                  //Hold GUIDs in userIDs array
 
 
             /*Iterate over each phrase and attempt to identify the user.
              Passes the audio data as a stream and the user GUID associated with the
-             Azure SpeakerRecogniztion API profile to the API via the IdentifyAsync() method.*/
+             Azure SpeakerRecogniztion API profile to the API via the IdentifyAsync() method.
+             Sets the User property in each TranscriptionOutput object in TrancriptionOutputs*/
             try
             {
                 foreach (var curPhrase in TranscriptionOutputs)
                 {
-                    MemoryStream audioStream = FileSplitter.SplitAudioGetMemStream((ulong)curPhrase.Value.StartOffset, (ulong)curPhrase.Value.EndOffset);
-                    Task<OperationLocation> idTask = idClient.IdentifyAsync(audioStream, userIDs, true);
+                    /*Write audio data in segment to a buffer containing wav file header */
+                    byte[] wavBuf = AudioFileSplitter.WriteWavToBuf(curPhrase.Value.Segment.AudioData);
+
+                    await Task.Delay(apiDelayInterval);                                  
+
+                    /*Create the task which submits the request to begin speaker recognition to the Speaker Recognition API*/
+                    Task<OperationLocation> idTask = idClient.IdentifyAsync(new MemoryStream(wavBuf), userIDs, true);
 
                     await idTask;
+                                        
 
-                    var resultLoc = idTask.Result;
+                    var resultLoc = idTask.Result;                                      //URL wrapper to check recognition status
 
                     /*Continue to check task status until it is completed */
                     Task<IdentificationOperation> idOutcomeCheck;
                     Boolean done = false;
+                    Status outcome;
                     do
                     {
-                        idOutcomeCheck = idClient.CheckIdentificationStatusAsync(resultLoc);
+                        await Task.Delay(apiDelayInterval);
 
+                        idOutcomeCheck = idClient.CheckIdentificationStatusAsync(resultLoc);
                         await idOutcomeCheck;
 
-                        done = (idOutcomeCheck.Result.Status == Status.Succeeded || idOutcomeCheck.Result.Status == Status.Failed);
+                        outcome = idOutcomeCheck.Result.Status;
+
+                        /*If recognition is complete or failed, stop checking for status*/
+                        done = (outcome == Status.Succeeded || outcome == Status.Failed);
                     } while (!done);
 
-                    Guid profileID = idOutcomeCheck.Result.ProcessingResult.IdentifiedProfileId;           //Get profile ID for this identification.
-
-                    
-                    /*No user could be recognized */
-                    if (idOutcomeCheck.Result.Status == Status.Succeeded 
-                        && profileID.ToString() == "00000000-0000-0000-0000-000000000000") 
+                    User speaker = null;
+                   
+                    /*Set user as unrecognizable if API request resonse indicates failure */
+                    if (outcome == Status.Failed)
                     {
-                        curPhrase.Value.Speaker = new User("Not recognized", "", -1);
-                    }
-
-                    else if (idOutcomeCheck.Result.Status == Status.Succeeded)
-                    {
-                        curPhrase.Value.Speaker = voiceprintDictionary[profileID].AssociatedUser;
+                        speaker = new User("Not recognized", "", -1);
+                        Console.Error.WriteLine("Recognition operation failed for this phrase.");
                     }
 
                     else
                     {
-                        Console.Error.WriteLine("Recognition operation failed");
-                    }
+                        Guid profileID = idOutcomeCheck.Result.ProcessingResult.IdentifiedProfileId;           //Get profile ID for this identification.
 
-                }
+
+                        /*If the recognition request succeeded but no user could be recognized */
+                        if (outcome == Status.Succeeded
+                            && profileID.ToString() == "00000000-0000-0000-0000-000000000000")
+                        {
+                            speaker = new User("Not recognized", "", -1);
+                        }
+
+                        /*If task suceeded and the profile ID does match an ID in 
+                         * the set of known user profiles then set associated user */
+                        else if (idOutcomeCheck.Result.Status == Status.Succeeded
+                            && voiceprintDictionary.ContainsKey(profileID))
+                        {
+                            speaker = voiceprintDictionary[profileID].AssociatedUser;
+                        }
+                    }
+                   
+                    curPhrase.Value.Speaker = speaker;                     //Set speaker property in TranscriptionOutput object based on result.
+
+                }//End-foreach
 
             } catch (AggregateException ex)
             {
                 Console.Error.WriteLine("Id failed: " + ex.Message);
             }
-
-                                                  
+                                                              
 
             recognitionComplete.SetResult(0);
-
-            
+                        
             
         }
 
@@ -316,7 +354,6 @@ namespace transcriber.TranscribeAgent
                 }
 
                 output.AppendLine(curSegmentText + "\n");
-
             }
 
             /*Overwrite any existing MeetingMinutes file with the same name,
