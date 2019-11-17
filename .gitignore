@@ -355,3 +355,5 @@ MigrationBackup/
 .DS_Store
 .vscode/
 transcriber/Transcriber.sln
+
+*PrivateSettings.json
