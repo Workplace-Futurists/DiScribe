@@ -141,7 +141,9 @@ namespace twilio_caller
             {
                 Console.WriteLine("Exception: " + ex.Message);
             }
-           
+
+            // Graph.GraphHelper.sendMail();
+            
             //int choice = -1;
 
             //while (choice != 0)
@@ -180,7 +182,7 @@ namespace twilio_caller
             //            break;
             //    }
             //}
-        }
         
-    }
+                }
+        }
 }
