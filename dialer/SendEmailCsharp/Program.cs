@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using static System.Environment;
+using System.Text;
 
 namespace SendEmailCsharp
 {
@@ -40,6 +41,40 @@ namespace SendEmailCsharp
                                                                        htmlContent,
                                                                        showAllRecipients
                                                                        );
+
+            
+            /*
+            // add attachments to the email
+            msg.AddAttachment("balance_001.pdf",
+                              "base64 encoded string",
+                              "application/pdf",
+                              "attachment",
+                              "Balance Sheet");
+
+            var attachment = new Attachment() {
+                Content = "base64 encoded string",
+                Type = "base64 encoded string",
+                Filename = "banner.png",
+                Disposition = "inline",
+                ContentId = "Banner"
+            };
+            
+            msg.AddAttachment(attachment);
+            */
+
+            // Add attachment as txt/plain
+            byte[] byteData = Encoding.ASCII.GetBytes("file.txt");
+            msg.Attachments = new List<SendGrid.Helpers.Mail.Attachment>
+            {
+                new SendGrid.Helpers.Mail.Attachment
+                {
+                    Content = Convert.ToBase64String(byteData),
+                    Filename = "file.txt",
+                    Type = "txt/plain",
+                    Disposition = "attachment"
+                }
+            };
+
             var response = await client.SendEmailAsync(msg);
         }
 
