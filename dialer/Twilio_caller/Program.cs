@@ -15,6 +15,8 @@ using System.IO;
 using Microsoft.Graph;
 using HtmlAgilityPack;
 using System.Net;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace twilio_caller
 {
@@ -34,7 +36,8 @@ namespace twilio_caller
             // Make sure there's at least one value in the scopes array
             string.IsNullOrEmpty(appConfig["scopes:0"]) ||
             string.IsNullOrEmpty(appConfig["TWILIO_ACCOUNT_SID"]) ||
-            string.IsNullOrEmpty(appConfig["TWILIO_AUTH_TOKEN"]))
+            string.IsNullOrEmpty(appConfig["TWILIO_AUTH_TOKEN"]) ||
+            string.IsNullOrEmpty(appConfig["SENDGRID_API_KEY"]))
             {
                 return null;
             }
@@ -142,8 +145,15 @@ namespace twilio_caller
                 Console.WriteLine("Exception: " + ex.Message);
             }
 
-            // Graph.GraphHelper.sendMail();
+            // Send email using SendGrid
+            // GOT TO FIND A WAY TO RETRIEVE MEETING INFORMATION
+            string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+            SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
+            SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();
             
+
+            // Graph.GraphHelper.sendMail();
+
             //int choice = -1;
 
             //while (choice != 0)
@@ -152,7 +162,7 @@ namespace twilio_caller
             //    Console.WriteLine("0. Exit");
             //    Console.WriteLine("1. Display access token");
             //    Console.WriteLine("2. List calendar events");
-                
+
             //    try
             //    {
             //        choice = int.Parse(Console.ReadLine());
@@ -182,7 +192,7 @@ namespace twilio_caller
             //            break;
             //    }
             //}
-        
-                }
+
+        }
         }
 }
