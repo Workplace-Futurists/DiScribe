@@ -11,8 +11,8 @@ namespace twilio_caller.dialer
 {
     public class dialerManager
     {
-        string _accountSid;
-        string _authToken;
+        private static string _accountSid;
+        private static string _authToken;
 
         public dialerManager(string sid, string authTok)
         {
