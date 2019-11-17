@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using static System.Environment;
 using System.Text;
+using System.IO;
 
 namespace twilio_caller.SendEmailCsharp
 {
@@ -46,19 +47,24 @@ namespace twilio_caller.SendEmailCsharp
                                                                        showAllRecipients
                                                                        );
 
-            // Add attachment as txt/plain
-            byte[] byteData = Encoding.ASCII.GetBytes("file.txt");
+            /*
+            byte[] byteData = Encoding.ASCII.GetBytes(@"../../../transcriber/transcript/Minutes.txt");
             msg.Attachments = new List<SendGrid.Helpers.Mail.Attachment>
             {
                 new SendGrid.Helpers.Mail.Attachment
                 {
                     Content = Convert.ToBase64String(byteData),
                     // TODO: Must change the name to match the meeting minutes
-                    Filename = "file.txt",
+                    Filename = "Minutes.txt",
                     Type = "txt/plain",
                     Disposition = "attachment"
                 }
             };
+            */
+            
+            var bytes = File.ReadAllBytes("../../../cs319-2019w1-hsbc/transcriber/transcript/Minutes.txt");
+            var file = Convert.ToBase64String(bytes);
+            msg.AddAttachment("Minutes.txt", file);
 
             var response = await sendGridClient.SendEmailAsync(msg);
             Console.WriteLine("Meeting Minute was sent successfully!");
