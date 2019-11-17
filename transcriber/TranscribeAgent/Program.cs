@@ -8,11 +8,13 @@ using transcriber.TranscribeAgent;
 using System.Collections.Generic;
 using transcriber.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
+using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 
 namespace transcriber.TranscribeAgent
 {
     public class Program
     {
+        const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                    //Min time allowed between requests to speaker recognition API.    
 
         public static void Main(string[] args)
         {
@@ -24,7 +26,7 @@ namespace transcriber.TranscribeAgent
             /*Subscription key for Azure SpeakerRecognition service. */
             var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
-            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
+            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeetingShorter.wav");
             FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
 
             //Make two test audio samples for user 1 and user 2. Note that audio file header data must
@@ -42,10 +44,10 @@ namespace transcriber.TranscribeAgent
                 new Voiceprint(userAudioSampleStream[0], user1),
                 new Voiceprint(userAudioSampleStream[1], user2)
             };
-            var enrollTask = EnrollUsers(speakerIDKey, voiceprints);
 
-            enrollTask.Wait();                                               //Attempt enrolling the 2 users
+            EnrollUsers(speakerIDKey, voiceprints).Wait();
 
+            
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
 
@@ -85,25 +87,35 @@ namespace transcriber.TranscribeAgent
             /*Create REST client for enrolling users */
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKey);
 
-            List<Task> taskList = new List<Task>();
 
             /*Make profiles for each user*/
-            var profileTask1 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
-            var profileTask2 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
+            var profileTaskList = new List<Task<CreateProfileResponse>>()
+            {
+                enrollmentClient.CreateProfileAsync(enrollmentLocale),
+                enrollmentClient.CreateProfileAsync(enrollmentLocale)
+            };
+            
+            
+            await Task.WhenAll(profileTaskList.ToArray());                                      //Asychronously wait for profiles to be created.
+
+            /*Get the generated profile IDs for each user profile */
+            voiceprints[0].UserGUID = profileTaskList[0].Result.ProfileId;
+            voiceprints[1].UserGUID = profileTaskList[1].Result.ProfileId;
+                        
+            voiceprints[0].AudioStream.Position = 0;
+            voiceprints[1].AudioStream.Position = 0;
+
+            
+            await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);                         //Delay between concurrent requests.
 
 
-            taskList.Add(profileTask1);
-            taskList.Add(profileTask2);        
-            await Task.WhenAll(taskList.ToArray());                                      //Asychronously wait for profiles to be created.
+            /*Enroll the users */
+            var enrollmentTasks = new List<Task<OperationLocation>>() {
+               enrollmentClient.EnrollAsync(voiceprints[0].AudioStream, voiceprints[0].UserGUID),
+               enrollmentClient.EnrollAsync(voiceprints[1].AudioStream, voiceprints[1].UserGUID)
+            };
 
-            /*Get and set the GUID for each profile in the voiceprint objects*/
-            voiceprints[0].UserGUID = profileTask1.Result.ProfileId;
-            voiceprints[1].UserGUID = profileTask1.Result.ProfileId;
-
-
-            taskList.Add(enrollmentClient.EnrollAsync(voiceprints[0].AudioStream, voiceprints[0].UserGUID, true));
-            taskList.Add(enrollmentClient.EnrollAsync(voiceprints[1].AudioStream, voiceprints[1].UserGUID, true));
-            await Task.WhenAll(taskList.ToArray());                                       //Asynchronously wait for all speakers to be enrolled
+            await Task.WhenAll(enrollmentTasks.ToArray());                               //Asynchronously wait for all speakers to be enrolled
             
 
         }
@@ -117,24 +129,19 @@ namespace transcriber.TranscribeAgent
         private static List<MemoryStream> MakeTestUserVoiceSamples(FileInfo audioFile)
         {
             AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
-            List<Voiceprint> result = new List<Voiceprint>();
-
+            
             /*Offsets identifying times */
-            ulong user1StartOffset = 30 * 1000;
-            ulong user1EndOffset = 60 * 1000;
+            ulong user1StartOffset = 1 * 1000;
+            ulong user1EndOffset = 40 * 1000;
             ulong user2StartOffset = 74 * 1000;
-            ulong user2EndOffset = 120 * 1000;
+            ulong user2EndOffset = 86 * 1000;
 
 
-            /*Get byte[] for both users */
-            byte[] user1Audio = splitter.SplitAudioGetBuf(user1StartOffset, user1EndOffset);
-            byte[] user2Audio = splitter.SplitAudioGetBuf(user2StartOffset, user2EndOffset);
-
-
-            /*Get memory streams for section of audio containing each user where audio stream begins
-             with WAV file RIFF header*/
-            return new List<MemoryStream>() { new MemoryStream(AudioFileSplitter.writeWavToBuf(user1Audio)),
-                                                new MemoryStream(AudioFileSplitter.writeWavToBuf(user2Audio)) };
+            
+            /*Get memory streams for section of audio containing each user. Note audio stream begins
+             with WAV file RIFF header, as required by SpeakerRecognition API*/
+            return new List<MemoryStream>() { splitter.WriteWavToStream(user1StartOffset, user1EndOffset),
+                                                splitter.WriteWavToStream(user2StartOffset, user2EndOffset) };
 
 
 
