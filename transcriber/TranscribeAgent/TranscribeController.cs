@@ -16,15 +16,12 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints, SpeechConfig speechConfig, string speakerIDSubKey)
+        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints)
         {
             Voiceprints = voiceprints;
             FileSplitter = new AudioFileSplitter(meetingRecording);
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
-            SpeechConfig = speechConfig;
-            SpeakerIDSubKey = speakerIDSubKey;
-
             Console.WriteLine(">\tTranscription Controller initialized " +
                 "on Audio Recording [" + meetingRecording.FullName + "].");
         }
@@ -36,10 +33,6 @@ namespace transcriber.TranscribeAgent
         public SpeechTranscriber Transcriber { get; private set; }
 
         public Recognizer Recognizer { get; private set; }
-
-        public SpeechConfig SpeechConfig { get; private set; }
-
-        public String SpeakerIDSubKey { get; private set; }
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
