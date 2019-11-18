@@ -67,9 +67,6 @@ namespace transcriber.TranscribeAgent
             }
 
             Console.Write("Writing transcription to file...");
-            /*Write transcription to text file */
-            WriteTranscriptionFile(lineLength);
-
         }
 
         /// <summary>
