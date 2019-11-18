@@ -22,8 +22,7 @@ namespace transcriber.TranscribeAgent
             Controller = controller;
         }
 
-        private TranscribeController Controller;
-
+        private static TranscribeController Controller;
 
         /// <summary>
         /// Performs speaker recognition on TranscriberOutputs to set
@@ -41,7 +40,7 @@ namespace transcriber.TranscribeAgent
             var recognitionComplete = new TaskCompletionSource<int>();
 
             /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(Controller.SpeakerIDSubKey);
+            SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(Program.SpeakerIDKey);
 
             /*Dictionary for efficient voiceprint lookup by enrollment GUID*/
             Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();

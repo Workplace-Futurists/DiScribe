@@ -90,7 +90,7 @@ namespace transcriber.TranscribeAgent
             using (var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream))
             {
                 // Creates a speech recognizer using audio stream input.
-                using (var speech_recogniser = new SpeechRecognizer(Controller.SpeechConfig, audioInput))
+                using (var speech_recogniser = new SpeechRecognizer(Program.SpeechConfig, audioInput))
                 {
                     // Subscribes to events. Subscription is important, otherwise recognition events aren't handled.
                     speech_recogniser.Recognizing += (s, e) =>
