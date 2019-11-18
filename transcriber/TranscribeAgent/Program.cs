@@ -16,37 +16,37 @@ namespace transcriber.TranscribeAgent
 {
     public class Program
     {
-        const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                    //Min time allowed between requests to speaker recognition API.    
+        /* Creates an instance of a speech config with specified subscription key and service region
+         * for Azure Speech Recognition service
+         */
+        public static SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+
+        /* Subscription key for Azure SpeakerRecognition service. */
+        public static string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
+
+        public static int SPEAKER_RECOGNITION_API_INTERVAL = 3000; //Min time allowed between requests to speaker recognition API.    
 
         public static void Main(string[] args)
         {
-            /* Creates an instance of a speech config with specified subscription key and service region
-               for Azure Speech Recognition service */
-            
-            var speechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
-
-            /*Subscription key for Azure SpeakerRecognition service. */
-            var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
             FileInfo testRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
             FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
 
             var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
-            
-            EnrollUsers(speakerIDKey, voiceprints).Wait();
 
-            
+            EnrollUsers(Program.SpeakerIDKey, voiceprints).Wait();
+
+
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(speechConfig, speakerIDKey, initData.MeetingRecording, initData.Voiceprints, meetingMinutes);
-                                                                           
+            var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             Console.WriteLine("Creating transcript...");
             Boolean success = controller.DoTranscription();
-
+            success = success && controller.WriteTranscriptionFile(meetingMinutes);
             Boolean emailSent = false;
 
             if (success)
@@ -54,13 +54,13 @@ namespace transcriber.TranscribeAgent
                 Console.WriteLine("\nTranscription completed");
 
                 string emailSubject = "Meeting minutes for " + DateTime.Now.ToLocalTime().ToString();
-                emailSent = controller.SendEmail(initData.TargetEmail, emailSubject);
+                var emailer = new TranscriptionEmailer("someone@ubc.ca", meetingMinutes);
+                emailSent = emailer.SendEmail(initData.TargetEmail, emailSubject);
             }
 
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();
         }
-
 
         /// <summary>
         /// Function which enrolls 2 users for testing purposes. In final system, enrollment will
@@ -113,8 +113,8 @@ namespace transcriber.TranscribeAgent
                 enrollmentTasks.Add(enrollmentClient.EnrollAsync(voiceprints[i].AudioStream,
                     voiceprints[i].UserGUID, true));
             }
-            
-                        
+
+
             /*Async wait for all speaker voiceprints to be submitted in request for enrollment */
             await Task.WhenAll(enrollmentTasks.ToArray());
 
@@ -124,9 +124,8 @@ namespace transcriber.TranscribeAgent
 
         }
 
-
         /// <summary>
-        /// Creates a new user profile for a User and returns the GUID for that profile. 
+        /// Creates a new user profile for a User and returns the GUID for that profile.
         /// In the full system, this method should include a check to find out
         /// if the user is already registered in persistent storage (i.e. database).
         /// </summary>
@@ -145,9 +144,6 @@ namespace transcriber.TranscribeAgent
             return profileTask.Result.ProfileId;
 
         }
-
-
-
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -168,7 +164,7 @@ namespace transcriber.TranscribeAgent
             User user3 = new User("Nick Smith", "N.Smith@example.com", 3);
             User user4 = new User("Patrick Shyu", "P.Shyu@example.com", 4);
 
-            
+
             /*Offsets identifying times */
             ulong user1StartOffset = 1 * 1000;
             ulong user1EndOffset = 49 * 1000;
@@ -224,16 +220,11 @@ namespace transcriber.TranscribeAgent
 
         }
 
-        
-
-
-
-
-            /// <summary>
-            /// Confirms that enrollment was successful for all the profiles
-            /// associated with the enrollment tasks in enrollmentOps.
-            /// </summary>
-            /// <returns></returns>
+        /// <summary>
+        /// Confirms that enrollment was successful for all the profiles
+        /// associated with the enrollment tasks in enrollmentOps.
+        /// </summary>
+        /// <returns></returns>
         private static async Task ConfirmEnrollment(List<Task<OperationLocation>> enrollmentTasks, SpeakerIdentificationServiceClient enrollmentClient)
         {
             foreach(var curTask in enrollmentTasks)
@@ -257,7 +248,5 @@ namespace transcriber.TranscribeAgent
             }
 
         }
-
-
     }
 }
