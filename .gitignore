@@ -355,3 +355,4 @@ MigrationBackup/
 .DS_Store
 .vscode/
 transcriber/Transcriber.sln
+transcriber/transcript/minutes.txt
