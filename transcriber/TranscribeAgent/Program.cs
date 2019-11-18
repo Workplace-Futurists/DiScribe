@@ -16,37 +16,48 @@ namespace transcriber.TranscribeAgent
 {
     public class Program
     {
+        
+        /* Subscription key for Azure SpeakerRecognition service. */
+        private static readonly string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
+
+        private static readonly string SpeakerLocale = "en-us";
+
+        public static readonly int SpeakerRecognitionApiInterval = 3000; //Min time allowed between requests to speaker recognition API.
+
         /* Creates an instance of a speech config with specified subscription key and service region
          * for Azure Speech Recognition service
          */
-        public static SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+        private static readonly SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
-        /* Subscription key for Azure SpeakerRecognition service. */
-        public static string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
+        private static readonly FileInfo TestRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
 
-        public static int SPEAKER_RECOGNITION_API_INTERVAL = 3000; //Min time allowed between requests to speaker recognition API.
+        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
+
+
 
         public static void Main(string[] args)
         {
-            FileInfo testRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
-            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
-
-            var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
-            EnrollUsers(Program.SpeakerIDKey, voiceprints).Wait();
+            var voiceprints = MakeTestVoiceprints(TestRecording);                   //Make a test set of voiceprint objects
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
-            var initData = new TranscriptionInitData(testRecording, voiceprints, "");
+            var initData = new TranscriptionInitData(TestRecording, voiceprints, "");
+
+            /*Enroll speaker voice profiles with the Speaker Recognition API */
+            SpeakerRegistration registration = new SpeakerRegistration(SpeakerIDKey, voiceprints, SpeakerLocale);
+
+            Console.WriteLine(">\tChecking user voice profile enrollment...");
+            registration.EnrollUsers().Wait();
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints);
+            var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints, SpeechConfig, SpeakerIDKey);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             if (controller.Perform())
             {
-                controller.WriteTranscriptionFile(meetingMinutes);
+                controller.WriteTranscriptionFile(MeetingMinutes);
 
                 string emailSubject = "Meeting minutes for " + DateTime.Now.ToLocalTime().ToString();
-                var emailer = new TranscriptionEmailer("someone@ubc.ca", meetingMinutes);
+                var emailer = new TranscriptionEmailer("someone@ubc.ca", MeetingMinutes);
                 emailer.SendEmail(initData.TargetEmail, emailSubject);
             }
 
@@ -54,88 +65,9 @@ namespace transcriber.TranscribeAgent
             Console.ReadLine();
         }
 
-        /// <summary>
-        /// Function which enrolls 2 users for testing purposes. In final system, enrollment will
-        /// be done by users.
-        /// </summary>
-        /// <param name="speakerIDKey"></param>
-        /// <param name="audioFile"></param>
-        /// <returns></returns>
-        public static async Task EnrollUsers(string speakerIDKey, List<Voiceprint> voiceprints, string enrollmentLocale = "en-us")
-        {
-            /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKey);
+        
 
-
-            /*First check that all profiles in the voiceprint objects actually exist*/
-            Profile[] existingProfiles = await enrollmentClient.GetProfilesAsync();
-
-            for (int i = 0; i < voiceprints.Count; i++)
-            {
-                Boolean profileExists = false;
-
-                int j = 0;
-                while (!profileExists && j < existingProfiles.Length)
-                {
-                    if (voiceprints[i].UserGUID == existingProfiles[j].ProfileId)
-                    {
-                        profileExists = true;
-                    }
-                    else
-                        j++;
-                }
-
-                /*Create a profile if the profile doesn't actually exist. Also change the
-                 * profile ID in the voiceprint object to the new ID*/
-                if (!profileExists)
-                {
-                    await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
-                    var profileCreateTask = CreateUserProfile(enrollmentClient, voiceprints[i].AssociatedUser, enrollmentLocale);
-                    await profileCreateTask;
-                    voiceprints[i].UserGUID = profileCreateTask.Result;
-                }
-            }
-
-            var enrollmentTasks = new List<Task<OperationLocation>>();
-
-            /*Start enrollment tasks for all user voiceprints */
-            for (int i = 0; i < voiceprints.Count; i++)
-            {
-                await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
-                enrollmentTasks.Add(enrollmentClient.EnrollAsync(voiceprints[i].AudioStream,
-                    voiceprints[i].UserGUID, true));
-            }
-
-
-            /*Async wait for all speaker voiceprints to be submitted in request for enrollment */
-            await Task.WhenAll(enrollmentTasks.ToArray());
-
-
-            /*Async wait for all enrollments to be in an enrolled state */
-            await ConfirmEnrollment(enrollmentTasks, enrollmentClient);
-
-        }
-
-        /// <summary>
-        /// Creates a new user profile for a User and returns the GUID for that profile.
-        /// In the full system, this method should include a check to find out
-        /// if the user is already registered in persistent storage (i.e. database).
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="locale"></param>
-        /// <returns></returns>
-        public static async Task<Guid> CreateUserProfile(SpeakerIdentificationServiceClient client, User user, string locale = "en-us")
-        {
-            var taskComplete = new TaskCompletionSource<Guid>();
-
-            var profileTask = client.CreateProfileAsync(locale);
-            await profileTask;
-
-            taskComplete.SetResult(profileTask.Result.ProfileId);
-
-            return profileTask.Result.ProfileId;
-
-        }
+        
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -193,33 +125,12 @@ namespace transcriber.TranscribeAgent
 
         }
 
-        /// <summary>
-        /// Confirms that enrollment was successful for all the profiles
-        /// associated with the enrollment tasks in enrollmentOps.
-        /// </summary>
-        /// <returns></returns>
-        private static async Task ConfirmEnrollment(List<Task<OperationLocation>> enrollmentTasks, SpeakerIdentificationServiceClient enrollmentClient)
-        {
-            foreach(var curTask in enrollmentTasks)
-            {
-                Boolean done = false;
-                do
-                {
-                    await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
 
-                    var enrollmentCheck = enrollmentClient.CheckEnrollmentStatusAsync(curTask.Result);
-                    await enrollmentCheck;
 
-                    /*Check that this profile is enrolled */
-                    if (enrollmentCheck.Result.ProcessingResult.EnrollmentStatus == EnrollmentStatus.Enrolled)
-                    {
-                        done = true;
-                    }
 
-                } while (!done);
 
-            }
 
-        }
+
+
     }
 }
