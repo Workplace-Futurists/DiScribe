@@ -1,6 +1,7 @@
 ﻿using System;
 using transcriber.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
+using System.IO;
 
 namespace transcriber.TranscribeAgent
 {
@@ -11,13 +12,24 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     public class AudioSegment : System.IComparable
     {
-        public AudioSegment(PullAudioInputStream audioStream, long startOffset, long endOffset)
+        public AudioSegment(byte[] audioData, long startOffset, long endOffset, 
+            uint sampleRate = SAMPLE_RATE, byte bitsPerSample = BITS_PER_SAMPLE, byte channels = CHANNELS)
         {
-            AudioStream = audioStream;
+            MemoryStream tempStream = new MemoryStream(audioData);
+            AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(sampleRate, bitsPerSample, channels);
+
+            AudioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(tempStream), streamFormat);
+
+            AudioData = audioData;
             StartOffset = startOffset;
             EndOffset = endOffset;
             
         }
+
+
+        const uint SAMPLE_RATE = 16000;
+        const byte BITS_PER_SAMPLE = 16;
+        const byte CHANNELS = 1;
 
 
         /// <summary>
@@ -26,16 +38,18 @@ namespace transcriber.TranscribeAgent
         public PullAudioInputStream AudioStream { get; set; }
 
         /// <summary>
+        /// Data used by AudioStream
+        /// </summary>
+        public byte[] AudioData { get; private set; }
+
+        /// <summary>
         /// Offset of audio segment from the beginning of the recording.
         /// </summary>
         public long StartOffset { get; set; }
 
         public long EndOffset { get; set; }
 
-        /// <summary>
-        /// Info about the speaker in this instance.
-        /// </summary>
-        public User SpeakerInfo { get; set; }
+        
 
 
         public int CompareTo(object obj)

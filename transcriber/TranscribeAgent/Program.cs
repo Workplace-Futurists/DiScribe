@@ -8,6 +8,9 @@ using transcriber.TranscribeAgent;
 using System.Collections.Generic;
 using transcriber.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
+using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
+using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
+using NAudio.Wave;
 
 namespace transcriber.TranscribeAgent
 {
@@ -23,26 +26,14 @@ namespace transcriber.TranscribeAgent
 
         public static void Main(string[] args)
         {
-            FileInfo testRecording = new FileInfo(@"../../../Record/FakeMeeting.wav");
-            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
-            //Make two test audio samples for user 1 and user 2. Note that audio file header data must
-            //be present for SpeakerRecognition API (not for SpeechRecognition API).
-            List<MemoryStream> userAudioSampleStream = MakeTestUserVoiceSamples(testRecording);
+            FileInfo testRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
+            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
 
-            /*Set result with List<Voiceprint> containing both voiceprint objects */
-            User user1 = new User("Tom", "Tom@example.com", 1);
-            User user2 = new User("Maya", "Maya@example.com", 2);
+            var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
 
-            /////For testing, enroll 2 users to get speaker profiles directly from the audio.
-            List<Voiceprint> voiceprints = new List<Voiceprint>()
-            {
-                new Voiceprint(userAudioSampleStream[0], user1),
-                new Voiceprint(userAudioSampleStream[1], user2)
-            };
-            var enrollTask = EnrollUsers(SpeakerIDKey, voiceprints);
+            EnrollUsers(speakerIDKey, voiceprints).Wait();
 
-            enrollTask.Wait();  //Attempt enrolling the 2 users
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
@@ -81,50 +72,187 @@ namespace transcriber.TranscribeAgent
             /*Create REST client for enrolling users */
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKey);
 
-            List<Task> taskList = new List<Task>();
 
-            /*Make profiles for each user*/
-            var profileTask1 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
-            var profileTask2 = enrollmentClient.CreateProfileAsync(enrollmentLocale);
+            /*First check that all profiles in the voiceprint objects actually exist*/
+            Profile[] existingProfiles = await enrollmentClient.GetProfilesAsync();
 
-            taskList.Add(profileTask1);
-            taskList.Add(profileTask2);
-            await Task.WhenAll(taskList.ToArray()); //Asychronously wait for profiles to be created.
+            for (int i = 0; i < voiceprints.Count; i++)
+            {
+                Boolean profileExists = false;
 
-            /*Get and set the GUID for each profile in the voiceprint objects*/
-            voiceprints[0].UserGUID = profileTask1.Result.ProfileId;
-            voiceprints[1].UserGUID = profileTask1.Result.ProfileId;
+                int j = 0;
+                while (!profileExists && j < existingProfiles.Length)
+                {
+                    if (voiceprints[i].UserGUID == existingProfiles[j].ProfileId)
+                    {
+                        profileExists = true;
+                    }
+                    else
+                        j++;
+                }
 
-            taskList.Add(enrollmentClient.EnrollAsync(voiceprints[0].AudioStream, voiceprints[0].UserGUID, true));
-            taskList.Add(enrollmentClient.EnrollAsync(voiceprints[1].AudioStream, voiceprints[1].UserGUID, true));
-            await Task.WhenAll(taskList.ToArray()); //Asynchronously wait for all speakers to be enrolled
+                /*Create a profile if the profile doesn't actually exist. Also change the
+                 * profile ID in the voiceprint object to the new ID*/
+                if (!profileExists)
+                {
+                    await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
+                    var profileCreateTask = CreateUserProfile(enrollmentClient, voiceprints[i].AssociatedUser, enrollmentLocale);
+                    await profileCreateTask;
+                    voiceprints[i].UserGUID = profileCreateTask.Result;
+                }
+            }
+
+            var enrollmentTasks = new List<Task<OperationLocation>>();
+
+            /*Start enrollment tasks for all user voiceprints */
+            for (int i = 0; i < voiceprints.Count; i++)
+            {
+                await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
+                enrollmentTasks.Add(enrollmentClient.EnrollAsync(voiceprints[i].AudioStream,
+                    voiceprints[i].UserGUID, true));
+            }
+
+
+            /*Async wait for all speaker voiceprints to be submitted in request for enrollment */
+            await Task.WhenAll(enrollmentTasks.ToArray());
+
+
+            /*Async wait for all enrollments to be in an enrolled state */
+            await ConfirmEnrollment(enrollmentTasks, enrollmentClient);
+
         }
+
+        /// <summary>
+        /// Creates a new user profile for a User and returns the GUID for that profile.
+        /// In the full system, this method should include a check to find out
+        /// if the user is already registered in persistent storage (i.e. database).
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="locale"></param>
+        /// <returns></returns>
+        public static async Task<Guid> CreateUserProfile(SpeakerIdentificationServiceClient client, User user, string locale = "en-us")
+        {
+            var taskComplete = new TaskCompletionSource<Guid>();
+
+            var profileTask = client.CreateProfileAsync(locale);
+            await profileTask;
+
+            taskComplete.SetResult(profileTask.Result.ProfileId);
+
+            return profileTask.Result.ProfileId;
+
+        }
+
+
+
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
         /// </summary>
         /// <param name="audioFile"></param>
         /// <returns></returns>
-        private static List<MemoryStream> MakeTestUserVoiceSamples(FileInfo audioFile)
+        private static List<Voiceprint> MakeTestVoiceprints(FileInfo audioFile)
         {
-            AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
-            List<Voiceprint> result = new List<Voiceprint>();
+            /*Pre-registered profiles.*/
+            Guid user1GUID = new Guid("87aed609-b072-4fc5-bca6-87f8caa6dea9");
+            Guid user2GUID = new Guid("0135a034-f9dc-45ed-84e6-94f35caf4617");
+            Guid user3GUID = new Guid("5483bd0c-55b7-457d-9924-a3b0e76096dd");
+            Guid user4GUID = new Guid("c00243a8-cba8-4a64-910b-8a9973c6c9c6");
+
+            /*Set result with List<Voiceprint> containing both voiceprint objects */
+            User user1 = new User("Brian Kernighan", "B.Kernighan@example.com", 1);
+            User user2 = new User("Janelle Shane", "J.Shane@example.com", 2);
+            User user3 = new User("Nick Smith", "N.Smith@example.com", 3);
+            User user4 = new User("Patrick Shyu", "P.Shyu@example.com", 4);
+
 
             /*Offsets identifying times */
-            ulong user1StartOffset = 30 * 1000;
-            ulong user1EndOffset = 60 * 1000;
-            ulong user2StartOffset = 74 * 1000;
-            ulong user2EndOffset = 120 * 1000;
+            ulong user1StartOffset = 1 * 1000;
+            ulong user1EndOffset = 49 * 1000;
+
+            ulong user2StartOffset = 51 * 1000;
+            ulong user2EndOffset = 100 * 1000;
+
+            ulong user3StartOffset = 101 * 1000;
+            ulong user3EndOffset = 148 * 1000;
+
+            ulong user4StartOffset = 151 * 1000;
+            ulong user4EndOffset = 198 * 1000;
 
 
-            /*Get byte[] for both users */
-            byte[] user1Audio = splitter.SplitAudioGetBuf(user1StartOffset, user1EndOffset);
-            byte[] user2Audio = splitter.SplitAudioGetBuf(user2StartOffset, user2EndOffset);
+            AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
 
-            /*Get memory streams for section of audio containing each user where audio stream begins
-             with WAV file RIFF header*/
-            return new List<MemoryStream>() { new MemoryStream(AudioFileSplitter.writeWavToBuf(user1Audio)),
-                                                new MemoryStream(AudioFileSplitter.writeWavToBuf(user2Audio)) };
+            var user1Audio = splitter.WriteWavToStream(user1StartOffset, user1EndOffset);
+            var user2Audio = splitter.WriteWavToStream(user2StartOffset, user2EndOffset);
+            var user3Audio = splitter.WriteWavToStream(user3StartOffset, user3EndOffset);
+            var user4Audio = splitter.WriteWavToStream(user4StartOffset, user4EndOffset);
+
+
+            var format = new WaveFormat(16000, 16, 1);
+            using (WaveFileWriter testWriter = new WaveFileWriter($"user1Audio.wav", format))
+            {
+                testWriter.Write(user1Audio.ToArray(), 0, (int)user1Audio.Length);
+            }
+
+            using (WaveFileWriter testWriter = new WaveFileWriter($"user2Audio.wav", format))
+            {
+                testWriter.Write(user2Audio.ToArray(), 0, (int)user2Audio.Length);
+            }
+
+            using (WaveFileWriter testWriter = new WaveFileWriter($"user3Audio.wav", format))
+            {
+                testWriter.Write(user3Audio.ToArray(), 0, (int)user3Audio.Length);
+            }
+
+            using (WaveFileWriter testWriter = new WaveFileWriter($"user4Audio.wav", format))
+            {
+                testWriter.Write(user4Audio.ToArray(), 0, (int)user4Audio.Length);
+            }
+
+            List<Voiceprint> voiceprints = new List<Voiceprint>()
+            {
+                new Voiceprint(user1Audio, user1, user1GUID),
+                new Voiceprint(user2Audio, user2, user2GUID),
+                new Voiceprint(user3Audio, user3, user3GUID),
+                new Voiceprint(user4Audio, user4, user4GUID)
+            };
+
+            return voiceprints;
+
+        }
+
+
+
+
+
+
+            /// <summary>
+            /// Confirms that enrollment was successful for all the profiles
+            /// associated with the enrollment tasks in enrollmentOps.
+            /// </summary>
+            /// <returns></returns>
+        private static async Task ConfirmEnrollment(List<Task<OperationLocation>> enrollmentTasks, SpeakerIdentificationServiceClient enrollmentClient)
+        {
+            foreach(var curTask in enrollmentTasks)
+            {
+                Boolean done = false;
+                do
+                {
+                    await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
+
+                    var enrollmentCheck = enrollmentClient.CheckEnrollmentStatusAsync(curTask.Result);
+                    await enrollmentCheck;
+
+                    /*Check that this profile is enrolled */
+                    if (enrollmentCheck.Result.ProcessingResult.EnrollmentStatus == EnrollmentStatus.Enrolled)
+                    {
+                        done = true;
+                    }
+
+                } while (!done);
+
+            }
+
         }
     }
 }
