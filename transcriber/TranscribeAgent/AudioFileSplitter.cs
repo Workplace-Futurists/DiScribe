@@ -87,16 +87,12 @@ namespace transcriber.TranscribeAgent
 
             ulong segmentLength = upperIndex - lowerIndex;
 
-            byte[] sampleBytes = new byte[segmentLength];
-            System.Span<byte> bufSpan = sampleBytes;
-            
-            MainStream.Seek((long)startOffset, SeekOrigin.Begin);                           //Seek to position in stream at start of segment
+            System.Span<byte> bufSpan = new byte[segmentLength];
+
+            MainStream.Seek((long)lowerIndex, SeekOrigin.Begin);                           //Seek to position in stream at start of segment
             MainStream.Read(bufSpan);                                                      //Read bytes into buf (number of bytes read is segmentLength)
 
-            /*Setup the PullAudioInputStream for this AudioSegment 
-             * by writing data for this segment into temp buffer and creating 
-             * a MemoryStream to read from that buffer */
-            return sampleBytes;
+            return bufSpan.ToArray();
         }
 
 

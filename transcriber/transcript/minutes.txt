@@ -1,38 +1,51 @@
-Tom	0:0:0	OK, well. Good morning, everyone. Thank you very much for being here on time. We've got a lot to do
-today to so let's get started now everyone scare apart from Jaun in facilities. But we have apologies from him as everyone
-got a copy of the agenda.
+Brian Kernighan	0:0:0	Newer machines instead of having everything in the machine be a single size of in effect integer. Let's
+say 16 bits or something like that. They had different sizes that were in the machine would efficiently and naturally manipulate
+8 bit 16 bit maybe 32 bit.
 
 
-Tom	0:3:19	Good OK can I draw your attention to item 4? Where it says presentation of online survey results presentation
-is going to be given by Miss Patricia Reyes, who is a representative of the research company. We contracted to carry out
-the work in this race will arrive at 11:30. So I plan to break at about 11:15 to give her time to set up it may also mean
-that we need to interrupt.
+Brian Kernighan	0:2:16	And the language be didn't reflect that and so Dennis Ritchie undertook to design what amounted to
+a version of be that was richer and head mechanisms in the language to say this is an 8 bit quantity. This is a 16 bit quantity.
+Basically, they care. An int types that you see in the early versions of C and so he wrote a compiler for that and then with
+the compiler in hand. They started to rewrite the operating system itself in C and this took a while, but
 
 
-Tom	0:8:49	The first few are gender items, but we'll come back to those an Darcy. I'd like to leave a little bit
-of time under any other business to just.
+Patrick Shyu	0:8:48	Something in the order so the question is what happened what went wrong is the AI trying to kill us.
+
+Not recognized	0:9:56	Or is it trying to do what we asked and there was a problem.
+
+Not recognized	0:10:1	So, in movies when something goes wrong with AI. It's usually because the AI has decided that doesn't
+want to obey the humans anymore. And it's got his own goals. Thank you very much so in real life, though the AI that we actually
+have is not nearly smart enough for that. It has the approximate computing power of an earthworm or maybe at most single
+honeybee.
 
 
-Tom	0:10:2	Maya I'm aware that flexible working hours has a particular impact on some of your team do you have
-any thoughts on that?
+Nick Smith	0:14:25	And actually probably maybe less like we're constantly learning new things about brains that make it clear
+how much are a eyes don't measure up to real brains, so today's AI can do some a task like identify pedestrian and first
+thing that we're going to start doing is talk a little bit about what store is and why it is important for the pilots to
+be able to control and approaching stalled condition so there are thousands. Maybe not thousands, but there are several good
+.
 
 
-Maya	0:12:12	Well, from my point of view? What Paul is proposing sounds fine. I am a bit concerned about working
-with the system of core hours and then flexible hours. But I think we all need time to read through pause proposal in more
-detail before discussing it any further.
+Nick Smith	0:20:0	But you need to understand is that an aircraft wing works when the air is flowing freely around it right
+so the air flows underwing and on Top of the wing and if the aircraft starts taking out a higher angle of attack which means
+that it's increasing the angle towards the ongoing wind well, then it's going to be harder and harder for the air to stay
+following the oversight of wing and at some point, which is called the critical angle of attack the air will not now. The
+second reason that coding is difficult.
 
 
-Tom	0:14:29	OK, that sounds reasonable and what do other people think and you agree with my are that we need to
-look through the proposal in more detail 1st.
+Patrick Shyu	0:25:32	I believe is because they requires an inordinate amount of time sitting in front of the computer and
+just staring at that screen.
 
 
-Tom	0:16:39	Yes, OK well, I'm sure we can return to it at next month's meeting.
+Patrick Shyu	0:26:39	And this is going to be probably far more time than you may be used to write for most other disciplines.
+You don't need to be sitting down for a large amount of time focused on something like say 2 to 3 hours. You can learn on
+the go right, you could go to a restaurant while you're eating. Maybe you could read up on the little bit of biology right
+learn a little bit of chemistry while you're in the car spent 20 minutes at the beach reading a chapter of your history book.
+That's OK. That's fine, then that type of learning can be done in segments, but for computer programming. You really need
+to be sedated.
 
-Tom	0:17:46	Good we all OK to move onto the next point.
 
-Tom	0:18:51	Right so the up and coming board meeting.
-
-Tom	0:19:57	Now we don't need to spend too much time on this, but there are one or 2 issues, which we need to
-be aware of Lydia. Can you warn me if we go beyond 10 minutes on this one?
+Patrick Shyu	0:31:9	A single place at your desk at the computer for a long period of time. Many people are just not used
+to being with.
 
 

@@ -9,6 +9,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
+using NAudio.Wave;
 using transcriber.Data;
 using transcriber.TranscribeAgent;
 
@@ -94,6 +95,7 @@ namespace transcriber.TranscribeAgent
                 throw new AggregateException(new List<Exception> { new Exception("Transcription failed. Empty result.") });
             }
 
+            Console.Write("Writing transcription to file...");
             /*Write transcription to text file */
             WriteTranscriptionFile(lineLength);
         
@@ -108,9 +110,11 @@ namespace transcriber.TranscribeAgent
         /// <returns>Task for transcription flow</returns>
         private async Task MakeTranscriptionOutputs()
         {
+            Console.WriteLine("Transcribing audio...");
            /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
             await RecognitionWithPullAudioStreamAsync();
 
+            Console.Write("Performing speaker recognition...");
             /*Do speaker recognition concurrently for each TranscriptionOutput. */
             await DoSpeakerRecognition();
 
@@ -120,8 +124,10 @@ namespace transcriber.TranscribeAgent
 
         private async Task RecognitionWithPullAudioStreamAsync()
         {
-           var stopRecognition = new TaskCompletionSource<int>();
-           var entireAudio = FileSplitter.GetEntireAudio();
+            var stopRecognition = new TaskCompletionSource<int>();
+            var entireAudio = FileSplitter.GetEntireAudio();
+            int errorCounter = 0;                                                //Number of failed recognitions to detect if recognizer gets stuck
+            const int ERROR_MAX = 10;
 
             using (var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream))
             {
@@ -147,12 +153,19 @@ namespace transcriber.TranscribeAgent
                             Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
                             transcribedText = e.Result.Text;                                      //Write transcription text to result
                             success = true;                                                       //Set flag to indicate that transcription succeeded.
+                            errorCounter = 0;                                                     //Reset error counter
                         }
                         else if (e.Result.Reason == ResultReason.NoMatch)
                         {
                             resultAvailable = true;
                             Console.WriteLine($"NOMATCH: Speech could not be recognized.");
                             transcribedText = $"NOMATCH: Speech could not be recognized.";        //Write fail message to result
+                            errorCounter++;                                                       //Increment error counter
+
+                            if (errorCounter > ERROR_MAX)                                         //If ERROR_MAX failures occur in a row, stop recognition
+                            {
+                                recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                            }
                         }
 
                         
@@ -172,9 +185,7 @@ namespace transcriber.TranscribeAgent
                                 TranscriptionOutputs.Add(startOffset, new TranscriptionOutput(transcribedText, success, segment));
                             }//END CRITICAL section.
                         }
-                        
-
-                    };
+                   };
 
                     recognizer.Canceled += (s, e) =>
                     {
@@ -202,7 +213,7 @@ namespace transcriber.TranscribeAgent
                         stopRecognition.TrySetResult(0);
                     };
 
-                    Console.Write("Awaiting recognition completeion");
+                    Console.Write("Awaiting recognition completion");
                     // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
                     await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
 
@@ -249,7 +260,7 @@ namespace transcriber.TranscribeAgent
 
             voiceprintDictionary.Keys.CopyTo(userIDs, 0);                  //Hold GUIDs in userIDs array
 
-
+            int p = 0;
             /*Iterate over each phrase and attempt to identify the user.
              Passes the audio data as a stream and the user GUID associated with the
              Azure SpeakerRecogniztion API profile to the API via the IdentifyAsync() method.
@@ -258,12 +269,20 @@ namespace transcriber.TranscribeAgent
             {
                 foreach (var curPhrase in TranscriptionOutputs)
                 {
+                    p++;
                     /*Write audio data in segment to a buffer containing wav file header */
                     byte[] wavBuf = AudioFileSplitter.WriteWavToBuf(curPhrase.Value.Segment.AudioData);
 
-                    await Task.Delay(apiDelayInterval);                                  
+                    var format = new WaveFormat(16000, 16, 1);
+                    using (WaveFileWriter testWriter = new WaveFileWriter($"{p}.wav", format))
+                    {
+                        testWriter.Write(wavBuf);
+                    }
 
-                    /*Create the task which submits the request to begin speaker recognition to the Speaker Recognition API*/
+                        await Task.Delay(apiDelayInterval);                                  
+
+                    /*Create the task which submits the request to begin speaker recognition to the Speaker Recognition API.
+                     Request contains the stream of this phrase and the GUIDs of users that may be present.*/
                     Task<OperationLocation> idTask = idClient.IdentifyAsync(new MemoryStream(wavBuf), userIDs, true);
 
                     await idTask;
@@ -283,6 +302,7 @@ namespace transcriber.TranscribeAgent
                         await idOutcomeCheck;
 
                         outcome = idOutcomeCheck.Result.Status;
+                                                                       
 
                         /*If recognition is complete or failed, stop checking for status*/
                         done = (outcome == Status.Succeeded || outcome == Status.Failed);
@@ -300,8 +320,7 @@ namespace transcriber.TranscribeAgent
                     else
                     {
                         Guid profileID = idOutcomeCheck.Result.ProcessingResult.IdentifiedProfileId;           //Get profile ID for this identification.
-
-
+                        
                         /*If the recognition request succeeded but no user could be recognized */
                         if (outcome == Status.Succeeded
                             && profileID.ToString() == "00000000-0000-0000-0000-000000000000")
@@ -329,8 +348,7 @@ namespace transcriber.TranscribeAgent
                                                               
 
             recognitionComplete.SetResult(0);
-                        
-            
+                 
         }
 
 
