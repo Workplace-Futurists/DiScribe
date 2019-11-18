@@ -11,7 +11,7 @@ namespace transcriber.TranscribeAgent
     {
         /// <summary>
         /// Presents an interface to the speaker-recognition based transcription functionality.
-        /// Allows the use of a set of Voiceprints to perform transcription of a meeting audio file. 
+        /// Allows the use of a set of Voiceprints to perform transcription of a meeting audio file.
         /// Also supports emailing of a transcription file.
         /// </summary>
         /// <param name="meetingRecording"></param>
@@ -49,6 +49,9 @@ namespace transcriber.TranscribeAgent
             {
                 //Wait synchronously for transcript to be finished and written to minutes file.
                 Transcriber.CreateTranscription().Wait();
+
+                Console.Write("Performing speaker recognition...");
+                /*Do speaker recognition concurrently for each TranscriptionOutput. */
                 Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
             }
             catch (Exception transcribeEx)
@@ -60,18 +63,17 @@ namespace transcriber.TranscribeAgent
             return true;
         }
 
-        public bool WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
+        public void WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
         {
             StringBuilder output = new StringBuilder();
 
-            /*Iterate over the list of TranscrtiptionOutputs in order and add them to
-             * output that will be written to file.
-             * Order is by start offset. 
-             * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
-             * if width goes over limit of chars per line.
-             */
-            try
-            {
+            try {
+                /*Iterate over the list of TranscrtiptionOutputs in order and add them to
+                 * output that will be written to file.
+                 * Order is by start offset.
+                 * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
+                 * if width goes over limit of chars per line.
+                 */
                 foreach (var curNode in Transcriber.TranscriptionOutputs)
                 {
                     string curSegmentText = curNode.Value.ToString();
@@ -79,7 +81,6 @@ namespace transcriber.TranscribeAgent
                     {
                         curSegmentText = Helper.WrapText(curSegmentText, lineLength);
                     }
-
                     output.AppendLine(curSegmentText + "\n");
                 }
 
@@ -98,6 +99,5 @@ namespace transcriber.TranscribeAgent
             }
             return true;
         }
-
     }
 }
