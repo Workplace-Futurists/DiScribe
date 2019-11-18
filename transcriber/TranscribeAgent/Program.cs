@@ -191,26 +191,7 @@ namespace transcriber.TranscribeAgent
             var user4Audio = splitter.WriteWavToStream(user4StartOffset, user4EndOffset);
 
 
-            var format = new WaveFormat(16000, 16, 1);
-            using (WaveFileWriter testWriter = new WaveFileWriter($"user1Audio.wav", format))
-            {
-                testWriter.Write(user1Audio.ToArray(), 0, (int)user1Audio.Length);
-            }
-
-            using (WaveFileWriter testWriter = new WaveFileWriter($"user2Audio.wav", format))
-            {
-                testWriter.Write(user2Audio.ToArray(), 0, (int)user2Audio.Length);
-            }
-
-            using (WaveFileWriter testWriter = new WaveFileWriter($"user3Audio.wav", format))
-            {
-                testWriter.Write(user3Audio.ToArray(), 0, (int)user3Audio.Length);
-            }
-
-            using (WaveFileWriter testWriter = new WaveFileWriter($"user4Audio.wav", format))
-            {
-                testWriter.Write(user4Audio.ToArray(), 0, (int)user4Audio.Length);
-            }
+      
 
             List<Voiceprint> voiceprints = new List<Voiceprint>()
             {
