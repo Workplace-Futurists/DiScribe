@@ -28,14 +28,11 @@ namespace transcriber.TranscribeAgent
 
         public static void Main(string[] args)
         {
-
             FileInfo testRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
             FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
             var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
-
             EnrollUsers(Program.SpeakerIDKey, voiceprints).Wait();
-
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
@@ -44,18 +41,13 @@ namespace transcriber.TranscribeAgent
             var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints);
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
-            Console.WriteLine("Creating transcript...");
-            Boolean success = controller.DoTranscription();
-            success = success && controller.WriteTranscriptionFile(meetingMinutes);
-            Boolean emailSent = false;
-
-            if (success)
+            if (controller.Perform())
             {
-                Console.WriteLine("\nTranscription completed");
+                controller.WriteTranscriptionFile(meetingMinutes);
 
                 string emailSubject = "Meeting minutes for " + DateTime.Now.ToLocalTime().ToString();
                 var emailer = new TranscriptionEmailer("someone@ubc.ca", meetingMinutes);
-                emailSent = emailer.SendEmail(initData.TargetEmail, emailSubject);
+                emailer.SendEmail(initData.TargetEmail, emailSubject);
             }
 
             Console.WriteLine("Please press <Return> to continue.");

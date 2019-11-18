@@ -53,7 +53,7 @@ namespace transcriber.TranscribeAgent
         /// speech around the end of the meeting is at the end of the file.</para>
         /// </summary>
         /// <returns></returns>
-        public async Task CreateTranscription()
+        public async Task DoTranscription()
         {
             /*Transcribe audio to create a set of TransciptionOutputs to represent sentences.
              * with the speakers identified
@@ -92,14 +92,14 @@ namespace transcriber.TranscribeAgent
             using (var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream))
             {
                 // Creates a speech recognizer using audio stream input.
-                using (var recognizer = new SpeechRecognizer(Program.SpeechConfig, audioInput))
+                using (var speech_recogniser = new SpeechRecognizer(Program.SpeechConfig, audioInput))
                 {
                     // Subscribes to events. Subscription is important, otherwise recognition events aren't handled.
-                    recognizer.Recognizing += (s, e) =>
+                    speech_recogniser.Recognizing += (s, e) =>
                     {
                         //
                     };
-                    recognizer.Recognized += (s, e) =>
+                    speech_recogniser.Recognized += (s, e) =>
                     {
                         string transcribedText = "";
 
@@ -124,7 +124,7 @@ namespace transcriber.TranscribeAgent
 
                             if (errorCounter > ERROR_MAX)                                         //If ERROR_MAX failures occur in a row, stop recognition
                             {
-                                recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                                speech_recogniser.StopContinuousRecognitionAsync().ConfigureAwait(false);
                             }
                         }
 
@@ -144,9 +144,9 @@ namespace transcriber.TranscribeAgent
                                 TranscriptionOutputs.Add(startOffset, new TranscriptionOutput(transcribedText, success, segment));
                             }//END CRITICAL section.
                         }
-                   };
+                    };
 
-                    recognizer.Canceled += (s, e) =>
+                    speech_recogniser.Canceled += (s, e) =>
                     {
                         Console.WriteLine($"CANCELED: Reason={e.Reason}");
 
@@ -160,12 +160,12 @@ namespace transcriber.TranscribeAgent
                         stopRecognition.TrySetResult(0);
                     };
 
-                    recognizer.SessionStarted += (s, e) =>
+                    speech_recogniser.SessionStarted += (s, e) =>
                     {
                         Console.WriteLine("\nSession started event.");
                     };
 
-                    recognizer.SessionStopped += (s, e) =>
+                    speech_recogniser.SessionStopped += (s, e) =>
                     {
                         Console.WriteLine("\nSession stopped event.");
                         Console.WriteLine("\nStop recognition.");
@@ -174,7 +174,7 @@ namespace transcriber.TranscribeAgent
 
                     Console.Write("Awaiting recognition completion");
                     // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
-                    await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
+                    await speech_recogniser.StartContinuousRecognitionAsync().ConfigureAwait(false);
 
                     // Waits for completion.
                     // Use Task.WaitAny to keep the task rooted.
@@ -183,7 +183,7 @@ namespace transcriber.TranscribeAgent
                     Console.Write("Awaiting recognition stop");
 
                     // Stops recognition.
-                    await recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                    await speech_recogniser.StopContinuousRecognitionAsync().ConfigureAwait(false);
                 }
             }
         }

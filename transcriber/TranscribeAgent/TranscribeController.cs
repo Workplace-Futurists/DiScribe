@@ -37,12 +37,12 @@ namespace transcriber.TranscribeAgent
         /// Creates a formatted text output file holding the transcription.
         /// </summary>
         /// <returns>A FileInfo instance holding information about the transcript file that was created.</returns>
-        public Boolean DoTranscription()
+        public Boolean Perform()
         {
             try
             {
                 //Wait synchronously for transcript to be finished and written to minutes file.
-                Transcriber.CreateTranscription().Wait();
+                Transcriber.DoTranscription().Wait();
 
                 Console.Write("Performing speaker recognition...");
                 /*Do speaker recognition concurrently for each TranscriptionOutput. */
@@ -57,11 +57,12 @@ namespace transcriber.TranscribeAgent
             return true;
         }
 
-        public bool WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
+        public void WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
         {
             StringBuilder output = new StringBuilder();
 
-            try {
+            try
+            {
                 /*Iterate over the list of TranscrtiptionOutputs in order and add them to
                  * output that will be written to file.
                  * Order is by start offset.
@@ -88,10 +89,8 @@ namespace transcriber.TranscribeAgent
             }
             catch (Exception WriteException)
             {
-                Console.Error.Write("Error occurred during Write" + WriteException.Message);
-                return false;
+                Console.Error.WriteLine("Error occurred during Write: " + WriteException.Message);
             }
-            return true;
         }
     }
 }
