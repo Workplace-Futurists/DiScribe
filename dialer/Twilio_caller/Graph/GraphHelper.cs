@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
+using System.Timers;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,8 +13,10 @@ namespace twilio_caller.Graph
     {
         private static GraphServiceClient _graphClient;
 
-        private static Subscription _mailSubscription;
+        // Subscription variables
         private const int MAX_SUB_EXPIRATION_MINS = 4230;
+        private static Dictionary<string, Subscription> _Subscriptions = new Dictionary<string, Subscription>();
+        private static Timer _subscriptionTimer = null;
 
         public static void Initialize(IAuthenticationProvider authProvider)
         {
@@ -94,11 +97,12 @@ namespace twilio_caller.Graph
             }
         }
 
+        [HttpGet]
         public static async Task<Subscription> AddMailSubscription()
         {
             try
             {
-                _mailSubscription = new Subscription
+                Subscription mailSubscription = new Subscription
                 {
                     ChangeType = "created,updated",
                     //NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/OutlookMessageWebhookCreator1?code=oCrAsapgfgt68ChnQMGBmkTsYOdRuEGT2KB3yogU0ML4rLgdgIWMkQ==",
@@ -111,19 +115,62 @@ namespace twilio_caller.Graph
                     ClientState = "secretClientValue"
                 };
 
+                // make http request to graph api
                 var response = await _graphClient.Subscriptions
                     .Request()
-                    .AddAsync(_mailSubscription);
+                    .AddAsync(mailSubscription);
+
+                // add this subscription to class variable
+                _Subscriptions[response.Id] = response;
+
+                // set timer to renew subscription
+                if (_subscriptionTimer == null)
+                {
+                    // calls to check subscriptions every 12 hours = 43200000 milliseconds
+                    _subscriptionTimer = new Timer(43200000);
+                    _subscriptionTimer.Elapsed += CheckSubscriptions;
+                    _subscriptionTimer.AutoReset = true;
+                    _subscriptionTimer.Enabled = true;
+                }
 
                 Console.WriteLine($"Returned response from add subscription: {response}");
                 return response;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding subscription: {_mailSubscription}");
+                Console.WriteLine($"Error adding mail subscription");
                 Console.WriteLine($"Received error: {ex.Message}");
                 return null;
             }
+        }
+
+        private static void CheckSubscriptions(Object source, ElapsedEventArgs e)
+        {
+            Console.WriteLine($"Checking subscriptions {DateTime.Now.ToString("h:mm:ss.fff")}");
+            Console.WriteLine($"Current subscription count {_Subscriptions.Count}");
+
+            foreach (var subscription in _Subscriptions)
+            {
+                // if the subscription expires in the next day, renew it
+                if (subscription.Value.ExpirationDateTime < DateTime.UtcNow.AddDays(1))
+                {
+                    RenewSubscription(subscription.Value);
+                }
+            }
+        }
+
+        private static void RenewSubscription(Subscription subscription)
+        {
+            Console.WriteLine($"Current subscription: {subscription.Id}, Expiration: {subscription.ExpirationDateTime}");
+
+            subscription.ExpirationDateTime = DateTime.UtcNow.AddMinutes(MAX_SUB_EXPIRATION_MINS);
+
+            var foo = _graphClient
+              .Subscriptions[subscription.Id]
+              .Request()
+              .UpdateAsync(subscription).Result;
+
+            Console.WriteLine($"Renewed subscription: {subscription.Id}, New Expiration: {subscription.ExpirationDateTime}");
         }
 
         // public static async Task sendMail() {
