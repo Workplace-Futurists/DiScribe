@@ -24,13 +24,13 @@ namespace transcriber.TranscribeAgent
         /* Subscription key for Azure SpeakerRecognition service. */
         public static string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
-        public static int SPEAKER_RECOGNITION_API_INTERVAL = 3000; //Min time allowed between requests to speaker recognition API.    
+        public static int SPEAKER_RECOGNITION_API_INTERVAL = 3000; //Min time allowed between requests to speaker recognition API.
 
         public static void Main(string[] args)
         {
 
             FileInfo testRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
-            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/Minutes.txt");
+            FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
             var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
 
