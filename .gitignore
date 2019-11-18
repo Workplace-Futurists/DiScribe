@@ -311,7 +311,7 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/**
-# !tools/packages.config
+!tools/packages.config
 
 # Tabs Studio
 *.tss
@@ -355,3 +355,4 @@ MigrationBackup/
 .DS_Store
 .vscode/
 transcriber/Transcriber.sln
+transcriber/transcript/minutes.txt

@@ -1,6 +1,7 @@
 ﻿using System;
 using transcriber.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
+using System.IO;
 
 namespace transcriber.TranscribeAgent
 {
@@ -11,12 +12,24 @@ namespace transcriber.TranscribeAgent
     /// </summary>
     public class AudioSegment : System.IComparable
     {
-        public AudioSegment(PullAudioInputStream audioStream, int offset, User speakerInfo)
+        public AudioSegment(byte[] audioData, long startOffset, long endOffset, 
+            uint sampleRate = SAMPLE_RATE, byte bitsPerSample = BITS_PER_SAMPLE, byte channels = CHANNELS)
         {
-            AudioStream = audioStream;
-            Offset = offset;
-            SpeakerInfo = speakerInfo;
+            MemoryStream tempStream = new MemoryStream(audioData);
+            AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(sampleRate, bitsPerSample, channels);
+
+            AudioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(tempStream), streamFormat);
+
+            AudioData = audioData;
+            StartOffset = startOffset;
+            EndOffset = endOffset;
+            
         }
+
+
+        const uint SAMPLE_RATE = 16000;
+        const byte BITS_PER_SAMPLE = 16;
+        const byte CHANNELS = 1;
 
 
         /// <summary>
@@ -25,21 +38,25 @@ namespace transcriber.TranscribeAgent
         public PullAudioInputStream AudioStream { get; set; }
 
         /// <summary>
-        /// Offset of audio segment from the beginning of the recording.
+        /// Data used by AudioStream
         /// </summary>
-        public int Offset { get; set; }
+        public byte[] AudioData { get; private set; }
 
         /// <summary>
-        /// Info about the speaker in this instance.
+        /// Offset of audio segment from the beginning of the recording.
         /// </summary>
-        public User SpeakerInfo { get; set; }
+        public long StartOffset { get; set; }
+
+        public long EndOffset { get; set; }
+
+        
 
 
         public int CompareTo(object obj)
         {
             AudioSegment otherSegment = obj as AudioSegment;
 
-            return Offset.CompareTo(otherSegment.Offset);
+            return StartOffset.CompareTo(otherSegment.StartOffset);
         }
     }
 }
