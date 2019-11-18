@@ -356,3 +356,6 @@ MigrationBackup/
 .vscode/
 transcriber/Transcriber.sln
 transcriber/transcript/minutes.txt
+
+# some dialer files to ignore
+*PrivateSettings.json
