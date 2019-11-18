@@ -22,6 +22,8 @@ namespace transcriber.TranscribeAgent
             FileSplitter = new AudioFileSplitter(meetingRecording);
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
+            Console.WriteLine(">\tTranscription Controller initialized " +
+                "on Audio Recording [" + meetingRecording.FullName + "].");
         }
 
         public List<Voiceprint> Voiceprints { get; set; }
@@ -44,21 +46,22 @@ namespace transcriber.TranscribeAgent
                 //Wait synchronously for transcript to be finished and written to minutes file.
                 Transcriber.DoTranscription().Wait();
 
-                Console.Write("Performing speaker recognition...");
                 /*Do speaker recognition concurrently for each TranscriptionOutput. */
                 Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
+                Console.WriteLine(">\tTranscription && Recognition = Success");
             }
             catch (Exception transcribeEx)
             {
-                Console.Error.Write("Mission failed. No transcription could be created from audio segments. " + transcribeEx.Message);
+                Console.Error.Write(">\tTranscription Failed: " + transcribeEx.Message);
                 return false;
             }
-
             return true;
         }
 
         public void WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
         {
+            Console.WriteLine(">\tBegin Writing Transcription " +
+                "& Speaker Recognition Result into File [" + meetingMinutes.FullName + "]...");
             StringBuilder output = new StringBuilder();
 
             try
@@ -79,13 +82,21 @@ namespace transcriber.TranscribeAgent
                     output.AppendLine(curSegmentText + "\n");
                 }
 
-                /*Overwrite any existing MeetingMinutes file with the same name,
-                 * else create file. Output results to text file.*/
+                /* Overwrite any existing MeetingMinutes file with the same name,
+                 * else create file. Output results to text file.
+                 */
+                if (!meetingMinutes.Exists)
+                {
+                    Console.WriteLine(">\tFile [" + meetingMinutes.Name + "] Does Not Exist, " +
+                        "Creating the File Under the Directory: " + meetingMinutes.DirectoryName);
+                    meetingMinutes.Create().Close();
+                }
                 using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(meetingMinutes.FullName, false))
                 {
                     file.Write(output.ToString());
                 }
+                Console.WriteLine(">\tTranscript Successfully Written.");
             }
             catch (Exception WriteException)
             {

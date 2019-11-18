@@ -65,8 +65,6 @@ namespace transcriber.TranscribeAgent
             {
                 throw new AggregateException(new List<Exception> { new Exception("Transcription failed. Empty result.") });
             }
-
-            Console.Write("Writing transcription to file...");
         }
 
         /// <summary>
@@ -77,8 +75,8 @@ namespace transcriber.TranscribeAgent
         /// <returns>Task for transcription flow</returns>
         private async Task getTranscriptionOutputs()
         {
-            Console.WriteLine("Transcribing audio...");
-           /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
+            Console.WriteLine(">\tBegin Transcription...");
+            /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
             await RecognitionWithPullAudioStreamAsync();
         }
 
@@ -106,11 +104,10 @@ namespace transcriber.TranscribeAgent
                         Boolean resultAvailable = false;
                         Boolean success = false;
 
-
                         if (e.Result.Reason == ResultReason.RecognizedSpeech)
                         {
                             resultAvailable = true;
-                            Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
+                            Console.WriteLine($"RECOGNIZED: Text = {e.Result.Text}\n");
                             transcribedText = e.Result.Text;                                      //Write transcription text to result
                             success = true;                                                       //Set flag to indicate that transcription succeeded.
                             errorCounter = 0;                                                     //Reset error counter
@@ -118,7 +115,7 @@ namespace transcriber.TranscribeAgent
                         else if (e.Result.Reason == ResultReason.NoMatch)
                         {
                             resultAvailable = true;
-                            Console.WriteLine($"NOMATCH: Speech could not be recognized.");
+                            Console.WriteLine($">\tNOMATCH: Speech could not be recognized.");
                             transcribedText = $"NOMATCH: Speech could not be recognized.";        //Write fail message to result
                             errorCounter++;                                                       //Increment error counter
 
@@ -127,7 +124,6 @@ namespace transcriber.TranscribeAgent
                                 speech_recogniser.StopContinuousRecognitionAsync().ConfigureAwait(false);
                             }
                         }
-
 
                         if (resultAvailable)
                         {
@@ -148,13 +144,14 @@ namespace transcriber.TranscribeAgent
 
                     speech_recogniser.Canceled += (s, e) =>
                     {
-                        Console.WriteLine($"CANCELED: Reason={e.Reason}");
+                        Console.WriteLine($">\tCANCELED: Reason = {e.Reason}");
+                        Console.WriteLine(">\tTranscription Complete.");
 
                         if (e.Reason == CancellationReason.Error)
                         {
-                            Console.WriteLine($"CANCELED: ErrorCode={e.ErrorCode}");
-                            Console.WriteLine($"CANCELED: ErrorDetails={e.ErrorDetails}");
-                            Console.WriteLine($"CANCELED: Did you update the subscription info?");
+                            Console.WriteLine($">\tCANCELED: ErrorCode={e.ErrorCode}");
+                            Console.WriteLine($">\tCANCELED: ErrorDetails={e.ErrorDetails}");
+                            Console.WriteLine($">\tCANCELED: Make Sure to Update Subscription Info");
                         }
 
                         stopRecognition.TrySetResult(0);
@@ -162,17 +159,16 @@ namespace transcriber.TranscribeAgent
 
                     speech_recogniser.SessionStarted += (s, e) =>
                     {
-                        Console.WriteLine("\nSession started event.");
+                        Console.WriteLine(">\tSession Started.");
                     };
 
                     speech_recogniser.SessionStopped += (s, e) =>
                     {
-                        Console.WriteLine("\nSession stopped event.");
-                        Console.WriteLine("\nStop recognition.");
+                        Console.WriteLine(">\tSession Stopped.");
                         stopRecognition.TrySetResult(0);
                     };
 
-                    Console.Write("Awaiting recognition completion");
+                    Console.WriteLine(">\tPerforming Initial Transcription Process...");
                     // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
                     await speech_recogniser.StartContinuousRecognitionAsync().ConfigureAwait(false);
 
@@ -180,7 +176,7 @@ namespace transcriber.TranscribeAgent
                     // Use Task.WaitAny to keep the task rooted.
                     Task.WaitAny(new[] { stopRecognition.Task });
 
-                    Console.Write("Awaiting recognition stop");
+                    Console.WriteLine(">\tTranscription Process About to Stop...");
 
                     // Stops recognition.
                     await speech_recogniser.StopContinuousRecognitionAsync().ConfigureAwait(false);
