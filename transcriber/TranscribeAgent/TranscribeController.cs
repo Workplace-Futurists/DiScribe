@@ -11,78 +11,97 @@ namespace transcriber.TranscribeAgent
     {
         /// <summary>
         /// Presents an interface to the speaker-recognition based transcription functionality.
-        /// Allows the use of a set of Voiceprints to perform transcription of a meeting audio file. 
+        /// Allows the use of a set of Voiceprints to perform transcription of a meeting audio file.
         /// Also supports emailing of a transcription file.
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(SpeechConfig config, FileInfo meetingRecording, List<Voiceprint> voiceprints, FileInfo outFile)
+        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints)
         {
-            MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
-            OutFile = outFile;
-            Config = config;
+            FileSplitter = new AudioFileSplitter(meetingRecording);
+            Transcriber = new SpeechTranscriber(this);
+            Recognizer = new Recognizer(this);
+            Console.WriteLine(">\tTranscription Controller initialized " +
+                "on Audio Recording [" + meetingRecording.FullName + "].");
         }
 
-        /// <summary>
-        /// File details for audio file containing meeting recording.
-        /// </summary>
-        public FileInfo MeetingRecording { get; set; }
+        public List<Voiceprint> Voiceprints { get; set; }
 
-        /// <summary>
-        /// List of voiceprints for users involved in this meeting.
-        /// </summary>
-        public List<Voiceprint> Voiceprints{ get; set;}
+        public AudioFileSplitter FileSplitter { get; private set; }
 
-        public FileInfo OutFile { get; set; }
+        public SpeechTranscriber Transcriber { get; private set; }
 
-        SpeechConfig Config { get; set; }
-
-        /// <summary>
-        /// File details for text output file of meeting minutes.
-        /// </summary>
-        public FileInfo MeetingMinutes { get; private set; }
+        public Recognizer Recognizer { get; private set; }
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
         /// Creates a formatted text output file holding the transcription.
         /// </summary>
         /// <returns>A FileInfo instance holding information about the transcript file that was created.</returns>
-        public Boolean DoTranscription()
+        public Boolean Perform()
         {
-            AudioFileSplitter splitter = new AudioFileSplitter(Voiceprints, MeetingRecording);
-            SortedList<AudioSegment, AudioSegment> audioSegments;
             try
             {
-                //Split audio using speaker recognition. List of AudioSegments is sorted by timestamp
-                audioSegments = splitter.SplitAudio();
-                            
-            } catch(Exception splitEx)
-              {
-                  Console.Error.WriteLine("Splitting meeting audio failed. \n" + splitEx.Message);
-                  return false;
-              }
+                //Wait synchronously for transcript to be finished and written to minutes file.
+                Transcriber.DoTranscription().Wait();
 
-            try
+                /*Do speaker recognition concurrently for each TranscriptionOutput. */
+                Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
+                Console.WriteLine(">\tTranscription && Recognition = Success");
+            }
+            catch (Exception transcribeEx)
             {
-                var transcriber = new SpeechTranscriber(Config, audioSegments, OutFile);
-                transcriber.CreateTranscription().Wait();                 //Wait synchronously for transcript to be finished and written to minutes file.
-                           
-            } catch (Exception transcribeEx)
-              {
-                  Console.Error.Write("Mission failed. No transcription could be created from audio segments. " + transcribeEx.Message);
-                  return false;
-              }
-
+                Console.Error.Write(">\tTranscription Failed: " + transcribeEx.Message);
+                return false;
+            }
             return true;
         }
 
-
-                     
-        public Boolean SendEmail(string targetEmail, string subject = "")
+        public void WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
         {
+            Console.WriteLine(">\tBegin Writing Transcription " +
+                "& Speaker Recognition Result into File [" + meetingMinutes.FullName + "]...");
+            StringBuilder output = new StringBuilder();
 
-            return false;
+            try
+            {
+                /*Iterate over the list of TranscrtiptionOutputs in order and add them to
+                 * output that will be written to file.
+                 * Order is by start offset.
+                 * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
+                 * if width goes over limit of chars per line.
+                 */
+                foreach (var curNode in Transcriber.TranscriptionOutputs)
+                {
+                    string curSegmentText = curNode.Value.ToString();
+                    if (curSegmentText.Length > lineLength)
+                    {
+                        curSegmentText = Helper.WrapText(curSegmentText, lineLength);
+                    }
+                    output.AppendLine(curSegmentText + "\n");
+                }
+
+                /* Overwrite any existing MeetingMinutes file with the same name,
+                 * else create file. Output results to text file.
+                 */
+                if (!meetingMinutes.Exists)
+                {
+                    Console.WriteLine(">\tFile [" + meetingMinutes.Name + "] Does Not Exist, " +
+                        "Creating the File Under the Directory: " + meetingMinutes.DirectoryName);
+                    meetingMinutes.Create().Close();
+                }
+                using (System.IO.StreamWriter file =
+                    new System.IO.StreamWriter(meetingMinutes.FullName, false))
+                {
+                    file.Write(output.ToString());
+                }
+                Console.WriteLine(">\tTranscript Successfully Written.");
+            }
+            catch (Exception WriteException)
+            {
+                Console.Error.WriteLine("Error occurred during Write: " + WriteException.Message);
+            }
         }
     }
 }

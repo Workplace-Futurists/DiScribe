@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transcriberTests", "transcr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Cognitive.SpeakerRecognition.Streaming", "Cognitive-SpeakerRecognition-Windows-master\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj", "{8A58E960-8D3B-4DA7-A111-270AF62FE812}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeakerRecognitionClient", "SpeakerRecognitionClient\SpeakerRecognitionClient.csproj", "{54254060-358B-4702-87D4-B4F2FE503066}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|anycpu = Debug|anycpu
@@ -73,6 +75,14 @@ Global
 		{8A58E960-8D3B-4DA7-A111-270AF62FE812}.Release|anycpu.Build.0 = Release|Any CPU
 		{8A58E960-8D3B-4DA7-A111-270AF62FE812}.Release|x64.ActiveCfg = Release|x64
 		{8A58E960-8D3B-4DA7-A111-270AF62FE812}.Release|x64.Build.0 = Release|x64
+		{54254060-358B-4702-87D4-B4F2FE503066}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{54254060-358B-4702-87D4-B4F2FE503066}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{54254060-358B-4702-87D4-B4F2FE503066}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{54254060-358B-4702-87D4-B4F2FE503066}.Debug|x64.Build.0 = Debug|Any CPU
+		{54254060-358B-4702-87D4-B4F2FE503066}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{54254060-358B-4702-87D4-B4F2FE503066}.Release|anycpu.Build.0 = Release|Any CPU
+		{54254060-358B-4702-87D4-B4F2FE503066}.Release|x64.ActiveCfg = Release|Any CPU
+		{54254060-358B-4702-87D4-B4F2FE503066}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
