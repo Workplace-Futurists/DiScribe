@@ -9,6 +9,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
+using NAudio.Wave;
 using transcriber.Data;
 using transcriber.TranscribeAgent;
 
@@ -54,7 +55,7 @@ namespace transcriber.TranscribeAgent
         /// <returns></returns>
         public async Task CreateTranscription()
         {
-            /*Transcribe audio to create a set of TransciptionOutputs to represent sentences. 
+            /*Transcribe audio to create a set of TransciptionOutputs to represent sentences.
              * with the speakers identified
              */
             await getTranscriptionOutputs();
@@ -64,6 +65,11 @@ namespace transcriber.TranscribeAgent
             {
                 throw new AggregateException(new List<Exception> { new Exception("Transcription failed. Empty result.") });
             }
+
+            Console.Write("Writing transcription to file...");
+            /*Write transcription to text file */
+            WriteTranscriptionFile(lineLength);
+
         }
 
         /// <summary>
@@ -74,7 +80,8 @@ namespace transcriber.TranscribeAgent
         /// <returns>Task for transcription flow</returns>
         private async Task getTranscriptionOutputs()
         {
-            /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
+            Console.WriteLine("Transcribing audio...");
+           /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
             await RecognitionWithPullAudioStreamAsync();
         }
 
@@ -82,6 +89,8 @@ namespace transcriber.TranscribeAgent
         {
             var stopRecognition = new TaskCompletionSource<int>();
             var entireAudio = Controller.FileSplitter.GetEntireAudio();
+            int errorCounter = 0;                                                //Number of failed recognitions to detect if recognizer gets stuck
+            const int ERROR_MAX = 10;
 
             using (var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream))
             {
@@ -107,13 +116,21 @@ namespace transcriber.TranscribeAgent
                             Console.WriteLine($"RECOGNIZED: Text={e.Result.Text}");
                             transcribedText = e.Result.Text;                                      //Write transcription text to result
                             success = true;                                                       //Set flag to indicate that transcription succeeded.
+                            errorCounter = 0;                                                     //Reset error counter
                         }
                         else if (e.Result.Reason == ResultReason.NoMatch)
                         {
                             resultAvailable = true;
                             Console.WriteLine($"NOMATCH: Speech could not be recognized.");
                             transcribedText = $"NOMATCH: Speech could not be recognized.";        //Write fail message to result
+                            errorCounter++;                                                       //Increment error counter
+
+                            if (errorCounter > ERROR_MAX)                                         //If ERROR_MAX failures occur in a row, stop recognition
+                            {
+                                recognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+                            }
                         }
+
 
                         if (resultAvailable)
                         {
@@ -122,17 +139,15 @@ namespace transcriber.TranscribeAgent
                             long startOffset = e.Result.OffsetInTicks / 10000L;
                             long endOffset = startOffset + (long)e.Result.Duration.TotalMilliseconds;
 
-                            /*Split the audio based on start and end offset of the identified phrase */
-                            AudioSegment segment = Controller.FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
-
                             //CRITICAL section. Add the result to transcriptionOutputs wrapped in a TranscriptionOutput object.
                             lock (_lockObj)
                             {
+                                /*Split the audio based on start and end offset of the identified phrase. Note access to shared stream. */
+                                AudioSegment segment = FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
                                 TranscriptionOutputs.Add(startOffset, new TranscriptionOutput(transcribedText, success, segment));
                             }//END CRITICAL section.
                         }
-
-                    };
+                   };
 
                     recognizer.Canceled += (s, e) =>
                     {
@@ -160,7 +175,7 @@ namespace transcriber.TranscribeAgent
                         stopRecognition.TrySetResult(0);
                     };
 
-                    Console.Write("Awaiting recognition completeion");
+                    Console.Write("Awaiting recognition completion");
                     // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
                     await recognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
 

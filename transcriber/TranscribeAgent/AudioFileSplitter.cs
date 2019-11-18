@@ -33,7 +33,7 @@ namespace transcriber.TranscribeAgent
             MainStream = new MemoryStream(AudioData);                           //Set up the main stream with AudioData as backing buffer.
         }
 
-
+        /*Default WAV file format attributes */
         public const int SAMPLE_RATE = 16000;
         public const int BITS_PER_SAMPLE = 16;
         public const int CHANNELS = 1;
@@ -67,23 +67,11 @@ namespace transcriber.TranscribeAgent
         }
 
 
-        /// <summary>
-        /// Provides a memory stream to access audio data which starts at
-        /// startOffset and ends at endOffset in milliseconds
-        /// </summary>
-        public MemoryStream SplitAudioGetMemStream(ulong startOffset, ulong endOffset)
-        {
-            byte[] buf = SplitAudioGetBuf(startOffset, endOffset);
-            System.Span<byte> bufSpan = buf;
-            MainStream.Seek((long)startOffset, SeekOrigin.Begin);                           //Seek to position in stream at start of segment
-            MainStream.Read(bufSpan);                                                      //Read bytes into buf (number of bytes read is segmentLength)
-            return new MemoryStream(buf);
-
-        }
 
         /// <summary>
         /// Obtain a buffer containing data for the specified start
         /// and end offsets in milliseconds.
+        /// No RIFF header is included in data.
         /// </summary>
         /// <param name="startOffset"></param>
         /// <param name="endOffset"></param>
@@ -97,15 +85,29 @@ namespace transcriber.TranscribeAgent
             ulong lowerIndex = startOffset / 1000UL * BYTES_PER_SECOND;
             ulong upperIndex = endOffset / 1000UL * BYTES_PER_SECOND;
 
-            ulong segmentLength = endOffset - startOffset;
+            ulong segmentLength = upperIndex - lowerIndex;
 
+            System.Span<byte> bufSpan = new byte[segmentLength];
 
-            /*Setup the PullAudioInputStream for this AudioSegment 
-             * by writing data for this segment into temp buffer and creating 
-             * a MemoryStream to read from that buffer */
-            return new byte[segmentLength];
+            MainStream.Seek((long)lowerIndex, SeekOrigin.Begin);                           //Seek to position in stream at start of segment
+            MainStream.Read(bufSpan);                                                      //Read bytes into buf (number of bytes read is segmentLength)
 
+            return bufSpan.ToArray();
         }
+
+
+        /// <summary>
+        /// Get a stream which provides access to data in this audio file from startOffset to endOffset.
+        /// No RIFF header is included in data.
+        /// </summary>
+        /// <param name="startOffset"></param>
+        /// <param name="endOffset"></param>
+        /// <returns></returns>
+        public MemoryStream SplitAudioGetStream(ulong startOffset, ulong endOffset)
+        {
+            return new MemoryStream(SplitAudioGetBuf(startOffset, endOffset));
+        }
+
 
         /// <summary>
         /// Get the entire audio managed by this instance as an AudioSegment
@@ -113,40 +115,19 @@ namespace transcriber.TranscribeAgent
         /// <returns>The audio segment containing all audio data and a stream to access that data.</returns>
         public AudioSegment GetEntireAudio()
         {
-            AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS);
-            PullAudioInputStream audioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(MainStream), streamFormat);
+            byte[] dataCopy = (byte[])AudioData.Clone();                   //Make copy of audio data
 
+            /*Calc audio length in milliseconds */
             const long BIT_RATE = SAMPLE_RATE * BITS_PER_SAMPLE;
             const long BYTES_PER_SECOND = BIT_RATE / 8L;
-            long audioLengthMS = AudioData.Length * BYTES_PER_SECOND * 1000L;
+            long audioLengthMS = AudioData.Length / BYTES_PER_SECOND * 1000L;
 
-            return new AudioSegment(audioStream, 0, audioLengthMS);
+            return new AudioSegment(dataCopy, 0, audioLengthMS);
             
         }
 
 
-        /// <summary>
-        /// Identifies all speakers in AudioFile using the participant voiceprints.
-        /// Create a set of RecognitionResultWrapper corresponding to each time the speaker changes.
-        /// in the audio changes.
-        /// For testing, just returns list of 5 fake RecognitionResultWrapper objects
-        /// </summary>
-        /// <returns><see cref="SortedList"/> List of RecognitionResultWrapper objects sorted by offset.</returns>
-        //private SortedList<int, RecognitionResultWrapper> DoRecognition()
-        //{
-        //   RecognitionResult fakeResult = new RecognitionResult(new Identification(), new System.Guid(), 0);
-
-
-        //   return new SortedList<int, RecognitionResultWrapper>()
-        // {
-        //   {0, new RecognitionResultWrapper(0, 10000, fakeResult)},
-        // {20, new RecognitionResultWrapper(15000, 20000, fakeResult)},
-        //{21, new RecognitionResultWrapper(21000, 58000, fakeResult)},
-        //{60//, new RecognitionResultWrapper(60000, 80000, fakeResult) },
-        //{120, new RecognitionResultWrapper(120000, 150000, fakeResult) }
-
-        //};
-        //}
+     
 
         /// <summary>
         /// Creates buffer with file data. File header is removed.
@@ -168,8 +149,6 @@ namespace transcriber.TranscribeAgent
 
         
 
-
-
         /// <summary>
         /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/> 
         /// wrapper. The stream has the specified int offset.
@@ -180,35 +159,55 @@ namespace transcriber.TranscribeAgent
         /// <returns></returns>
         public AudioSegment CreateAudioSegment(ulong startOffset, ulong endOffset)
         {
-            MemoryStream stream = SplitAudioGetMemStream(startOffset, endOffset);
-
-            AudioStreamFormat streamFormat = AudioStreamFormat.GetWaveFormatPCM(SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS);   
-            PullAudioInputStream audioStream = AudioInputStream.CreatePullStream(new BinaryAudioStreamReader(stream), streamFormat);
-            
-            return new AudioSegment(audioStream, (long)startOffset, (long)endOffset);
+            byte[] buf = SplitAudioGetBuf(startOffset, endOffset);
+                       
+            return new AudioSegment(buf, (long)startOffset, (long)endOffset);
         }
 
 
+
         /// <summary>
-        /// Writes WAV data with header to a stream
+        /// Splits audio data to obtain a stream which gives access data between
+        /// startOffset and endOffset (inclusive).
+        /// </summary>
+        /// <param name="startOffset"></param>
+        /// <param name="endOffset"></param>
+        /// <returns></returns>
+        public MemoryStream WriteWavToStream(ulong startOffset, ulong endOffset)
+        {
+            byte[] buf = SplitAudioGetBuf(startOffset, endOffset);
+
+            byte[] wavBuf = WriteWavToBuf(buf);                  //Write data to the wave data buffer
+
+            MemoryStream outputStream = new MemoryStream(wavBuf);
+            outputStream.Position = 0;                          //Set stream position to 0;
+
+            return outputStream;
+        }
+
+
+
+        /// <summary>
+        /// Writes WAV data INCLUDING a RIFF header to a stream
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="buf"></param>
         /// <returns></returns>
-        public static byte[] writeWavToBuf(byte[] dataBuf, int sampleRate = SAMPLE_RATE, int channels = CHANNELS, int bitPerSample = BITS_PER_SAMPLE)
+        public static byte[] WriteWavToBuf(byte[] dataBuf, int sampleRate = SAMPLE_RATE, int channels = CHANNELS, int bitPerSample = BITS_PER_SAMPLE)
         {
-           
+            byte[] output = null;
             WaveFormat format = new WaveFormat(sampleRate, bitPerSample, channels);
 
-            MemoryStream stream = new MemoryStream();
-            WaveFileWriter writer = new WaveFileWriter(stream, format);
-            
-            writer.Write(dataBuf, 0, dataBuf.Length);
 
-            writer.Dispose();
-            return stream.ToArray();
+            MemoryStream stream  = new MemoryStream();
+            using (WaveFileWriter writer = new WaveFileWriter(stream, format))
+            {
+                writer.Write(dataBuf, 0, dataBuf.Length);
 
+                output = stream.GetBuffer();
+            }
 
+            return output;
         }
 
 
@@ -222,7 +221,7 @@ namespace transcriber.TranscribeAgent
         /// <param name="sampleRate"></param>
         /// <param name="bitRate"></param>
         /// <param name="channels"></param>
-        private void ProcessWavFile(FileInfo originalFile, int sampleRate = SAMPLE_RATE, int channels = CHANNELS, int bitPerSample = BITS_PER_SAMPLE)
+        private void ProcessWavFile(FileInfo originalFile, int sampleRate = SAMPLE_RATE)
         {
             /*Convert the file using NAudio library */
             using (var inputReader = new WaveFileReader(originalFile.FullName))
@@ -244,6 +243,7 @@ namespace transcriber.TranscribeAgent
                 var wav16provider = resampler.ToWaveProvider16();
                 AudioData = new byte[inputReader.Length];
                 wav16provider.Read(AudioData, 0, (int)(inputReader.Length));        //Read transformed WAV data into buffer WavData (header is removed).
+
             }
 
         }
