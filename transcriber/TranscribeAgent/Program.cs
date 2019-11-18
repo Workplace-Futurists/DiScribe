@@ -29,9 +29,9 @@ namespace transcriber.TranscribeAgent
          */
         private static readonly SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
-        private static readonly FileInfo TestRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
+        private static readonly FileInfo TestRecording = new FileInfo(@"..\..\..\Record\MultipleSpeakers.wav");
 
-        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
+        private static readonly FileInfo MeetingMinutes = new FileInfo(@"..\..\..\transcript\minutes.txt");
 
 
 
