@@ -51,7 +51,7 @@ namespace transcriber.TranscribeAgent
         public static string FormatTime(long offsetMS)
         {
             long hours = offsetMS / 3600000;
-            long minutes = (offsetMS / 6000) % 60;
+            long minutes = (offsetMS / 60000) % 60;
             long seconds = (offsetMS / 1000) % 60;
             
             return $"{hours}:{minutes}:{seconds}";
