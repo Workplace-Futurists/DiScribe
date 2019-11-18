@@ -31,10 +31,11 @@ namespace transcriber.TranscribeAgent
             FileInfo testRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
             FileInfo meetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
-            var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
-            EnrollUsers(Program.SpeakerIDKey, voiceprints).Wait();
+            var voiceprints = MakeTestVoiceprints(testRecording); //Make a test set of voiceprint objects
+            EnrollUsers(voiceprints).Wait();
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
+            // TODO not yet used?
             var initData = new TranscriptionInitData(testRecording, voiceprints, "");
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
@@ -58,14 +59,12 @@ namespace transcriber.TranscribeAgent
         /// Function which enrolls 2 users for testing purposes. In final system, enrollment will
         /// be done by users.
         /// </summary>
-        /// <param name="speakerIDKey"></param>
-        /// <param name="audioFile"></param>
         /// <returns></returns>
-        public static async Task EnrollUsers(string speakerIDKey, List<Voiceprint> voiceprints, string enrollmentLocale = "en-us")
+        public static async Task EnrollUsers(List<Voiceprint> voiceprints, string enrollmentLocale = "en-us")
         {
+            Console.WriteLine(">\tEnrolling Users...");
             /*Create REST client for enrolling users */
-            SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKey);
-
+            SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(SpeakerIDKey);
 
             /*First check that all profiles in the voiceprint objects actually exist*/
             Profile[] existingProfiles = await enrollmentClient.GetProfilesAsync();
@@ -73,14 +72,12 @@ namespace transcriber.TranscribeAgent
             for (int i = 0; i < voiceprints.Count; i++)
             {
                 Boolean profileExists = false;
-
                 int j = 0;
+
                 while (!profileExists && j < existingProfiles.Length)
                 {
-                    if (voiceprints[i].UserGUID == existingProfiles[j].ProfileId)
-                    {
-                        profileExists = true;
-                    }
+                    if (voiceprints[i].UserGUID == existingProfiles[j].ProfileId)                    
+                        profileExists = true;                    
                     else
                         j++;
                 }
@@ -106,14 +103,11 @@ namespace transcriber.TranscribeAgent
                     voiceprints[i].UserGUID, true));
             }
 
-
             /*Async wait for all speaker voiceprints to be submitted in request for enrollment */
             await Task.WhenAll(enrollmentTasks.ToArray());
 
-
             /*Async wait for all enrollments to be in an enrolled state */
             await ConfirmEnrollment(enrollmentTasks, enrollmentClient);
-
         }
 
         /// <summary>
@@ -132,9 +126,7 @@ namespace transcriber.TranscribeAgent
             await profileTask;
 
             taskComplete.SetResult(profileTask.Result.ProfileId);
-
             return profileTask.Result.ProfileId;
-
         }
 
         /// <summary>
@@ -144,6 +136,7 @@ namespace transcriber.TranscribeAgent
         /// <returns></returns>
         private static List<Voiceprint> MakeTestVoiceprints(FileInfo audioFile)
         {
+            Console.WriteLine(">\tGenerating Voice Prints...");
             /*Pre-registered profiles.*/
             Guid user1GUID = new Guid("87aed609-b072-4fc5-bca6-87f8caa6dea9");
             Guid user2GUID = new Guid("0135a034-f9dc-45ed-84e6-94f35caf4617");
@@ -155,7 +148,6 @@ namespace transcriber.TranscribeAgent
             User user2 = new User("Janelle Shane", "J.Shane@example.com", 2);
             User user3 = new User("Nick Smith", "N.Smith@example.com", 3);
             User user4 = new User("Patrick Shyu", "P.Shyu@example.com", 4);
-
 
             /*Offsets identifying times */
             ulong user1StartOffset = 1 * 1000;
@@ -177,7 +169,6 @@ namespace transcriber.TranscribeAgent
             var user2Audio = splitter.WriteWavToStream(user2StartOffset, user2EndOffset);
             var user3Audio = splitter.WriteWavToStream(user3StartOffset, user3EndOffset);
             var user4Audio = splitter.WriteWavToStream(user4StartOffset, user4EndOffset);
-
 
             var format = new WaveFormat(16000, 16, 1);
             using (WaveFileWriter testWriter = new WaveFileWriter($"user1Audio.wav", format))
@@ -209,7 +200,6 @@ namespace transcriber.TranscribeAgent
             };
 
             return voiceprints;
-
         }
 
         /// <summary>
@@ -219,7 +209,8 @@ namespace transcriber.TranscribeAgent
         /// <returns></returns>
         private static async Task ConfirmEnrollment(List<Task<OperationLocation>> enrollmentTasks, SpeakerIdentificationServiceClient enrollmentClient)
         {
-            foreach(var curTask in enrollmentTasks)
+            Console.WriteLine(">\tConfirm Enrollment...");
+            foreach (var curTask in enrollmentTasks)
             {
                 Boolean done = false;
                 do
@@ -230,15 +221,10 @@ namespace transcriber.TranscribeAgent
                     await enrollmentCheck;
 
                     /*Check that this profile is enrolled */
-                    if (enrollmentCheck.Result.ProcessingResult.EnrollmentStatus == EnrollmentStatus.Enrolled)
-                    {
-                        done = true;
-                    }
+                    done = enrollmentCheck.Result.ProcessingResult.EnrollmentStatus == EnrollmentStatus.Enrolled;
 
                 } while (!done);
-
             }
-
         }
     }
 }
