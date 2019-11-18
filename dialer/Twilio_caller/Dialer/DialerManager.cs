@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,15 +11,14 @@ namespace twilio_caller.dialer
 {
     public class dialerManager
     {
-        //// TODO: can't reference class in main program due to static referencing when 
-        //// instantiating call to methods need to fix before this can be encapsuled
-        //private string meetingNum { get; set; }
+        private static string _accountSid;
+        private static string _authToken;
 
-        //public dialerManager(string mnum)
-        //{
-        //    meetingNum = mnum;
-        //}
-
+        public dialerManager(string sid, string authTok)
+        {
+            _accountSid = sid;
+            _authToken = authTok;
+        }
         // a function to add pauses ('w' characters) between meeting call in numbers and extensions
         // ex. 628079791
         private string formatDigits(string meetingNum)
@@ -43,20 +43,9 @@ namespace twilio_caller.dialer
 
         public string CallMeeting(string mNum)
         {
-            var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
-            var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
-            TwilioClient.Init(accountSid, authToken);
+            TwilioClient.Init(_accountSid, _authToken);
 
-            // From the Twilio SIP guide
-            //var call = CallResource.Create(
-            //    url: new Uri("http://www.example.com/sipdial.xml"),
-            //    to: new PhoneNumber("sip:628353018@cs319-futurists-test01.my.webex.com"),
-            //    from: new PhoneNumber("+17787444195")
-            //);
-
-            // Tried using the SIP of a webex meeting and it fails. probably because this isn't an async method
-            //var to = new PhoneNumber("sip:628353018@cs319-futurists-test01.my.webex.com");
-
+            // call in number and call from number
             const string vancouverTollNum = "+12268289662";
             const string twilioAccNum = "+17787444195";
             //string meetingNum = "628079791";

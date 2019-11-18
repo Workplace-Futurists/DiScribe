@@ -1,0 +1,23 @@
+{
+  "name": "cs319-2019w1-hsbc",
+  "version": "1.0.0",
+  "description": "HSBC Canada would like to develop a proof of concept project that help staff reduce their\r administration time capturing meetings and outcomes. They would like to integrate with their\r existing email client, Microsoft Outlook, and the natural language.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/team-workplace-futurists/cs319-2019w1-hsbc.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/team-workplace-futurists/cs319-2019w1-hsbc/issues"
+  },
+  "homepage": "https://gitlab.com/team-workplace-futurists/cs319-2019w1-hsbc#readme",
+  "dependencies": {
+    "@aspnet/signalr": "^1.1.4"
+  }
+}
