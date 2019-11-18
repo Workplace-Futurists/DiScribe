@@ -24,6 +24,8 @@ namespace transcriber.TranscribeAgent
         /* Subscription key for Azure SpeakerRecognition service. */
         public static string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
+        public static int SPEAKER_RECOGNITION_API_INTERVAL = 3000; //Min time allowed between requests to speaker recognition API.    
+
         public static void Main(string[] args)
         {
 
@@ -32,7 +34,7 @@ namespace transcriber.TranscribeAgent
 
             var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
 
-            EnrollUsers(speakerIDKey, voiceprints).Wait();
+            EnrollUsers(Program.SpeakerIDKey, voiceprints).Wait();
 
 
             /*This TranscriptionInitData instance will be received from the Dialer in method call*/
@@ -143,9 +145,6 @@ namespace transcriber.TranscribeAgent
 
         }
 
-
-
-
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
         /// </summary>
@@ -221,16 +220,11 @@ namespace transcriber.TranscribeAgent
 
         }
 
-
-
-
-
-
-            /// <summary>
-            /// Confirms that enrollment was successful for all the profiles
-            /// associated with the enrollment tasks in enrollmentOps.
-            /// </summary>
-            /// <returns></returns>
+        /// <summary>
+        /// Confirms that enrollment was successful for all the profiles
+        /// associated with the enrollment tasks in enrollmentOps.
+        /// </summary>
+        /// <returns></returns>
         private static async Task ConfirmEnrollment(List<Task<OperationLocation>> enrollmentTasks, SpeakerIdentificationServiceClient enrollmentClient)
         {
             foreach(var curTask in enrollmentTasks)

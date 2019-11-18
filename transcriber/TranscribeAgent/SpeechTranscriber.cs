@@ -92,7 +92,7 @@ namespace transcriber.TranscribeAgent
             using (var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream))
             {
                 // Creates a speech recognizer using audio stream input.
-                using (var recognizer = new SpeechRecognizer(Controller.Config, audioInput))
+                using (var recognizer = new SpeechRecognizer(Program.SpeechConfig, audioInput))
                 {
                     // Subscribes to events. Subscription is important, otherwise recognition events aren't handled.
                     recognizer.Recognizing += (s, e) =>
@@ -140,7 +140,7 @@ namespace transcriber.TranscribeAgent
                             lock (_lockObj)
                             {
                                 /*Split the audio based on start and end offset of the identified phrase. Note access to shared stream. */
-                                AudioSegment segment = FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
+                                AudioSegment segment = Controller.FileSplitter.SplitAudio((ulong)startOffset, (ulong)endOffset);
                                 TranscriptionOutputs.Add(startOffset, new TranscriptionOutput(transcribedText, success, segment));
                             }//END CRITICAL section.
                         }
