@@ -20,7 +20,6 @@ namespace transcriber.TranscribeAgent
         {
             Voiceprints = voiceprints;
             FileSplitter = new AudioFileSplitter(meetingRecording);
-
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
         }
@@ -28,11 +27,6 @@ namespace transcriber.TranscribeAgent
         public List<Voiceprint> Voiceprints { get; set; }
 
         public AudioFileSplitter FileSplitter { get; private set; }
-
-        /// <summary>
-        /// Configuration for the Azure Cognitive Speech Services resource.
-        /// </summary>
-        public SpeechConfig Config { get; set; }
 
         public SpeechTranscriber Transcriber { get; private set; }
 
@@ -63,7 +57,7 @@ namespace transcriber.TranscribeAgent
             return true;
         }
 
-        public void WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
+        public bool WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
         {
             StringBuilder output = new StringBuilder();
 
