@@ -41,7 +41,7 @@ namespace twilio_caller
 
             // prompt user for recording resource sid
             Console.WriteLine("Below is the start of code to download a recording.");
-            Console.WriteLine("To test fetching a recording resource, feel free to use the following sid: RE4250a08aac66a6a25f7147a3226e6376");
+            Console.WriteLine("To test fetching a recording resource, feel free to use the following sid: RE0b27568e36f9b32cef47a1ec760d8ca8");
             Console.WriteLine("Enter the Recording Sid for the desired Twilio Recording to fetch: ");
 
             // set recording id
