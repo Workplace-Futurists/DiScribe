@@ -36,6 +36,7 @@ namespace transcriber.TranscribeAgent
         /// <param name="apiDelayInterval"></param>
         public async Task DoSpeakerRecognition(SortedList<long, TranscriptionOutput> TranscriptionOutputs, int apiDelayInterval = 3000)
         {
+            Console.WriteLine(">\tBegin Speaker Recognition...");
             var recognitionComplete = new TaskCompletionSource<int>();
 
             /*Create REST client for enrolling users */
