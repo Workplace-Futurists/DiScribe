@@ -9,11 +9,12 @@ Basically, they care. An int types that you see in the early versions of C and s
 the compiler in hand. They started to rewrite the operating system itself in C and this took a while, but
 
 
-Patrick Shyu	0:8:48	Something in the order so the question is what happened what went wrong is the AI trying to kill us.
+.
+
 
 Not recognized	0:9:56	Or is it trying to do what we asked and there was a problem.
 
-Not recognized	0:10:1	So, in movies when something goes wrong with AI. It's usually because the AI has decided that doesn't
+Janelle Shane	0:10:1	So, in movies when something goes wrong with AI. It's usually because the AI has decided that doesn't
 want to obey the humans anymore. And it's got his own goals. Thank you very much so in real life, though the AI that we actually
 have is not nearly smart enough for that. It has the approximate computing power of an earthworm or maybe at most single
 honeybee.
