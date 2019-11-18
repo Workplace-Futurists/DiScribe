@@ -9,7 +9,7 @@ namespace transcriber.Data
     /// </summary>
     public class User : DataElement
     {
-        public User(string name, string email, Guid userID)
+        public User(string name, string email, int userID)
         {
             Name = name;
             Email = email;
@@ -20,7 +20,7 @@ namespace transcriber.Data
 
         public string Email { get; set; }
 
-        public Guid UserID { get; private set; }
+        public int UserID { get; private set; }
 
     }
 }
