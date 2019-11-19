@@ -21,10 +21,6 @@ namespace twilio_caller.SendEmailCsharp
 
         public static async Task sendEmail()
         {
-            // var apiKey = Environment.GetEnvironmentVariable("SENDGRID_KEY_API");
-            // String apiKey = "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";
-            // var client = new SendGridClient(apiKey);
-
             var from = new EmailAddress("workplace-futurists@hotmail.com", "Workplace Futurists");
             var tos = new List<EmailAddress>
             {
@@ -37,6 +33,7 @@ namespace twilio_caller.SendEmailCsharp
             var subject = "WebEx Meeting Minutes (Workplace-Futurists)";
             var plainTextContent = "Workplace-Futurists";
 
+            // TODO: any more information to be included?
             var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
             var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " + accessCode + "</h4>";
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
