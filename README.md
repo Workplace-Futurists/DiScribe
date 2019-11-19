@@ -27,3 +27,8 @@ The bot could not only correctly transcribes the content of speech but also coul
 
 ### Emailing Process
 - **Sends the Email** to meeting hosts upon `minutes.txt` is received *(incomplete)*
+
+### Stretch Goals (if time permits)
+- A **Website** that enables user log-in and voice print registrations and managements. *(incomplete)*
+- A **database** that stores all these crucial informations. *(incomplete)*
+- **Skips** the call-in identification process when user is recognized in the database. *(incomplete)*
