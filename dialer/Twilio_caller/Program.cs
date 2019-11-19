@@ -145,12 +145,19 @@ namespace twilio_caller
                 Console.WriteLine("Exception: " + ex.Message);
             }
 
+           
+            TimeSpan interval = new TimeSpan(0, 0, 30);
+            var test = Task.Run(() => Graph.GraphHelper.GetEmailMeetingNumAsync(interval));
+
+            test.Wait();
+
+
             // Send email using SendGrid
             // GOT TO FIND A WAY TO RETRIEVE MEETING INFORMATION
-            string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+            /**string sendGridAPI = appConfig["SENDGRID_API_KEY"];
             SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
-            SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();
-            
+            SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();**/
+
 
             // Graph.GraphHelper.sendMail();
 
