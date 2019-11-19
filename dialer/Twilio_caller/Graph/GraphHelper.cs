@@ -6,6 +6,9 @@ using System.Net;
 using System.Timers;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
+using twilio_caller.dialer;
+using System.Threading;
 
 namespace twilio_caller.Graph
 {
@@ -16,7 +19,8 @@ namespace twilio_caller.Graph
         // Subscription variables
         private const int MAX_SUB_EXPIRATION_MINS = 4230;
         private static Dictionary<string, Subscription> _Subscriptions = new Dictionary<string, Subscription>();
-        private static Timer _subscriptionTimer = null;
+        private static System.Timers.Timer _subscriptionTimer = null;
+        private static ArrayList meetings = new ArrayList();
 
         public static void Initialize(IAuthenticationProvider authProvider)
         {
@@ -67,33 +71,65 @@ namespace twilio_caller.Graph
                 .GetAsync();
             return messages[0];
         }
+        public static async void CreateMeetingInstance(string accessCode, DateTime date)
+        {
+            if ((date - DateTime.Now).TotalMilliseconds > 0)
+            {
+                dialerManager dialer = new dialerManager("AC5869733a59d586bbcaf5d27249d7ff2f", "312b3283121fd9bd80ca6a8fb8ea847c");
+                Console.WriteLine($"Now waiting{date.TimeOfDay.TotalMinutes} minutes until your meeting begins");
+                await Task.Delay((int)(date - DateTime.Now).TotalMilliseconds);
+                Console.WriteLine($"The recording process has begun for the following meeting: {accessCode}");
+                dialer.CallMeeting(accessCode);
+            }
 
-        public static async Task<string> GetEmailMeetingNumAsync()
+        }
+        public static async Task GetEmailMeetingNumAsync(TimeSpan runInterval)
         {
             try
             {
+
                 // Get message from mailbox
-                Message message = await GetEmailAsync();
-
-                string accessCode;
-                //string meetingStart;
-                //Boolean pm = false;
-                string parsedEmail = message.Body.Content;
-                parsedEmail = WebUtility.HtmlDecode(parsedEmail);
-                HtmlDocument htmldoc = new HtmlDocument();
-                htmldoc.LoadHtml(parsedEmail);
-                //htmldoc.DocumentNode.SelectNodes("//comment()")?.Foreach(c => c.Remove());
-                parsedEmail = htmldoc.DocumentNode.InnerText;
-                accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
-                accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
-                accessCode = accessCode.Replace(" ", "");
-
-                return accessCode;
+                while (true)
+                {
+                    Message message = await GetEmailAsync();
+                   
+                    if (message.Body.Content.Contains("Meeting number (access code):"))
+                    {
+                        string accessCode;
+                        string startDate;
+                        string parsedEmail = message.Body.Content;
+                        parsedEmail = WebUtility.HtmlDecode(parsedEmail);
+                        HtmlDocument htmldoc = new HtmlDocument();
+                        htmldoc.LoadHtml(parsedEmail);
+                        //htmldoc.DocumentNode.SelectNodes("//comment()")?.Foreach(c => c.Remove());
+                        parsedEmail = htmldoc.DocumentNode.InnerText;
+                        accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
+                        accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
+                        accessCode = accessCode.Replace(" ", "");
+                        startDate = parsedEmail.Substring(parsedEmail.IndexOf("Meeting password: ")+28);
+                        startDate = startDate.Substring(0, startDate.IndexOf("2019") + 21);
+                        DateTime date = DateTime.Parse(startDate);
+                        
+                         
+  
+                       
+                        if (!meetings.Contains(accessCode))
+                        {
+                            meetings.Add(accessCode);
+                            Console.WriteLine($"The following meeting was added to the queue:{accessCode}");
+                            Thread thread = new Thread(() => CreateMeetingInstance(accessCode, date));
+                            thread.Start();
+                            
+                        }
+                    }
+                    
+                    await Task.Delay(runInterval);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception in GetEmailMeetingNumAsync: " + ex.Message);
-                return "000000000";
+                
             }
         }
 
@@ -127,13 +163,13 @@ namespace twilio_caller.Graph
                 if (_subscriptionTimer == null)
                 {
                     // calls to check subscriptions every 12 hours = 43200000 milliseconds
-                    _subscriptionTimer = new Timer(43200000);
+                    _subscriptionTimer = new System.Timers.Timer(43200000);
                     _subscriptionTimer.Elapsed += CheckSubscriptions;
                     _subscriptionTimer.AutoReset = true;
                     _subscriptionTimer.Enabled = true;
                 }
 
-                Console.WriteLine($"Returned response from add subscription: {response}");
+                
                 return response;
             }
             catch (Exception ex)

@@ -34,8 +34,8 @@ namespace twilio_caller.SendEmailCsharp
             var plainTextContent = "Workplace-Futurists";
 
             // TODO: any more information to be included?
-            var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
-            var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " + accessCode + "</h4>";
+            //var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
+            var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " +  "</h4>";
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
 
             var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from,
