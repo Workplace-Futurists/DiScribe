@@ -37,7 +37,7 @@ namespace twilio_caller.SendEmailCsharp
             var subject = "WebEx Meeting Minutes (Workplace-Futurists)";
             var plainTextContent = "Workplace-Futurists";
 
-            Task<String> accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync();
+            var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
             var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " + accessCode + "</h4>";
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
 
