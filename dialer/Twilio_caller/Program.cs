@@ -17,6 +17,7 @@ using HtmlAgilityPack;
 using System.Net;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using twilio_caller.SendEmailCsharp;
 
 namespace twilio_caller
 {
@@ -145,11 +146,18 @@ namespace twilio_caller
                 Console.WriteLine("Exception: " + ex.Message);
             }
 
+            string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+
+            // Event Handler for Meeting Minute creation
+            // Once the meeting minute is created in the desired folder,
+            // emails are sent to participants
+            SendEmailCsharp.Watcher.Run(sendGridAPI);
+
             // Send email using SendGrid
             // GOT TO FIND A WAY TO RETRIEVE MEETING INFORMATION
-            string sendGridAPI = appConfig["SENDGRID_API_KEY"];
-            SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
-            SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();
+            // string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+            // SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
+            // SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();
             
 
             // Graph.GraphHelper.sendMail();
