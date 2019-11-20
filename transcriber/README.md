@@ -14,3 +14,6 @@ The purpose of this module is to
 - Navigate to the **publish** directory.
 - Double click on "Transcriber.exe". Transcription will then begin.
 - View transcription output in `minutes.txt` in the `transcript` directory.
+
+## Extra Instructions with Visual Studio
+- Make sure to install the package `Nuget Package Manager Console` as an **Extension**.
