@@ -9,7 +9,7 @@ using System.IO;
 
 namespace EmailController
 {
-    public class SendEmailCsharp
+    public class SendGridHelper
     {
         private static SendGridClient sendGridClient;
 
