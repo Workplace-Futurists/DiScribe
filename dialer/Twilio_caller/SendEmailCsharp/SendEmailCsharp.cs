@@ -29,18 +29,12 @@ namespace twilio_caller.SendEmailCsharp
                 new EmailAddress("tmdenddl@hanmail.net", "Hanmail")
             };
 
-            // TODO: Change the subject and content to match the meeting information
             var subject = "WebEx Meeting Minutes (Workplace-Futurists)";
             var plainTextContent = "Workplace-Futurists";
 
-            // TODO: any more information to be included?
-<<<<<<< HEAD
             var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
             var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " + accessCode + "</h4>";
-=======
-            //var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
-            var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " +  "</h4>";
->>>>>>> 9e5062af9f1c852f39cbbe0701ebfbc823d19152
+
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
 
             var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from,

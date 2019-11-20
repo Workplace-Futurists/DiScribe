@@ -81,8 +81,4 @@ namespace twilio_caller.SendEmailCsharp
             // Console.WriteLine($"File: {e.OldFullPath} renamed to {e.FullPath}");
             useSendGrid(sendGridAPIKey);
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 9e5062af9f1c852f39cbbe0701ebfbc823d19152
