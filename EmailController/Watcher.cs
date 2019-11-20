@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Security.Permissions;
+using EmailController;
 
 namespace twilio_caller.SendEmailCsharp
 {
@@ -18,7 +19,7 @@ namespace twilio_caller.SendEmailCsharp
         private static void UseSendGrid(string sendGridAPI)
         {
             SendGridHelper.Initialize(sendGridAPIKey);
-			SendGridHelper.sendEmail().Wait();
+			SendGridHelper.SendEmail().Wait();
             sendGridUsed = true;
         }
 
@@ -74,11 +75,11 @@ namespace twilio_caller.SendEmailCsharp
         private static void OnChanged(object source, FileSystemEventArgs e) =>
             // Specify what is done when a file is changed, created, or deleted.
             // Console.WriteLine($"File: {e.FullPath} {e.ChangeType}");
-            useSendGrid(sendGridAPIKey);
+            UseSendGrid(sendGridAPIKey);
 
         private static void OnRenamed(object source, RenamedEventArgs e) =>
             // Specify what is done when a file is renamed.
             // Console.WriteLine($"File: {e.OldFullPath} renamed to {e.FullPath}");
-            useSendGrid(sendGridAPIKey);
+            UseSendGrid(sendGridAPIKey);
     }
 }
