@@ -133,6 +133,36 @@ namespace twilio_caller.Graph
             }
         }
 
+        public static async Task<string> GetEmailMeetingNumAsync()
+        {
+            try
+            {
+                Message message = await GetEmailAsync();
+
+                string accessCode;
+                //string meetingStart;
+                //Boolean pm = false;
+                string parsedEmail = message.Body.Content;
+                parsedEmail = WebUtility.HtmlDecode(parsedEmail);
+                HtmlDocument htmldoc = new HtmlDocument();
+                htmldoc.LoadHtml(parsedEmail);
+                //htmldoc.DocumentNode.SelectNodes("//comment()")?.Foreach(c => c.Remove());
+                parsedEmail = htmldoc.DocumentNode.InnerText;
+                accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
+                accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
+                accessCode = accessCode.Replace(" ", "");
+
+                return accessCode;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception in GetEmailMeetingNumAsync: " + ex.Message);
+                return "000000000";
+            }
+
+        }
+
         [HttpGet]
         public static async Task<Subscription> AddMailSubscription()
         {
