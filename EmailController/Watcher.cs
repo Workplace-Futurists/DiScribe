@@ -46,7 +46,7 @@ namespace twilio_caller.SendEmailCsharp
                 // var path = Convert.ToBase64String(bytes);
                 watcher.Path = "../../../cs319-2019w1-hsbc/transcriber/transcript";
 
-                // Watch for changes in LastWrite times, 
+                // Watch for changes in LastWrite times,
                 // and the renaming of files
                 watcher.NotifyFilter = NotifyFilters.LastWrite
                                     | NotifyFilters.FileName;
@@ -71,7 +71,7 @@ namespace twilio_caller.SendEmailCsharp
         }
 
         // Define the event handlers.
-        private static void OnChanged(object source, FileSystemEventArgs e) => 
+        private static void OnChanged(object source, FileSystemEventArgs e) =>
             // Specify what is done when a file is changed, created, or deleted.
             // Console.WriteLine($"File: {e.FullPath} {e.ChangeType}");
             useSendGrid(sendGridAPIKey);
@@ -81,8 +81,4 @@ namespace twilio_caller.SendEmailCsharp
             // Console.WriteLine($"File: {e.OldFullPath} renamed to {e.FullPath}");
             useSendGrid(sendGridAPIKey);
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 9e5062af9f1c852f39cbbe0701ebfbc823d19152
