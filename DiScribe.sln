@@ -4,8 +4,6 @@ VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dialer_01", "dialer\wip_link_dialer\dialer_01\dialer_01.csproj", "{9E77A078-8B08-413D-8B8B-2BA13CE359D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendEmailCsharp", "dialer\Twilio_SendGrid\SendEmailCsharp\SendEmailCsharp.csproj", "{2BC0C582-DCBC-420E-A25B-41DCF1A1D78C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twilio_caller", "dialer\Twilio_caller\twilio_caller.csproj", "{331C0A0F-DE99-493B-A532-4857DB2082F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transcriber", "transcriber\transcriber.csproj", "{799D6680-F613-4E6C-B46B-6A806732A454}"
@@ -18,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Cognitive.SpeakerRecognition.Streaming", "Cognitive-SpeakerRecognition-Windows-master\Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming\Microsoft.Cognitive.SpeakerRecognition.Streaming.csproj", "{8A58E960-8D3B-4DA7-A111-270AF62FE812}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeakerRecognitionClient", "SpeakerRecognitionClient\SpeakerRecognitionClient.csproj", "{54254060-358B-4702-87D4-B4F2FE503066}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailController", "EmailController\EmailController.csproj", "{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,22 @@ Global
 		{54254060-358B-4702-87D4-B4F2FE503066}.Release|anycpu.Build.0 = Release|Any CPU
 		{54254060-358B-4702-87D4-B4F2FE503066}.Release|x64.ActiveCfg = Release|Any CPU
 		{54254060-358B-4702-87D4-B4F2FE503066}.Release|x64.Build.0 = Release|Any CPU
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Debug|anycpu.Build.0 = Debug|anycpu
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Debug|x64.ActiveCfg = Debug|anycpu
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Debug|x64.Build.0 = Debug|anycpu
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Release|anycpu.ActiveCfg = Release|anycpu
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Release|anycpu.Build.0 = Release|anycpu
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Release|x64.ActiveCfg = Release|anycpu
+		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Release|x64.Build.0 = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|anycpu.Build.0 = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|x64.ActiveCfg = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|x64.Build.0 = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|anycpu.ActiveCfg = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|anycpu.Build.0 = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|x64.ActiveCfg = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|x64.Build.0 = Release|anycpu
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
