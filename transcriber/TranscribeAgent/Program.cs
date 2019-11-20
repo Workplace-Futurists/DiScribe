@@ -16,7 +16,6 @@ namespace transcriber.TranscribeAgent
 {
     public class Program
     {
-        
         /* Subscription key for Azure SpeakerRecognition service. */
         private static readonly string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
@@ -29,11 +28,9 @@ namespace transcriber.TranscribeAgent
          */
         private static readonly SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
-        private static readonly FileInfo TestRecording = new FileInfo(@"..\..\..\Record\MultipleSpeakers.wav");
+        private static readonly FileInfo TestRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
 
-        private static readonly FileInfo MeetingMinutes = new FileInfo(@"..\..\..\transcript\minutes.txt");
-
-
+        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
 
         public static void Main(string[] args)
         {
@@ -64,10 +61,6 @@ namespace transcriber.TranscribeAgent
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();
         }
-
-        
-
-        
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -110,9 +103,6 @@ namespace transcriber.TranscribeAgent
             var user3Audio = splitter.WriteWavToStream(user3StartOffset, user3EndOffset);
             var user4Audio = splitter.WriteWavToStream(user4StartOffset, user4EndOffset);
 
-
-      
-
             List<Voiceprint> voiceprints = new List<Voiceprint>()
             {
                 new Voiceprint(user1Audio, user1, user1GUID),
@@ -122,15 +112,6 @@ namespace transcriber.TranscribeAgent
             };
 
             return voiceprints;
-
         }
-
-
-
-
-
-
-
-
     }
 }

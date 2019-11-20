@@ -57,7 +57,7 @@ namespace twilio_caller.dialer
                     byte[] buffer = new byte[bufferSize];
                     int bytesRead = 0;
 
-                    string filePath = ("..\\..\\..\\Recordings\\" + rid + ".wav");
+                    string filePath = ("../../../Recordings/" + rid + ".wav");
 
                     // Read from response and write to file
                     using (FileStream fileStream = File.Create(filePath))

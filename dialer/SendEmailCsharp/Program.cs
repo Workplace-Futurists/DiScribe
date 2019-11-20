@@ -106,7 +106,7 @@ namespace SendEmailCsharp
 //             var body = "Email Body";
 //             var msg = MailHelper.CreateSingleEmail(from, to, subject, body, "");
 
-//             using (var fileStream = File.OpenRead("C:\\Users\\username\\file.txt"))
+//             using (var fileStream = File.OpenRead("C:/Users/username/file.txt"))
 //             {
 //                 await msg.AddAttachmentAsync("file.txt", fileStream);
 //                 var response = await client.SendEmailAsync(msg);
