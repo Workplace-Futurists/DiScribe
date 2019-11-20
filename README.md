@@ -37,3 +37,5 @@ The bot could not only correctly transcribes the content of speech but also coul
 
 ### Emailing Component
 * [ ]    **Sends the Email** to meeting hosts upon `minutes.txt` is received
+
+****Note that unchecked parts are incomplete***
