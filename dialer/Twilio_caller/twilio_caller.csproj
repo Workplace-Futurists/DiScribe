@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="twilio_caller\" />
-    <Folder Include="SendEmailCsharp\" />
   </ItemGroup>
 
 </Project>

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeakerRecognitionClient", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailController", "EmailController\EmailController.csproj", "{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|anycpu = Debug|anycpu
@@ -91,6 +93,14 @@ Global
 		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Release|anycpu.Build.0 = Release|anycpu
 		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Release|x64.ActiveCfg = Release|anycpu
 		{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}.Release|x64.Build.0 = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|anycpu.Build.0 = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|x64.ActiveCfg = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Debug|x64.Build.0 = Debug|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|anycpu.ActiveCfg = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|anycpu.Build.0 = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|x64.ActiveCfg = Release|anycpu
+		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|x64.Build.0 = Release|anycpu
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
