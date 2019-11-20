@@ -1,6 +1,5 @@
-﻿// <copyright file="MainWindow.xaml.cs" company="Microsoft">
+﻿// 
 // Copyright (c) Microsoft. All rights reserved.
-// </copyright>
 // Licensed under the MIT license.
 // 
 // Microsoft Cognitive Services (formerly Project Oxford): https://www.microsoft.com/cognitive-services
@@ -30,53 +29,33 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
-namespace SPIDIdentificationStreaming_WPF_Samples
+namespace Microsoft.ProjectOxford.SpeakerRecognition.Contract
 {
-    using System.Windows;
-    using SampleUserControlLibrary;
-
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// An enum encoding the status of a speaker enrollments for verification/identification
     /// </summary>
-    public partial class MainWindow : Window
+    public enum EnrollmentStatus
     {
         /// <summary>
-        /// Initializes a new instance of the MainWindow class.
+        /// The profile is currently enrolling and is not ready for verification/identification
         /// </summary>
-        public MainWindow()
-        {
-            this.InitializeComponent();
-
-            this._scenariosControl.SampleTitle = "Speaker Streaming Sample";
-            this._scenariosControl.SampleScenarioList = new Scenario[]
-            {
-                new Scenario{ Title = "Enroll Speakers", PageClass = typeof(EnrollSpeakersPage) },
-                new Scenario{ Title = "Stream File", PageClass = typeof(StreamPage) },
-            };
-
-            this._scenariosControl.Disclaimer = string.Empty;
-            this._scenariosControl.ClearLog();
-        }
+        Enrolling,
 
         /// <summary>
-        /// Gets the sample scenario control
+        /// The profile is currently training and is not ready for verification/identification
         /// </summary>
-        public SampleScenarios ScenarioControl
-        {
-            get
-            {
-                return this._scenariosControl;
-            }
-        }
+        Training,
 
         /// <summary>
-        /// Writes a message in the status area
+        /// The profile is currently enrolled and is ready for verification/identification
         /// </summary>
-        /// <param name="message">The message to log</param>
-        public void Log(string message)
-        {
-            this._scenariosControl.Log(message);
-        }
+        Enrolled,
+
+        /// <summary>
+        /// Profile is not usable, and may result in undefined behaviour, if accessed.
+        /// </summary>
+        Unknown
     }
 }
