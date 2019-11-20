@@ -215,11 +215,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmailControllerHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SendEmailCsharp.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     <Compile Include="Watcher.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     <Compile Include="SendGridHelper.cs" />
+    <Compile Include="EmailController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

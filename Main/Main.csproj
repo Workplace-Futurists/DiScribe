@@ -35,5 +35,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EmailController\EmailController.csproj">
+      <Project>{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}</Project>
+      <Name>EmailController</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

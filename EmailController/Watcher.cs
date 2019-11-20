@@ -15,10 +15,10 @@ namespace twilio_caller.SendEmailCsharp
         }
         */
 
-        private static void useSendGrid(string sendGridAPI)
+        private static void UseSendGrid(string sendGridAPI)
         {
-            SendEmailCsharp.Initialize(sendGridAPIKey);
-            SendEmailCsharp.sendEmail().Wait();
+            SendGridHelper.Initialize(sendGridAPIKey);
+			SendGridHelper.sendEmail().Wait();
             sendGridUsed = true;
         }
 
@@ -44,7 +44,7 @@ namespace twilio_caller.SendEmailCsharp
                 // watcher.Path = args[1];
                 // var bytes = File.ReadAllBytes("../../../cs319-2019w1-hsbc/transcriber/transcript");
                 // var path = Convert.ToBase64String(bytes);
-                watcher.Path = "../../../cs319-2019w1-hsbc/transcriber/transcript";
+                watcher.Path = "../transcriber/transcript/Minutes.txt";
 
                 // Watch for changes in LastWrite times,
                 // and the renaming of files

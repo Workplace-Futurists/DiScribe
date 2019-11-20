@@ -19,7 +19,7 @@ namespace EmailController
             Console.WriteLine("SendGrid Client successfully created!");
         }
 
-        public static async Task sendEmail()
+        public static async Task SendEmail()
         {
             var from = new EmailAddress("workplace-futurists@hotmail.com", "Workplace Futurists");
             var tos = new List<EmailAddress>
@@ -32,8 +32,10 @@ namespace EmailController
             var subject = "WebEx Meeting Minutes (Workplace-Futurists)";
             var plainTextContent = "Workplace-Futurists";
 
-            var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
-            var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " + accessCode + "</h4>";
+            // TODO: Find a way to use class or sln from the above directory
+            // var accessCode = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
+            // var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: " + accessCode + "</h4>";
+            var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: </h4>";
 
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
 
