@@ -1,6 +1,5 @@
-﻿// <copyright file="AudioSpecifications.cs" company="Microsoft">
+﻿// 
 // Copyright (c) Microsoft. All rights reserved.
-// </copyright>
 // Licensed under the MIT license.
 // 
 // Microsoft Cognitive Services (formerly Project Oxford): https://www.microsoft.com/cognitive-services
@@ -30,28 +29,33 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
-namespace  Microsoft.Cognitive.SpeakerRecognition.Streaming.Audio
+namespace Microsoft.ProjectOxford.SpeakerRecognition.Contract
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
     /// <summary>
-    /// Types of audio encoding
+    /// An enum encoding the status of a speaker enrollments for verification/identification
     /// </summary>
-    public enum AudioEncoding
+    public enum EnrollmentStatus
     {
         /// <summary>
-        /// Default value
+        /// The profile is currently enrolling and is not ready for verification/identification
         /// </summary>
-        None = -1,
+        Enrolling,
 
         /// <summary>
-        /// PCM
+        /// The profile is currently training and is not ready for verification/identification
         /// </summary>
-        PCM = 0
+        Training,
+
+        /// <summary>
+        /// The profile is currently enrolled and is ready for verification/identification
+        /// </summary>
+        Enrolled,
+
+        /// <summary>
+        /// Profile is not usable, and may result in undefined behaviour, if accessed.
+        /// </summary>
+        Unknown
     }
 }
