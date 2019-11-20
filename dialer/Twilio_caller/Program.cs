@@ -148,8 +148,10 @@ namespace twilio_caller
             // Send email using SendGrid
             // GOT TO FIND A WAY TO RETRIEVE MEETING INFORMATION
             string sendGridAPI = appConfig["SENDGRID_API_KEY"];
-            SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
-            SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();
+            // SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
+            // SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();
+
+            SendEmailCsharp.Watcher.Run(sendGridAPI);
             
 
             // Graph.GraphHelper.sendMail();
