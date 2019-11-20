@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace transcriber.Data
+namespace DatabaseController.Data
 {   
     /// <summary>
     /// Represents a Voiceprint associated with a specific user. Contains raw audio data, the time stamp
@@ -28,6 +28,17 @@ namespace transcriber.Data
             UserGUID = userGUID;
 
             TimeStamp = timeStamp;
+        }
+
+
+        override public Boolean Delete()
+        {
+            return false;
+        }
+
+        override public Boolean Update()
+        {
+            return false;
         }
 
 

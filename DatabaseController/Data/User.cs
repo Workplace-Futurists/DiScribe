@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace transcriber.Data
+namespace DatabaseController.Data
 {
     /// <summary>
     /// Represents a user who is a meeting participant. Contains attributes for user name, email address, and user ID.
@@ -14,6 +14,17 @@ namespace transcriber.Data
             Name = name;
             Email = email;
             UserID = userID;
+        }
+
+
+        override public Boolean Delete()
+        {
+            return false;
+        }
+
+        override public Boolean Update()
+        {
+            return false;
         }
 
         public string Name { get; set; }

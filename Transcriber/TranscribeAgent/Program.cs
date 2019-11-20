@@ -6,7 +6,7 @@ using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
 using transcriber.TranscribeAgent;
 using System.Collections.Generic;
-using transcriber.Data;
+using DatabaseController.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
