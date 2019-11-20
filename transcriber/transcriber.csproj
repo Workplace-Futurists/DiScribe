@@ -6,7 +6,7 @@
   
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <SkipValidatePackageReferences>true</SkipValidatePackageReferences>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="ClientLibrary\ClientLibrary.csproj" />
-    <None Include="ClientLibrary\ClientLibrary.sln" />
+    <ProjectReference Include="..\SpeakerRecognitionClient\SpeakerRecognitionClient.csproj" />
   </ItemGroup>
 </Project>
