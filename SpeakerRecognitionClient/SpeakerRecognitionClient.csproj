@@ -12,6 +12,8 @@
   <ItemGroup>
     <None Include="ClientLibrary\ClientLibrary.csproj" />
     <None Include="ClientLibrary\ClientLibrary.sln" />
+    <None Include="ClientLibrary\SpeakerRecognitionClientLibrary\ClientLibrary.csproj" />
+    <None Include="ClientLibrary\SpeakerRecognitionClientLibrary\ClientLibrary.sln" />
   </ItemGroup>
 
   <ItemGroup>
