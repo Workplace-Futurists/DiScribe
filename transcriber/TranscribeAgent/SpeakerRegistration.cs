@@ -80,35 +80,71 @@ namespace transcriber.TranscribeAgent
         /// <returns></returns>
         private async Task ConfirmProfiles()
         {
-            /*First check that all profiles in the voiceprint objects actually exist*/
-            Profile[] existingProfiles = await EnrollmentClient.GetProfilesAsync();
-
-            for (int i = 0; i < Voiceprints.Count; i++)
+            Profile[] existingProfiles = null;
+            try
             {
-                Boolean profileExists = false;
+                /*First check that all profiles in the voiceprint objects actually exist*/
+                existingProfiles = await EnrollmentClient.GetProfilesAsync();
+            }
+            catch (Exception ex)
+            {
+                existingProfiles = null;
+                Console.Error.WriteLine(">\tFetching profiles failed. Executing fallback to recreate profiles.");
+            }
 
-                int j = 0;
-                while (!profileExists && j < existingProfiles.Length)
+            
+            if (existingProfiles != null)
+            {
+                for (int i = 0; i < Voiceprints.Count; i++)
                 {
-                    if (Voiceprints[i].UserGUID == existingProfiles[j].ProfileId)
+                    Boolean profileExists = false;
+                    int j = 0;
+                    while (!profileExists && j < existingProfiles.Length)
                     {
-                        profileExists = true;
+                        /*Check that the profile is in a usable state and that
+                         * it matches with the GUID of this voiceprint */
+                        if (existingProfiles[j].EnrollmentStatus != EnrollmentStatus.Unknown && 
+                            Voiceprints[i].UserGUID == existingProfiles[j].ProfileId)
+                        {
+                            profileExists = true;
+                        }
+                        else
+                            j++;
                     }
-                    else
-                        j++;
-                }
+                    
 
-                /*Create a profile if the profile doesn't actually exist. Also change the
-                 * profile ID in the voiceprint object to the new ID*/
-                if (!profileExists)
+                    /*Create a profile if the profile doesn't actually exist. Also change the
+                     * profile ID in the voiceprint object to the new ID*/
+                    if (!profileExists)
+                    {
+                        await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
+                        var profileCreateTask = CreateUserProfile(Voiceprints[i].AssociatedUser);
+                        await profileCreateTask;
+                        Voiceprints[i].UserGUID = profileCreateTask.Result;
+                    }
+                }//End-for
+            }//End-if
+
+            /*Fallback for when profiles could not be fetched from through Speaker API.*/
+            else
+            {
+                foreach (var curVoiceprint in Voiceprints)
                 {
                     await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);
-                    var profileCreateTask = CreateUserProfile(Voiceprints[i].AssociatedUser);
+                    var profileCreateTask = CreateUserProfile(curVoiceprint.AssociatedUser);
                     await profileCreateTask;
-                    Voiceprints[i].UserGUID = profileCreateTask.Result;
+                    curVoiceprint.UserGUID = profileCreateTask.Result;
                 }
-            }
-        }
+
+            } //End else
+
+
+
+        }    
+
+
+
+    
 
 
 
