@@ -43,7 +43,7 @@ namespace transcriber.TranscribeAgent
             SpeakerRegistration registration = new SpeakerRegistration(SpeakerIDKey, voiceprints, SpeakerLocale);
 
             Console.WriteLine(">\tChecking user voice profile enrollment...");
-            registration.EnrollUsers().Wait();
+            registration.EnrollVoiceProfiles().Wait();
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints, SpeechConfig, SpeakerIDKey);
