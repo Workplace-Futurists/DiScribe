@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using transcriber.Data;
+using DatabaseController.Data;
 
 namespace transcriber.TranscribeAgent
 {

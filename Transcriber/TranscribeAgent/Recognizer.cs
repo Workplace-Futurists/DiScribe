@@ -9,7 +9,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
-using transcriber.Data;
+using DatabaseController.Data;
 using NAudio.Wave;
 
 
