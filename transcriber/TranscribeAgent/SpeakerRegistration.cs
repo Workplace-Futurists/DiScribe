@@ -1,11 +1,12 @@
-﻿using Microsoft.ProjectOxford.SpeakerRecognition;
-using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
-using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using transcriber.Data;
+using Microsoft.ProjectOxford.SpeakerRecognition;
+using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
+using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 
 namespace transcriber.TranscribeAgent
 {

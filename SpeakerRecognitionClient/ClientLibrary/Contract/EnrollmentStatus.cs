@@ -51,6 +51,11 @@ namespace Microsoft.ProjectOxford.SpeakerRecognition.Contract
         /// <summary>
         /// The profile is currently enrolled and is ready for verification/identification
         /// </summary>
-        Enrolled
+        Enrolled,
+
+        /// <summary>
+        /// The status is unknown and will cause undefined behaviour is enrollment is accessed
+        /// </summary>
+        Unknown
     }
 }
