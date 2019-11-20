@@ -37,7 +37,7 @@ namespace transcriber.TranscribeAgent
         /// <param name="speakerIDKey"></param>
         /// <param name="audioFile"></param>
         /// <returns></returns>
-        public async Task EnrollUsers()
+        public async Task EnrollVoiceProfiles()
         {
            
             /*Ensure profiles associated with each voiceprint exist. Create any profiles that do not exist */

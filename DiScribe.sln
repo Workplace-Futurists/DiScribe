@@ -9,8 +9,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twilio_caller", "dialer\Twilio_caller\twilio_caller.csproj", "{331C0A0F-DE99-493B-A532-4857DB2082F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transcriber", "transcriber\transcriber.csproj", "{799D6680-F613-4E6C-B46B-6A806732A454}"
+	ProjectSection(ProjectDependencies) = postProject
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D} = {717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "transcriberTests", "transcriberTests\transcriberTests.csproj", "{F060B4E1-985E-4686-A2AD-587CA5B29064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeakerRecognitionClientLibrary", "SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj", "{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +65,14 @@ Global
 		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Release|anycpu.Build.0 = Release|Any CPU
 		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Release|x64.ActiveCfg = Release|Any CPU
 		{F060B4E1-985E-4686-A2AD-587CA5B29064}.Release|x64.Build.0 = Release|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Debug|x64.Build.0 = Debug|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Release|anycpu.Build.0 = Release|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Release|x64.ActiveCfg = Release|Any CPU
+		{717558FE-22B3-4CD6-B2CC-A7ECD1BDA08D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
