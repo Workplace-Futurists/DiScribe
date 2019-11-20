@@ -12,7 +12,7 @@ using System.Text;
 
 namespace transcriber.TranscribeAgent
 {
-    public static class Helper
+    public class Helper
     {
         public static string WrapText(string text, int lineLength)
         {
@@ -22,13 +22,14 @@ namespace transcriber.TranscribeAgent
             StringBuilder outcome = new StringBuilder();
 
             int i;
+            int startingIndex = 0;
             int lastSplitEnd = 0;
             Boolean savedLastLine = false;
 
             for (i = lineLength; i < text.Length; i += lineLength)
             {
                 Boolean foundSpace = false;
-                int startingIndex = i;
+                startingIndex = i;  //Starting index for this line.
 
                 while (i < text.Length && !foundSpace)
                 {
@@ -183,7 +184,7 @@ namespace transcriber.TranscribeAgent
         }
 
 
-        private bool disposed;
+        private bool disposed = false;
     }
 
     

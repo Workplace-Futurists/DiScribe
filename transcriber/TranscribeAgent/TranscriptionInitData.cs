@@ -15,7 +15,6 @@ namespace transcriber.TranscribeAgent
     {
         public TranscriptionInitData(FileInfo meetingRecording, List<Voiceprint> voiceprints, string targetEmail)
         {
-            Console.WriteLine(">\tInitializing Transcription");
             MeetingRecording = meetingRecording;
             Voiceprints = voiceprints;
             TargetEmail = targetEmail;
@@ -26,5 +25,7 @@ namespace transcriber.TranscribeAgent
         public List<Voiceprint> Voiceprints { get; set; }
 
         public string TargetEmail { get; set; }
+
+
     }
 }
