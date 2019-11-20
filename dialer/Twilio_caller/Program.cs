@@ -146,7 +146,6 @@ namespace twilio_caller
                 Console.WriteLine("Exception: " + ex.Message);
             }
 
-<<<<<<< HEAD
            
             TimeSpan interval = new TimeSpan(0, 0, 30);
             var test = Task.Run(() => Graph.GraphHelper.GetEmailMeetingNumAsync(interval));
@@ -160,7 +159,6 @@ namespace twilio_caller
             SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
             SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();**/
 
-=======
             string sendGridAPI = appConfig["SENDGRID_API_KEY"];
 
             // Event Handler for Meeting Minute creation
@@ -173,10 +171,6 @@ namespace twilio_caller
             // string sendGridAPI = appConfig["SENDGRID_API_KEY"];
             // SendEmailCsharp.SendEmailCsharp.Initialize(sendGridAPI);
             // SendEmailCsharp.SendEmailCsharp.sendEmail().Wait();
-            
->>>>>>> 9579219faa3e2a92a6c0ca6bf53b9a176b99651d
-
-            // Graph.GraphHelper.sendMail();
 
             //int choice = -1;
 
