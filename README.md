@@ -7,28 +7,33 @@ We aim to building a powerful bot that joins phone calls or web meetings, **reco
 
 The bot could not only correctly transcribes the content of speech but also could recognizes voice differences, characterizes and labels "who spoke what" correctly and efficiently.
 
-## Main Processes
-### Call-in Process
-- **Receives** proposed meeting schedules
+## Main Components
+### Website Component
+- <span style="color:orange">*(incomplete)*</span> Allows unregistered users to **register in the voice print** database with their email
+- <span style="color:orange">*(incomplete)* </span><span style="color:red">*(stretch goal)*</span> Allows users to **manage** meeting recordings and their corresponding transcription results
+- <span style="color:orange">*(incomplete)*</span> <span style="color:red">*(stretch goal)*</span> Allows users to update voice print samples, their email addresses or add alternative ones
+
+### Scheduling Component
+- <span style="color:orange">*(incomplete)*</span> **Listens** for emails containing scheduled meeting informations
+- <span style="color:orange">*(incomplete)*</span> Saves meeting informations into **database**
+- <span style="color:orange">*(incomplete)*</span> Able to retrieve meeting **attendees** email Lists
+- <span style="color:orange">*(incomplete)*</span> Check if any attendees aren't **registered** in the **voice print database**
+- <span style="color:orange">*(incomplete)*</span> Sends email to unregistered attendees with **link** to **voice print registration website**
+- <span style="color:orange">*(incomplete)*</span> Bot automatically **Executes** the following processes when meeting time is near
+
+### Call-in Component
 - **Parses** meeting informations
 - **Dials** into the meeting on time
 
-### Recording Process
-- **Ask for Identification** upon meeting attendee dials in *(incomplete)*
-- **Record and saves** voice samples for **speaker recognition** use *(incomplete)*
+### Recording Component
 - Meeting finishes. **Saves** Recording into Cloud
 - Downloads in correct Format
 
-### Transcribing Process
-- Starts the Transcribing process upon recording received *(incomplete)*
+### Transcribing Component
+- <span style="color:orange">*(incomplete)*</span> Starts the Transcribing process upon the recording **finishes downloading**
 - **Transcribes** the meeting recording into text
 - **Recognizes** the speakers and labelling them
 - Outputs the formatted **text file** `minutes.txt`
 
-### Emailing Process
-- **Sends the Email** to meeting hosts upon `minutes.txt` is received *(incomplete)*
-
-### Stretch Goals (if time permits)
-- A **Website** that enables user log-in and voice print registrations and managements. *(incomplete)*
-- A **database** that stores all these crucial informations. *(incomplete)*
-- **Skips** the call-in identification process when user is recognized in the database. *(incomplete)*
+### Emailing Component
+- <span style="color:orange">*(incomplete)*</span> **Sends the Email** to meeting hosts upon `minutes.txt` is received
