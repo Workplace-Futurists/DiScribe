@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailController", "EmailController\EmailController.csproj", "{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseController", "DatabaseController\DatabaseController.csproj", "{CF4E366E-BE24-431C-9197-12E552CEDA8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduler\Scheduler.csproj", "{5D06DE98-65C7-4EFB-A790-CAA3862B200F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|anycpu = Debug|anycpu
@@ -101,6 +105,22 @@ Global
 		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|anycpu.Build.0 = Release|anycpu
 		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|x64.ActiveCfg = Release|anycpu
 		{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}.Release|x64.Build.0 = Release|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Debug|anycpu.Build.0 = Debug|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Debug|x64.ActiveCfg = Debug|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Debug|x64.Build.0 = Debug|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Release|anycpu.ActiveCfg = Release|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Release|anycpu.Build.0 = Release|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Release|x64.ActiveCfg = Release|anycpu
+		{CF4E366E-BE24-431C-9197-12E552CEDA8C}.Release|x64.Build.0 = Release|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Debug|anycpu.Build.0 = Debug|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Debug|x64.ActiveCfg = Debug|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Debug|x64.Build.0 = Debug|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Release|anycpu.ActiveCfg = Release|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Release|anycpu.Build.0 = Release|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Release|x64.ActiveCfg = Release|anycpu
+		{5D06DE98-65C7-4EFB-A790-CAA3862B200F}.Release|x64.Build.0 = Release|anycpu
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
