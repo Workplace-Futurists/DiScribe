@@ -1,8 +1,9 @@
 ﻿using System;
+using EmailController;
 
 namespace Main
 {
-    class MainClass
+    class Program
     {
         public static void Main(string[] args)
         {
@@ -12,7 +13,8 @@ namespace Main
             // FROM THIS LINE IS SENDING EMAIL COMPONENT
             // Initialize SendGrid client and send email
             EmailController.EmailController.Initialize();
-            EmailController.EmailController.sendMail();
+            EmailController.EmailController.SendMail();
+            
         }
     }
 }

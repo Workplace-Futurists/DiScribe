@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace EmailController
 {
-    class EmailControllerHelper
+    public class EmailController
     {
         static IConfigurationRoot LoadAppSettings()
         {
@@ -38,9 +38,9 @@ namespace EmailController
             SendGridHelper.Initialize(sendGridAPI);
         }
 
-        public static void sendMail()
+        public static void SendMail()
         {
-            SendGridHelper.sendEmail().Wait();
+            SendGridHelper.SendEmail().Wait();
         }
     }
 }
