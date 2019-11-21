@@ -13,7 +13,7 @@ using DatabaseController.Data;
 using NAudio.Wave;
 
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     public class Recognizer
     {

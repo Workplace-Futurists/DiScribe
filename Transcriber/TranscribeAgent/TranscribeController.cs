@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     public class TranscribeController
     {

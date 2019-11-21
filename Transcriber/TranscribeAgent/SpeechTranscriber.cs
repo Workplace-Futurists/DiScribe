@@ -11,9 +11,9 @@ using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave;
 using DatabaseController.Data;
-using transcriber.TranscribeAgent;
+using Transcriber.TranscribeAgent;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     /// <summary>
     /// Provides transcription of a set of an AudioSegment representing meeting audio to create a formatted text file
