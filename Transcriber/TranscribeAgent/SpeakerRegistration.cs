@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,12 +11,12 @@ namespace transcriber.TranscribeAgent
 {
     class SpeakerRegistration
     {
-        public SpeakerRegistration(string speakerIDKeySub, List<Voiceprint> voiceprints, 
+        public SpeakerRegistration(string speakerIDKeySub, List<Voiceprint> voiceprints,
             string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
+            // TODO can api_interval and enrollmentLocale be changed?
             /*Create REST client for enrolling users */
             EnrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
-
             Voiceprints = voiceprints;
         }
 
@@ -25,40 +24,28 @@ namespace transcriber.TranscribeAgent
 
         public SpeakerIdentificationServiceClient EnrollmentClient { get; private set; }
 
-        public List<Voiceprint> Voiceprints {get; private set; }
-
-
-
-
+        public List<Voiceprint> Voiceprints { get; private set; }
 
         /// <summary>
         /// Function which enrolls 2 users for testing purposes. In final system, enrollment will
         /// be done by users.
         /// </summary>
-        /// <param name="speakerIDKey"></param>
-        /// <param name="audioFile"></param>
         /// <returns></returns>
         public async Task EnrollVoiceProfiles()
         {
-           
             /*Ensure profiles associated with each voiceprint exist. Create any profiles that do not exist */
             await ConfirmProfiles();
 
             /*Attempt to add a voice enrollment to each profile. If number of enrollments is exceeded,
              * enrollments will be cleared and another attempt will be made to add the enrollment */
             await EnrollVoiceSamples();
-
         }
-
-
-
 
         /// <summary>
         /// Creates a new user profile for a User and returns the GUID for that profile.
         /// In the full system, this method should include a check to find out
         /// if the user is already registered in persistent storage (i.e. database).
         /// </summary>
-        /// <param name="client"></param>
         /// <param name="locale"></param>
         /// <returns></returns>
         public async Task<Guid> CreateUserProfile(User user, string locale = "en-us")
@@ -72,8 +59,6 @@ namespace transcriber.TranscribeAgent
 
             return profileTask.Result.ProfileId;
         }
-
-
 
         /// <summary>
         /// 
@@ -93,7 +78,6 @@ namespace transcriber.TranscribeAgent
                 Console.Error.WriteLine(">\tFetching profiles failed. Executing fallback to recreate profiles.");
             }
 
-            
             if (existingProfiles != null)
             {
                 for (int i = 0; i < Voiceprints.Count; i++)
@@ -104,7 +88,7 @@ namespace transcriber.TranscribeAgent
                     {
                         /*Check that the profile is in a usable state and that
                          * it matches with the GUID of this voiceprint */
-                        if (existingProfiles[j].EnrollmentStatus != EnrollmentStatus.Unknown && 
+                        if (existingProfiles[j].EnrollmentStatus != EnrollmentStatus.Unknown &&
                             Voiceprints[i].UserGUID == existingProfiles[j].ProfileId)
                         {
                             profileExists = true;
@@ -112,7 +96,6 @@ namespace transcriber.TranscribeAgent
                         else
                             j++;
                     }
-                    
 
                     /*Create a profile if the profile doesn't actually exist. Also change the
                      * profile ID in the voiceprint object to the new ID*/
@@ -138,17 +121,7 @@ namespace transcriber.TranscribeAgent
                 }
 
             } //End else
-
-
-
-        }    
-
-
-
-    
-
-
-
+        }
 
         private async Task EnrollVoiceSamples()
         {
@@ -168,7 +141,6 @@ namespace transcriber.TranscribeAgent
             }
 
             await Task.WhenAll(enrollmentTasks.ToArray());                                   //Await all enrollment tasks to complete.
-
 
             /*Confirm that enrollment was successful for all the profiles
             associated with the enrollment tasks in enrollmentOps. */
@@ -220,15 +192,7 @@ namespace transcriber.TranscribeAgent
                     }
 
                 } while (!done);
-
             }
-
-
-
         }
-
-
-
-
     }
 }
