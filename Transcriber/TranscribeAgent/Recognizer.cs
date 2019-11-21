@@ -45,10 +45,10 @@ namespace transcriber.TranscribeAgent
 
             /*Dictionary for efficient voiceprint lookup by enrollment GUID*/
             Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();
-            Guid[] userIDs = new Guid[Controller.Voiceprints.Count];
+            Guid[] userIDs = new Guid[Controller.VoicePrints.Count];
 
             /*Add all voiceprints to the dictionary*/
-            foreach (var voiceprint in Controller.Voiceprints)
+            foreach (var voiceprint in Controller.VoicePrints)
             {
                 voiceprintDictionary.Add(voiceprint.UserGUID, voiceprint);
             }
@@ -74,7 +74,7 @@ namespace transcriber.TranscribeAgent
                         testWriter.Write(wavBuf);
                     }
 
-                        await Task.Delay(apiDelayInterval);
+                    await Task.Delay(apiDelayInterval);
 
                     /*Create the task which submits the request to begin speaker recognition to the Speaker Recognition API.
                      Request contains the stream of this phrase and the GUIDs of users that may be present.*/
@@ -136,7 +136,8 @@ namespace transcriber.TranscribeAgent
 
                 }//End-foreach
 
-            } catch (AggregateException ex)
+            }
+            catch (AggregateException ex)
             {
                 Console.Error.WriteLine("Id failed: " + ex.Message);
             }
