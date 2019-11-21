@@ -17,17 +17,9 @@ namespace EmailController
             Console.WriteLine("SendGrid Client successfully created!");
         }
 
-        public static async Task SendEmail()
+        public static async Task SendEmail(EmailAddress from, List<EmailAddress> recipients,
+            string subject, FileInfo file)
         {
-            var from = new EmailAddress("workplace-futurists@hotmail.com", "Workplace Futurists");
-            var tos = new List<EmailAddress>
-            {
-                new EmailAddress("workplace-futurists@hotmail.com", "Hotmail"),
-                new EmailAddress("seungwook.l95@gmail.com", "Gmail"),
-                new EmailAddress("tmdenddl@hanmail.net", "Hanmail")
-            };
-
-            var subject = "WebEx Meeting Minutes (Workplace-Futurists)";
             var plainTextContent = "Workplace-Futurists";
 
             // TODO: Find a way to use class or sln from the above directory
@@ -38,7 +30,7 @@ namespace EmailController
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
 
             var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from,
-                                                                       tos,
+                                                                       recipients,
                                                                        subject,
                                                                        plainTextContent,
                                                                        htmlContent,
@@ -59,27 +51,12 @@ namespace EmailController
             };
             */
 
-            var bytes = File.ReadAllBytes("../transcriber/transcript/Minutes.txt");
-            var file = Convert.ToBase64String(bytes);
-            msg.AddAttachment("Minutes.txt", file);
+            var bytes = File.ReadAllBytes(file.FullName);
+            var content = Convert.ToBase64String(bytes);
+            msg.AddAttachment("attachment", content);
 
-            var response = await sendGridClient.SendEmailAsync(msg);
-            Console.WriteLine("Meeting Minute was sent successfully!");
-        }
-
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return base.ToString();
+            await sendGridClient.SendEmailAsync(msg);
+            Console.WriteLine(">\tEmail sent successfully");
         }
     }
 }

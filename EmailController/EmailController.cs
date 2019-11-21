@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace EmailController
 {
     public class EmailController
     {
+        // TODO we need one maybe?
+        private static EmailAddress OFFICIAL_EMAIL = new EmailAddress("workplace-futurists@hotmail.com", "Hotmail");
+
         static IConfigurationRoot LoadAppSettings()
         {
             var appConfig = new ConfigurationBuilder()
@@ -38,9 +45,16 @@ namespace EmailController
             SendGridHelper.Initialize(sendGridAPI);
         }
 
-        public static void SendMail()
+        public static void SendMinutes(List<EmailAddress> recipients, string meeting_info = "your recent meeting")
         {
-            SendGridHelper.SendEmail().Wait();
+            FileInfo minutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
+            string subject = "Meeting minutes of " + meeting_info;
+            SendGridHelper.SendEmail(OFFICIAL_EMAIL, recipients, subject, minutes).Wait();
+        }
+
+        public static void SendMail(List<EmailAddress> recipients, string subject, FileInfo file)
+        {
+            SendGridHelper.SendEmail(OFFICIAL_EMAIL, recipients, subject, file).Wait();
         }
     }
 }
