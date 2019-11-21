@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Record\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
     <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
   </ItemGroup>

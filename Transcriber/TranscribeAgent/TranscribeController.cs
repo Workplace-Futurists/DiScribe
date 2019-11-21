@@ -96,6 +96,7 @@ namespace transcriber.TranscribeAgent
                 {
                     Console.WriteLine(">\tFile [" + meetingMinutes.Name + "] Does Not Exist, " +
                         "Creating the File Under the Directory: " + meetingMinutes.DirectoryName);
+                    meetingMinutes.Directory.Create();
                     meetingMinutes.Create().Close();
                 }
                 using (System.IO.StreamWriter file =

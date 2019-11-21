@@ -28,9 +28,9 @@ namespace transcriber.TranscribeAgent
          */
         private static readonly SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
 
-        private static readonly FileInfo TestRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
+        private static readonly FileInfo TestRecording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
 
-        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
+        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
 
         public static void Main(string[] args)
         {
@@ -81,7 +81,6 @@ namespace transcriber.TranscribeAgent
             User user3 = new User("Nick Smith", "N.Smith@example.com", 3);
             User user4 = new User("Patrick Shyu", "P.Shyu@example.com", 4);
 
-
             /*Offsets identifying times */
             ulong user1StartOffset = 1 * 1000;
             ulong user1EndOffset = 49 * 1000;
@@ -94,7 +93,6 @@ namespace transcriber.TranscribeAgent
 
             ulong user4StartOffset = 151 * 1000;
             ulong user4EndOffset = 198 * 1000;
-
 
             AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
 
