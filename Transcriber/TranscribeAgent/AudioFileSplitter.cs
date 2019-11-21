@@ -23,7 +23,7 @@ namespace transcriber.TranscribeAgent
         /// Create an AudioFileSplitter instance which uses a List of voiceprints for speaker recognition to
         /// divide an audio file. Allows the divided audio segment data to be accessed via streams.
         /// </summary>
-        /// <param name="voiceprints"><see cref="List{Voiceprint}"/>List of <see cref="Voiceprint"/> instances used for speaker recognition</param>
+        /// <param name="voiceprints"><see cref="List{Voiceprint}"/>List of <see cref="User"/> instances used for speaker recognition</param>
         /// <param name="audioFile"><see cref="FileInfo"/> instance with absolute path to audio file. File must be a WAV file
         /// with mono audio, 16kHz sampling rate, and 16 bits per sample.</param>
         public AudioFileSplitter(FileInfo audioFile)
