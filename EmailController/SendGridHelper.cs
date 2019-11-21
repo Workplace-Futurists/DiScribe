@@ -14,7 +14,7 @@ namespace EmailController
         public static void Initialize(String SENDGRID_API_KEY)
         {
             sendGridClient = new SendGridClient(SENDGRID_API_KEY);
-            Console.WriteLine("SendGrid Client successfully created!");
+            Console.WriteLine(">\tEmail Client successfully created!");
         }
 
         public static async Task SendEmail(EmailAddress from, List<EmailAddress> recipients,
@@ -50,10 +50,12 @@ namespace EmailController
                 }
             };
             */
-
-            var bytes = File.ReadAllBytes(file.FullName);
-            var content = Convert.ToBase64String(bytes);
-            msg.AddAttachment("attachment", content);
+            if (file != null)
+            {
+                var bytes = File.ReadAllBytes(file.FullName);
+                var content = Convert.ToBase64String(bytes);
+                msg.AddAttachment("attachment", content);
+            }
 
             await sendGridClient.SendEmailAsync(msg);
             Console.WriteLine(">\tEmail sent successfully");
