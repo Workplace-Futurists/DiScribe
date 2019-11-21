@@ -1,38 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3AAD7D52-E4F6-479B-AD64-BE2260F64F48}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Main</RootNamespace>
-    <AssemblyName>Main</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <IntermediateOutputPath>obj\Debug</IntermediateOutputPath>
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType></DebugType>
-    <DefineConstants></DefineConstants>
-    <ExternalConsole>false</ExternalConsole>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <IntermediateOutputPath>obj\Release</IntermediateOutputPath>
-    <Optimize>false</Optimize>
-    <ExternalConsole>false</ExternalConsole>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
+    <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
+    <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
+    <ProjectReference Include="..\dialer\Twilio_caller\twilio_caller.csproj" />
+    <ProjectReference Include="..\dialer\wip_link_dialer\dialer_01\dialer_01.csproj" />
+    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
+    <ProjectReference Include="..\EmailController\EmailController.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EmailController\EmailController.csproj">
-      <Project>{A1ECD9DB-2924-49C6-AF73-D1EF89EE0DD8}</Project>
-      <Name>EmailController</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
