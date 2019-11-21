@@ -22,7 +22,7 @@ namespace SpeakerRegistration.Data
         public abstract Boolean Delete();
       
         
-        public abstract Boolean Update();
+        public abstract Boolean Update(string lookup);
      
 
         

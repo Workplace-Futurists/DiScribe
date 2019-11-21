@@ -46,8 +46,8 @@ namespace SpeakerRegistration.Data
 
 
         /// <summary>
-        /// Overrides constructor to creates stream from the byte buffer instead
-        /// of accepting a stream directly.
+        /// Overrides constructor to use a UserParams object instead of many parameters
+        /// for convenience and readability.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="audioSample"></param>
@@ -58,24 +58,19 @@ namespace SpeakerRegistration.Data
         /// <param name="userID"></param>
         /// <param name="timestamp"></param>
         /// <param name="password"></param>
-        public User(DatabaseController controller,
-           byte[] audioSample,
-           string firstName,
-           string lastName,
-           string email,
-           Guid profileGUID = new Guid(),
-           int userID = -1,
-           DateTime timeStamp = new DateTime(),
-           string password = "") : this(
-               controller, 
-               new MemoryStream(audioSample),
-               firstName,
-               lastName,
-               email,
-               profileGUID,
-               userID,
-               timeStamp)
-        {    }
+        public User(DatabaseController controller, UserParams userParams) : 
+            this(controller, 
+                new MemoryStream(userParams.AudioSample),
+                userParams.FirstName,
+                userParams.LastName,
+                userParams.Email,
+                userParams.ProfileGUID,
+                userParams.UserID,
+                userParams.TimeStamp,
+                userParams.Password)
+        { }
+
+
 
 
         /// <summary>
@@ -84,16 +79,26 @@ namespace SpeakerRegistration.Data
         /// <returns></returns>
         override public Boolean Delete()
         {
-            return false;
+            return Controller.DeleteUser(this.Email);
+            
         }
 
         /// <summary>
-        /// Updates the voiceprint in the database.
+        /// Updates the voiceprint in the database. Note that a lookup
+        /// email can be specified, if the property or properties to update 
+        /// include the email for this user.
         /// </summary>
         /// <returns></returns>
-        override public Boolean Update()
+        override public Boolean Update(string lookupEmail = null)
         {
-            return false;
+            string email = lookupEmail;
+            if (email == null)
+            {
+                email = this.Email;
+            }
+
+            return Controller.UpdateUser(this, email);
+            
         }
 
         public string FirstName { get; set; }
@@ -123,5 +128,41 @@ namespace SpeakerRegistration.Data
         public DatabaseController Controller { get; private set; }
 
       
+    }
+
+    public class UserParams
+    {
+        public UserParams (
+           byte[] audioSample,
+           string firstName,
+           string lastName,
+           string email,
+           Guid profileGUID = new Guid(),
+           int userID = -1,
+           DateTime timeStamp = new DateTime(),
+           string password = "") 
+          {
+            AudioSample = audioSample;
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
+            ProfileGUID = ProfileGUID;
+            UserID = userID;
+            TimeStamp = timeStamp;
+            Password = password;
+        }
+
+
+        public byte[] AudioSample { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public Guid ProfileGUID { get; set; }
+        public int UserID { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public string Password { get; set; }
+
+
+
     }
 }

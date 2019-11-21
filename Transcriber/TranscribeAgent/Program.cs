@@ -11,6 +11,7 @@ using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 using NAudio.Wave;
+using SpeakerRegistration;
 
 namespace transcriber.TranscribeAgent
 {
@@ -40,10 +41,10 @@ namespace transcriber.TranscribeAgent
             var initData = new TranscriptionInitData(TestRecording, voiceprints, "");
 
             /*Enroll speaker voice profiles with the Speaker Recognition API */
-            SpeakerRegistration registration = new SpeakerRegistration(SpeakerIDKey, voiceprints, SpeakerLocale);
+            RegistrationController registration = new RegistrationController(SpeakerIDKey, voiceprints, SpeakerLocale);
 
             Console.WriteLine(">\tChecking user voice profile enrollment...");
-            registration.EnrollVoiceProfiles().Wait();
+            registration.EnrollUsers().Wait();
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints, SpeechConfig, SpeakerIDKey);

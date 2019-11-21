@@ -1,5 +1,5 @@
 ﻿using System;
-using DatabaseController.Data;
+using SpeakerRegistration.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 using System.IO;
 

@@ -1,4 +1,4 @@
-﻿using DatabaseController.Data;
+﻿using SpeakerRegistration.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
