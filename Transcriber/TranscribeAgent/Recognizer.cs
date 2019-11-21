@@ -44,7 +44,7 @@ namespace transcriber.TranscribeAgent
             SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(Controller.SpeakerIDSubKey);
 
             /*Dictionary for efficient voiceprint lookup by enrollment GUID*/
-            Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();
+            Dictionary<Guid, User> voiceprintDictionary = new Dictionary<Guid, User>();
             Guid[] userIDs = new Guid[Controller.Voiceprints.Count];
 
             /*Add all voiceprints to the dictionary*/

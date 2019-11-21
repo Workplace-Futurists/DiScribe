@@ -19,7 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduler\Sche
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRecognitionClientLibrary", "SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj", "{C39CE9CA-9B29-4754-89E7-1A0A1E9812A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseController", "DatabaseController\DatabaseController.csproj", "{41105037-C23A-4BB7-BCEB-81B54E4E8672}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRegistration", "SpeakerRegistration\SpeakerRegistration.csproj", "{41105037-C23A-4BB7-BCEB-81B54E4E8672}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C39CE9CA-9B29-4754-89E7-1A0A1E9812A4} = {C39CE9CA-9B29-4754-89E7-1A0A1E9812A4}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

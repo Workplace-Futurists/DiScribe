@@ -16,7 +16,7 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(FileInfo meetingRecording, List<Voiceprint> voiceprints, SpeechConfig speechConfig, string speakerIDSubKey)
+        public TranscribeController(FileInfo meetingRecording, List<User> voiceprints, SpeechConfig speechConfig, string speakerIDSubKey)
         {
             Voiceprints = voiceprints;
             FileSplitter = new AudioFileSplitter(meetingRecording);
@@ -29,7 +29,7 @@ namespace transcriber.TranscribeAgent
                 "on Audio Recording [" + meetingRecording.FullName + "].");
         }
 
-        public List<Voiceprint> Voiceprints { get; set; }
+        public List<User> Voiceprints { get; set; }
 
         public AudioFileSplitter FileSplitter { get; private set; }
 

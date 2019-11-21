@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using DatabaseController.Data;
+using SpeakerRegistration.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 
-namespace transcriber.TranscribeAgent
+namespace SpeakerRegistration
 {
     class SpeakerRegistration
     {
-        public SpeakerRegistration(string speakerIDKeySub, List<Voiceprint> voiceprints, 
+        public SpeakerRegistration(string speakerIDKeySub, List<User> voiceprints, 
             string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
             /*Create REST client for enrolling users */
@@ -25,7 +25,7 @@ namespace transcriber.TranscribeAgent
 
         public SpeakerIdentificationServiceClient EnrollmentClient { get; private set; }
 
-        public List<Voiceprint> Voiceprints {get; private set; }
+        public List<User> Voiceprints {get; private set; }
 
 
 
@@ -152,7 +152,7 @@ namespace transcriber.TranscribeAgent
 
         private async Task EnrollVoiceSamples()
         {
-            var taskTuples = new List<Tuple<Voiceprint, Task<OperationLocation>>>();
+            var taskTuples = new List<Tuple<User, Task<OperationLocation>>>();
             List<Task<OperationLocation>> enrollmentTasks = new List<Task<OperationLocation>>();
 
             /*Start enrollment tasks for all user voiceprints. Use enrollmentTaskTuples
@@ -163,7 +163,7 @@ namespace transcriber.TranscribeAgent
                 await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);                          //Do not exceed max requests per second.
 
                 var curTask = EnrollmentClient.EnrollAsync(Voiceprints[i].AudioStream, Voiceprints[i].UserGUID, true);
-                taskTuples.Add(new Tuple<Voiceprint, Task<OperationLocation>>(Voiceprints[i], curTask));
+                taskTuples.Add(new Tuple<User, Task<OperationLocation>>(Voiceprints[i], curTask));
                 enrollmentTasks.Add(curTask);
             }
 
@@ -205,7 +205,7 @@ namespace transcriber.TranscribeAgent
                         var reEnrollmentTask = EnrollmentClient.EnrollAsync(taskTuples[i].Item1.AudioStream, taskTuples[i].Item1.UserGUID, true);
 
                         /*Replace curElem with an element representing the new enrollment task*/
-                        taskTuples[i] = new Tuple<Voiceprint, Task<OperationLocation>>(taskTuples[i].Item1, reEnrollmentTask);
+                        taskTuples[i] = new Tuple<User, Task<OperationLocation>>(taskTuples[i].Item1, reEnrollmentTask);
                     }
 
                     /*Check that that result is ready and that profile is enrolled */

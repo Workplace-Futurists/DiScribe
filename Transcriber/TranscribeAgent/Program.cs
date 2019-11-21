@@ -6,7 +6,7 @@ using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
 using transcriber.TranscribeAgent;
 using System.Collections.Generic;
-using DatabaseController.Data;
+using SpeakerRegistration.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
@@ -67,7 +67,7 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="audioFile"></param>
         /// <returns></returns>
-        private static List<Voiceprint> MakeTestVoiceprints(FileInfo audioFile)
+        private static List<User> MakeTestVoiceprints(FileInfo audioFile)
         {
             /*Pre-registered profiles.*/
             Guid user1GUID = new Guid("87aed609-b072-4fc5-bca6-87f8caa6dea9");
@@ -103,12 +103,12 @@ namespace transcriber.TranscribeAgent
             var user3Audio = splitter.WriteWavToStream(user3StartOffset, user3EndOffset);
             var user4Audio = splitter.WriteWavToStream(user4StartOffset, user4EndOffset);
 
-            List<Voiceprint> voiceprints = new List<Voiceprint>()
+            List<User> voiceprints = new List<User>()
             {
-                new Voiceprint(user1Audio, user1, user1GUID),
-                new Voiceprint(user2Audio, user2, user2GUID),
-                new Voiceprint(user3Audio, user3, user3GUID),
-                new Voiceprint(user4Audio, user4, user4GUID)
+                new User(user1Audio, user1, user1GUID),
+                new User(user2Audio, user2, user2GUID),
+                new User(user3Audio, user3, user3GUID),
+                new User(user4Audio, user4, user4GUID)
             };
 
             return voiceprints;
