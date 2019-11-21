@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 
 namespace EmailController
 {
@@ -28,7 +29,6 @@ namespace EmailController
             var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: </h4>";
 
             var showAllRecipients = true; // Set to true if you want the recipients to see each others email addresses
-
             var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from,
                                                                        recipients,
                                                                        subject,
@@ -36,27 +36,12 @@ namespace EmailController
                                                                        htmlContent,
                                                                        showAllRecipients
                                                                        );
-
-            /*
-            byte[] byteData = Encoding.ASCII.GetBytes(@"../../../transcriber/transcript/Minutes.txt");
-            msg.Attachments = new List<SendGrid.Helpers.Mail.Attachment>
-            {
-                new SendGrid.Helpers.Mail.Attachment
-                {
-                    Content = Convert.ToBase64String(byteData),
-                    Filename = "Minutes.txt",
-                    Type = "txt/plain",
-                    Disposition = "attachment"
-                }
-            };
-            */
             if (file != null)
             {
                 var bytes = File.ReadAllBytes(file.FullName);
                 var content = Convert.ToBase64String(bytes);
                 msg.AddAttachment("attachment", content);
             }
-
             await sendGridClient.SendEmailAsync(msg);
             Console.WriteLine(">\tEmail sent successfully");
         }
