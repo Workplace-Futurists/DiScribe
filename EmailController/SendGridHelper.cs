@@ -3,8 +3,6 @@ using SendGrid.Helpers.Mail;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using static System.Environment;
-using System.Text;
 using System.IO;
 
 namespace EmailController
