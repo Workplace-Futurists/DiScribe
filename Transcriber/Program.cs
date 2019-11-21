@@ -4,7 +4,7 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
-using transcriber.TranscribeAgent;
+using Transcriber.TranscribeAgent;
 using System.Collections.Generic;
 using DatabaseController.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
@@ -12,7 +12,7 @@ using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 using NAudio.Wave;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     public class Program
     {

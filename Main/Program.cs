@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using transcriber.TranscribeAgent;
+using Transcriber.TranscribeAgent;
 using SendGrid.Helpers.Mail;
 using System.IO;
 
@@ -15,7 +15,7 @@ namespace Main
             // TODO download the recording
             // transcribe the meeting
             FileInfo pseudo_recording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
-            var voiceprints = transcriber.TranscribeAgent.Program.MakeTestVoiceprints(pseudo_recording);
+            var voiceprints = Transcriber.TranscribeAgent.Program.MakeTestVoiceprints(pseudo_recording);
             var controller = new TranscribeController(pseudo_recording, voiceprints);
             controller.EnrollVoiceProfiles();
 

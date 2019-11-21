@@ -7,7 +7,7 @@ using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     class SpeakerRegistration
     {

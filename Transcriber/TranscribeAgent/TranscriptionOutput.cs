@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DatabaseController.Data;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     public class TranscriptionOutput : IComparable
     {
