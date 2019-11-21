@@ -71,13 +71,21 @@ namespace twilio_caller.Graph
                 .GetAsync();
             return messages[0];
         }
-        public static async void CreateMeetingInstance(string accessCode, DateTime date)
+        public static async void CreateMeetingInstance(string accessCode, DateTime date, TimeSpan length)
         {
+            
             if ((date - DateTime.Now).TotalMilliseconds > 0)
             {
                 dialerManager dialer = new dialerManager("AC5869733a59d586bbcaf5d27249d7ff2f", "312b3283121fd9bd80ca6a8fb8ea847c");
-                Console.WriteLine($"Now waiting{date.TimeOfDay.TotalMinutes} minutes until your meeting begins");
+                Console.WriteLine($"The following meeting was added to the queue:{accessCode}");
+                Console.WriteLine($"Now waiting for your meeting to begin before joining.");
                 await Task.Delay((int)(date - DateTime.Now).TotalMilliseconds);
+                Console.WriteLine($"The recording process has begun for the following meeting: {accessCode}");
+                dialer.CallMeeting(accessCode);
+            }
+            else if(date.TimeOfDay + length > DateTime.Now.TimeOfDay)
+            {
+                dialerManager dialer = new dialerManager("AC5869733a59d586bbcaf5d27249d7ff2f", "312b3283121fd9bd80ca6a8fb8ea847c");
                 Console.WriteLine($"The recording process has begun for the following meeting: {accessCode}");
                 dialer.CallMeeting(accessCode);
             }
@@ -97,6 +105,7 @@ namespace twilio_caller.Graph
                     {
                         string accessCode;
                         string startDate;
+                        TimeSpan meetingLength;
                         string parsedEmail = message.Body.Content;
                         parsedEmail = WebUtility.HtmlDecode(parsedEmail);
                         HtmlDocument htmldoc = new HtmlDocument();
@@ -107,6 +116,26 @@ namespace twilio_caller.Graph
                         accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
                         accessCode = accessCode.Replace(" ", "");
                         startDate = parsedEmail.Substring(parsedEmail.IndexOf("Meeting password: ")+28);
+                        parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ", parsedEmail.IndexOf("  |  ")+1));
+                        parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ") + 4);
+                        parsedEmail = parsedEmail.Substring(0, 8); 
+                        parsedEmail = parsedEmail.Replace(" ", "");
+                       
+                        if(parsedEmail.Contains("hr") && !parsedEmail.Contains("min"))
+                        {
+                            parsedEmail = parsedEmail.Substring(0, parsedEmail.IndexOf("h"));
+                            meetingLength = TimeSpan.Parse(parsedEmail + ":00:00");
+                        }
+                        else if(parsedEmail.Contains("min") && !parsedEmail.Contains("hr"))
+                        {
+                            parsedEmail = parsedEmail.Substring(0, parsedEmail.IndexOf("m"));
+                            meetingLength = TimeSpan.Parse("00:" +parsedEmail + ":00");
+                        }
+                        else
+                        {
+                            meetingLength = TimeSpan.Parse(parsedEmail.Substring(0, parsedEmail.IndexOf("h")) +":"+ parsedEmail.Substring(parsedEmail.IndexOf("r")+1, parsedEmail.IndexOf("m")-4)+ ":00");
+                        }
+                        
                         startDate = startDate.Substring(0, startDate.IndexOf("2019") + 21);
                         DateTime date = DateTime.Parse(startDate);
                         
@@ -116,12 +145,12 @@ namespace twilio_caller.Graph
                         if (!meetings.Contains(accessCode))
                         {
                             meetings.Add(accessCode);
-                            Console.WriteLine($"The following meeting was added to the queue:{accessCode}");
-                            Thread thread = new Thread(() => CreateMeetingInstance(accessCode, date));
+                            Thread thread = new Thread(() => CreateMeetingInstance(accessCode, date, meetingLength));
                             thread.Start();
                             
                         }
                     }
+                    
                     
                     await Task.Delay(runInterval);
                 }
