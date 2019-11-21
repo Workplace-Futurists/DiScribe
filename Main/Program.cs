@@ -14,7 +14,7 @@ namespace Main
             // Initialize SendGrid client and send email
             EmailController.EmailController.Initialize();
             EmailController.EmailController.SendMail();
-            
+
         }
     }
 }
