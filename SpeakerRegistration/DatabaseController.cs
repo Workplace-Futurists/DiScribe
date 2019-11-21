@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using SpeakerRegistration.Data;
 
-namespace SpeakerRegistration.Data
+namespace SpeakerRegistration
 {
     /// <summary>
     /// Provides access to the stored procedures provided by the MS SQL registration database.
@@ -11,13 +11,37 @@ namespace SpeakerRegistration.Data
     /// </summary>
     public class DatabaseController
     {
-        DatabaseController(string connectionStr)
+        public DatabaseController(string connectionStr)
         {
             DBConnection = new SqlConnection(connectionStr);
             DBConnection.Open();
         }
 
         public SqlConnection DBConnection {get; set;}
+
+
+
+
+
+
+        /// <summary>
+        /// Stores a user with params matching userParams in the database.
+        /// </summary>
+        /// <param name="userParams"></param>
+        /// <returns></returns>
+        public User CreateUser(UserParams userParams)
+        {
+            return CreateUser(userParams.AudioSample,
+                userParams.FirstName,
+                userParams.LastName,
+                userParams.Email, 
+                userParams.ProfileGUID, 
+                userParams.TimeStamp, 
+                userParams.Password);
+        }
+
+
+
 
 
         /// <summary>
@@ -38,7 +62,6 @@ namespace SpeakerRegistration.Data
            string lastName,
            string email,
            Guid profileGUID = new Guid(),
-           int userID = -1,
            DateTime timeStamp = new DateTime(),
            string password = "")
         {
@@ -81,7 +104,7 @@ namespace SpeakerRegistration.Data
                     int rowID = Convert.ToInt32(command.Parameters["@RowID"].Value);
 
                     /*Return User object representing this user */
-                    return new User(this, audioSample, firstName, lastName, email, profileGUID, rowID, timeStamp, password);
+                    return new User(this, new UserParams(audioSample, firstName, lastName, email, profileGUID, rowID, timeStamp, password));
                 }
                 catch (Exception ex)
                 {
@@ -128,7 +151,7 @@ namespace SpeakerRegistration.Data
                         DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
 
 
-                        return new User(this, audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password);
+                        return new User(this, new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
 
 
                     }
@@ -146,15 +169,7 @@ namespace SpeakerRegistration.Data
 
 
 
-        public Boolean UpdateUser(
-           string lookupEmail, 
-           byte[] audioSample,
-           string firstName,
-           string lastName,
-           string email,
-           Guid profileGUID,
-           DateTime timeStamp = new DateTime(),
-           string password = "")
+        public Boolean UpdateUser(User user, string lookupEmail)
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "EXEC dbo.stpUpdateUserByEmail";
@@ -177,12 +192,12 @@ namespace SpeakerRegistration.Data
                     var parameters = new List<SqlParameter>
                     {
                         new SqlParameter("@LookupEmail", lookupEmail),
-                        new SqlParameter("@FirstName", firstName),
-                        new SqlParameter("@LastName", lastName),
-                        new SqlParameter("@Email", email),
-                        new SqlParameter("@ProfileGUID", profileGUID.ToString()),
-                        new SqlParameter("@TimeStamp", timeStamp),
-                        new SqlParameter("@Password", password)
+                        new SqlParameter("@FirstName", user.FirstName),
+                        new SqlParameter("@LastName", user.LastName),
+                        new SqlParameter("@Email", user.Email),
+                        new SqlParameter("@ProfileGUID", user.ProfileGUID.ToString()),
+                        new SqlParameter("@TimeStamp", user.TimeStamp),
+                        new SqlParameter("@Password", user.Password)
                     };
 
                     SqlParameter result = new SqlParameter("@RowID", System.Data.SqlDbType.Int);

@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DatabaseController\SpeakerRegistration.csproj" />
+    <ProjectReference Include="..\SpeakerRegistration\SpeakerRegistration.csproj" />
     <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DatabaseController.Data;x
+using SpeakerRegistration.Data;
 
 namespace transcriber.TranscribeAgent
 {
@@ -40,7 +40,7 @@ namespace transcriber.TranscribeAgent
 
         public override string ToString()
         {
-            return Speaker.Name + "\t" + FormatTime(StartOffset) + "\t" + Text;
+            return $"{Speaker.FirstName} {Speaker.LastName}\t{FormatTime(StartOffset)}\t{Text}";
         }
 
         /// <summary>

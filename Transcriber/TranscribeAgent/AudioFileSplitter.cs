@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using DatabaseController.Data;
+using SpeakerRegistration.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
-using System.Collections;
 using NAudio.Wave.SampleProviders;
 
 namespace transcriber.TranscribeAgent
