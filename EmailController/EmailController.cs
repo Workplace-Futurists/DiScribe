@@ -52,7 +52,7 @@ namespace EmailController
             SendGridHelper.SendEmail(OFFICIAL_EMAIL, recipients, subject, minutes).Wait();
         }
 
-        public static void SendMail(List<EmailAddress> recipients, string subject, FileInfo file)
+        public static void SendMail(List<EmailAddress> recipients, string subject, FileInfo file = null)
         {
             SendGridHelper.SendEmail(OFFICIAL_EMAIL, recipients, subject, file).Wait();
         }

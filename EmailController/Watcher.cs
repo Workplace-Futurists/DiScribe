@@ -19,7 +19,7 @@ namespace twilio_caller.SendEmailCsharp
         private static void UseSendGrid(string sendGridAPI)
         {
             SendGridHelper.Initialize(sendGridAPIKey);
-			SendGridHelper.SendEmail().Wait();
+			//SendGridHelper.SendEmail().Wait();
             sendGridUsed = true;
         }
 
