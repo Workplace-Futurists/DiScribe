@@ -38,7 +38,7 @@ namespace Main
                 EmailController.EmailController.Initialize();
                 EmailController.EmailController.SendMail(recipients, "Failed To Generate Meeting Transcription");
             }
-
+ 
             Console.WriteLine(">\tTasks Complete!");
         }
     }
