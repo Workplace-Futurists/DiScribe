@@ -10,7 +10,7 @@ using System.Collections;
 //using twilio_caller.dialer;
 using System.Threading;
 
-namespace twilio_caller.Graph
+namespace EmailController.GraphHelper
 {
     public class GraphHelper
     {
@@ -40,6 +40,7 @@ namespace twilio_caller.Graph
                 return null;
             }
         }
+
         public static async Task<IEnumerable<Event>> GetEventsAsync()
         {
             try
@@ -61,16 +62,24 @@ namespace twilio_caller.Graph
             }
         }
 
+        public static async Task<Boolean> ifNewEmail()
+        {
+            // TODO 
+            return false;
+        }
+
         public static async Task<Message> GetEmailAsync()
         {
             var messages = await _graphClient.Me.Messages
                 .Request()
-                .Select(e => new {
+                .Select(e => new
+                {
                     e.Body
                 })
                 .GetAsync();
             return messages[0];
         }
+
         public static async void CreateMeetingInstance(string accessCode, DateTime date, TimeSpan length)
         {
 
@@ -91,86 +100,16 @@ namespace twilio_caller.Graph
             }
 
         }
-        public static async Task GetEmailMeetingNumAsync(TimeSpan runInterval)
-        {
-            try
-            {
-
-                // Get message from mailbox
-                while (true)
-                {
-                    Message message = await GetEmailAsync();
-
-                    if (message.Body.Content.Contains("Meeting number (access code):"))
-                    {
-                        string accessCode;
-                        string startDate;
-                        TimeSpan meetingLength;
-                        string parsedEmail = message.Body.Content;
-                        parsedEmail = WebUtility.HtmlDecode(parsedEmail);
-                        HtmlDocument htmldoc = new HtmlDocument();
-                        htmldoc.LoadHtml(parsedEmail);
-                        //htmldoc.DocumentNode.SelectNodes("//comment()")?.Foreach(c => c.Remove());
-                        parsedEmail = htmldoc.DocumentNode.InnerText;
-                        accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
-                        accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
-                        accessCode = accessCode.Replace(" ", "");
-                        startDate = parsedEmail.Substring(parsedEmail.IndexOf("Meeting password: ") + 28);
-                        parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ", parsedEmail.IndexOf("  |  ") + 1));
-                        parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ") + 4);
-                        parsedEmail = parsedEmail.Substring(0, 8);
-                        parsedEmail = parsedEmail.Replace(" ", "");
-
-                        if (parsedEmail.Contains("hr") && !parsedEmail.Contains("min"))
-                        {
-                            parsedEmail = parsedEmail.Substring(0, parsedEmail.IndexOf("h"));
-                            meetingLength = TimeSpan.Parse(parsedEmail + ":00:00");
-                        }
-                        else if (parsedEmail.Contains("min") && !parsedEmail.Contains("hr"))
-                        {
-                            parsedEmail = parsedEmail.Substring(0, parsedEmail.IndexOf("m"));
-                            meetingLength = TimeSpan.Parse("00:" + parsedEmail + ":00");
-                        }
-                        else
-                        {
-                            meetingLength = TimeSpan.Parse(parsedEmail.Substring(0, parsedEmail.IndexOf("h")) + ":" + parsedEmail.Substring(parsedEmail.IndexOf("r") + 1, parsedEmail.IndexOf("m") - 4) + ":00");
-                        }
-
-                        startDate = startDate.Substring(0, startDate.IndexOf("2019") + 21);
-                        DateTime date = DateTime.Parse(startDate);
-
-
-
-
-                        if (!meetings.Contains(accessCode))
-                        {
-                            meetings.Add(accessCode);
-                            Thread thread = new Thread(() => CreateMeetingInstance(accessCode, date, meetingLength));
-                            thread.Start();
-
-                        }
-                    }
-
-
-                    await Task.Delay(runInterval);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception in GetEmailMeetingNumAsync: " + ex.Message);
-
-            }
-        }
 
         public static async Task<string> GetEmailMeetingNumAsync()
         {
-            try
-            {
-                Message message = await GetEmailAsync();
+            Message message = await GetEmailAsync();
 
+            if (message.Body.Content.Contains("Meeting number (access code):"))
+            {
                 string accessCode;
-                //string meetingStart;
-                //Boolean pm = false;
+                string startDate;
+                TimeSpan meetingLength;
                 string parsedEmail = message.Body.Content;
                 parsedEmail = WebUtility.HtmlDecode(parsedEmail);
                 HtmlDocument htmldoc = new HtmlDocument();
@@ -180,16 +119,39 @@ namespace twilio_caller.Graph
                 accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
                 accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
                 accessCode = accessCode.Replace(" ", "");
+                startDate = parsedEmail.Substring(parsedEmail.IndexOf("Meeting password: ") + 28);
+                parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ", parsedEmail.IndexOf("  |  ") + 1));
+                parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ") + 4);
+                parsedEmail = parsedEmail.Substring(0, 8);
+                parsedEmail = parsedEmail.Replace(" ", "");
+
+                if (parsedEmail.Contains("hr") && !parsedEmail.Contains("min"))
+                {
+                    parsedEmail = parsedEmail.Substring(0, parsedEmail.IndexOf("h"));
+                    meetingLength = TimeSpan.Parse(parsedEmail + ":00:00");
+                }
+                else if (parsedEmail.Contains("min") && !parsedEmail.Contains("hr"))
+                {
+                    parsedEmail = parsedEmail.Substring(0, parsedEmail.IndexOf("m"));
+                    meetingLength = TimeSpan.Parse("00:" + parsedEmail + ":00");
+                }
+                else
+                {
+                    meetingLength = TimeSpan.Parse(parsedEmail.Substring(0, parsedEmail.IndexOf("h")) + ":" + parsedEmail.Substring(parsedEmail.IndexOf("r") + 1, parsedEmail.IndexOf("m") - 4) + ":00");
+                }
+
+                startDate = startDate.Substring(0, startDate.IndexOf("2019") + 21);
+                DateTime date = DateTime.Parse(startDate);
 
                 return accessCode;
-
+                //if (!meetings.Contains(accessCode))
+                //{
+                //    meetings.Add(accessCode);
+                //    Thread thread = new Thread(() => CreateMeetingInstance(accessCode, date, meetingLength));
+                //    thread.Start();
+                //}
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception in GetEmailMeetingNumAsync: " + ex.Message);
-                return "000000000";
-            }
-
+            return "";
         }
 
         [HttpGet]
