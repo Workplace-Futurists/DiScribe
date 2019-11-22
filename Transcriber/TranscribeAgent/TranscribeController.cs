@@ -5,10 +5,12 @@ using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     public class TranscribeController
     {
+        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
+
         /// <summary>
         /// Presents an interface to the speaker-recognition based transcription functionality.
         /// Allows the use of a set of Voiceprints to perform transcription of a meeting audio file.
@@ -16,14 +18,15 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(FileInfo meetingRecording, List<User> voiceprints, SpeechConfig speechConfig, string speakerIDSubKey)
+        public TranscribeController(FileInfo meetingRecording, List<User> voiceprints)
         {
-            Voiceprints = voiceprints;
+            SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+            SpeakerIDSubKey = "7fb70665af5b4770a94bb097e15b8ae0";
+
+            VoicePrints = voiceprints;
             FileSplitter = new AudioFileSplitter(meetingRecording);
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
-            SpeechConfig = speechConfig;
-            SpeakerIDSubKey = speakerIDSubKey;
 
             Console.WriteLine(">\tTranscription Controller initialized " +
                 "on Audio Recording [" + meetingRecording.FullName + "].");
@@ -40,6 +43,13 @@ namespace transcriber.TranscribeAgent
         public SpeechConfig SpeechConfig { get; private set; }
 
         public String SpeakerIDSubKey { get; private set; }
+
+        public void EnrollVoiceProfiles()
+        {
+            Console.WriteLine(">\tEnrolling user voice profiles...");
+            SpeakerRegistration registration = new SpeakerRegistration(SpeakerIDSubKey, VoicePrints);
+            registration.EnrollVoiceProfiles().Wait();
+        }
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
@@ -65,8 +75,11 @@ namespace transcriber.TranscribeAgent
             return true;
         }
 
-        public void WriteTranscriptionFile(FileInfo meetingMinutes, int lineLength = 120)
+        public void WriteTranscriptionFile(FileInfo meetingMinutes = null, int lineLength = 120)
         {
+            if (meetingMinutes is null)
+                meetingMinutes = MeetingMinutes;
+
             Console.WriteLine(">\tBegin Writing Transcription " +
                 "& Speaker Recognition Result into File [" + meetingMinutes.FullName + "]...");
             StringBuilder output = new StringBuilder();
@@ -96,6 +109,7 @@ namespace transcriber.TranscribeAgent
                 {
                     Console.WriteLine(">\tFile [" + meetingMinutes.Name + "] Does Not Exist, " +
                         "Creating the File Under the Directory: " + meetingMinutes.DirectoryName);
+                    meetingMinutes.Directory.Create();
                     meetingMinutes.Create().Close();
                 }
                 using (System.IO.StreamWriter file =

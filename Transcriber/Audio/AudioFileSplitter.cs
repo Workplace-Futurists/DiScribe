@@ -5,7 +5,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     /// <summary>
     /// Provides meeting audio file splitting. An audio file is split into <see cref="TranscribeAgent.AudioSegment"></see>
@@ -37,7 +37,7 @@ namespace transcriber.TranscribeAgent
         public const int BITS_PER_SAMPLE = 16;
         public const int CHANNELS = 1;
 
-        
+
         /// <summary>
         /// Info for access to audio file which must be in correct format for Azure Cognitive Services Speech API.
         /// </summary>
@@ -46,11 +46,11 @@ namespace transcriber.TranscribeAgent
         /// <summary>
         /// WAV audio data without header. References the buffer backing MainStream. 
         /// </summary>
-        public byte[] AudioData {get; set;}
+        public byte[] AudioData { get; set; }
 
 
         public MemoryStream MainStream { get; private set; }
-        
+
 
         /// <summary>
         /// Creates an AudioSegment from this instance using the specified
@@ -122,11 +122,11 @@ namespace transcriber.TranscribeAgent
             long audioLengthMS = AudioData.Length / BYTES_PER_SECOND * 1000L;
 
             return new AudioSegment(dataCopy, 0, audioLengthMS);
-            
+
         }
 
 
-     
+
 
         /// <summary>
         /// Creates buffer with file data. File header is removed.
@@ -146,7 +146,7 @@ namespace transcriber.TranscribeAgent
         }
 
 
-        
+
 
         /// <summary>
         /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/> 
@@ -159,7 +159,7 @@ namespace transcriber.TranscribeAgent
         public AudioSegment CreateAudioSegment(ulong startOffset, ulong endOffset)
         {
             byte[] buf = SplitAudioGetBuf(startOffset, endOffset);
-                       
+
             return new AudioSegment(buf, (long)startOffset, (long)endOffset);
         }
 
@@ -198,7 +198,7 @@ namespace transcriber.TranscribeAgent
             WaveFormat format = new WaveFormat(sampleRate, bitPerSample, channels);
 
 
-            MemoryStream stream  = new MemoryStream();
+            MemoryStream stream = new MemoryStream();
             using (WaveFileWriter writer = new WaveFileWriter(stream, format))
             {
                 writer.Write(dataBuf, 0, dataBuf.Length);
