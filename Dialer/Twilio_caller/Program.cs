@@ -110,8 +110,8 @@ namespace twilio_caller
             string twilioAuthToken = appConfig["TWILIO_AUTH_TOKEN"];
 
             // Initialize the auth provider with values from appsettings.json
-            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, mailUser, mailPass, scopes,tenantId);
-           
+            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, mailUser, mailPass, scopes, tenantId);
+
             // Request a token to sign in the user
             var accessToken = authProvider.GetAccessToken().Result;
 
@@ -121,7 +121,7 @@ namespace twilio_caller
             // Get signed in user
             var user = Graph.GraphHelper.GetMeAsync().Result;
             Console.WriteLine($"Welcome {user.DisplayName}!\n");
-     
+
             //// Get meeting number in email inbox
             //try
             //{
@@ -208,5 +208,5 @@ namespace twilio_caller
             //}
 
         }
-        }
+    }
 }
