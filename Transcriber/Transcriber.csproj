@@ -3,7 +3,7 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -24,11 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Record\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\SpeakerRegistration\SpeakerRegistration.csproj" />
     <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
+    <ProjectReference Include="..\SpeakerRegistration\SpeakerRegistration.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Audio\" />
   </ItemGroup>
 </Project>

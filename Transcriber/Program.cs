@@ -4,7 +4,7 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
-using transcriber.TranscribeAgent;
+using Transcriber.TranscribeAgent;
 using System.Collections.Generic;
 using SpeakerRegistration.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
@@ -13,50 +13,25 @@ using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 using NAudio.Wave;
 using SpeakerRegistration;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     public class Program
     {
-        /* Subscription key for Azure SpeakerRecognition service. */
-        private static readonly string SpeakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
-
-        private static readonly string SpeakerLocale = "en-us";
-
-        public static readonly int SpeakerRecognitionApiInterval = 3000; //Min time allowed between requests to speaker recognition API.
-
-        /* Creates an instance of a speech config with specified subscription key and service region
-         * for Azure Speech Recognition service
-         */
-        private static readonly SpeechConfig SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
-
-        private static readonly FileInfo TestRecording = new FileInfo(@"../../../Record/MultipleSpeakers.wav");
-
-        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../transcript/minutes.txt");
+        private static readonly FileInfo TestRecording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
 
         public static void Main(string[] args)
         {
             var voiceprints = MakeTestVoiceprints(TestRecording);                   //Make a test set of voiceprint objects
 
-            /*This TranscriptionInitData instance will be received from the Dialer in method call*/
-            var initData = new TranscriptionInitData(TestRecording, voiceprints, "");
-
-            /*Enroll speaker voice profiles with the Speaker Recognition API */
-            RegistrationController registration = new RegistrationController(SpeakerIDKey, voiceprints, SpeakerLocale);
-
-            Console.WriteLine(">\tChecking user voice profile enrollment...");
-            registration.EnrollUsers().Wait();
-
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(initData.MeetingRecording, initData.Voiceprints, SpeechConfig, SpeakerIDKey);
+            var controller = new TranscribeController(TestRecording, voiceprints);
+
+            controller.EnrollVoiceProfiles();
 
             /*Start the transcription of all audio segments to produce the meeting minutes file*/
             if (controller.Perform())
             {
-                controller.WriteTranscriptionFile(MeetingMinutes);
-
-                string emailSubject = "Meeting minutes for " + DateTime.Now.ToLocalTime().ToString();
-                var emailer = new TranscriptionEmailer("someone@ubc.ca", MeetingMinutes);
-                emailer.SendEmail(initData.TargetEmail, emailSubject);
+                controller.WriteTranscriptionFile();
             }
 
             Console.WriteLine("Please press <Return> to continue.");
@@ -68,8 +43,10 @@ namespace transcriber.TranscribeAgent
         /// </summary>
         /// <param name="audioFile"></param>
         /// <returns></returns>
-        private static List<User> MakeTestVoiceprints(FileInfo audioFile)
+        public static List<User> MakeTestVoiceprints(FileInfo audioFile)
         {
+            Console.WriteLine(">\tGenerating Test Voice prints...");
+
             /*Pre-registered profiles.*/
             Guid user1GUID = new Guid("87aed609-b072-4fc5-bca6-87f8caa6dea9");
             Guid user2GUID = new Guid("0135a034-f9dc-45ed-84e6-94f35caf4617");
@@ -81,7 +58,6 @@ namespace transcriber.TranscribeAgent
             User user2 = new User("Janelle Shane", "J.Shane@example.com", 2);
             User user3 = new User("Nick Smith", "N.Smith@example.com", 3);
             User user4 = new User("Patrick Shyu", "P.Shyu@example.com", 4);
-
 
             /*Offsets identifying times */
             ulong user1StartOffset = 1 * 1000;
@@ -95,7 +71,6 @@ namespace transcriber.TranscribeAgent
 
             ulong user4StartOffset = 151 * 1000;
             ulong user4EndOffset = 198 * 1000;
-
 
             AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
 

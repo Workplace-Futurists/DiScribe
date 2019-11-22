@@ -30,12 +30,12 @@ The bot could not only correctly transcribes the content of speech but also coul
 * [x]   Downloads in correct Format
 
 ### Transcribing Component
-* [ ]    Starts the Transcribing process upon the recording **finishes downloading**
+* [x]    Starts the Transcribing process upon the recording **finishes downloading**
 * [x]   **Transcribes** the meeting recording into text
 * [x]   **Recognizes** the speakers and labelling them
 * [x]   Outputs the formatted **text file** `minutes.txt`
 
 ### Emailing Component
-* [ ]    **Sends the Email** to meeting hosts upon `minutes.txt` is received
+* [x]    **Sends the Email** to meeting hosts upon `minutes.txt` is received
 
 ****Note that unchecked parts are incomplete***

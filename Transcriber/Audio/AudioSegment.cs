@@ -3,7 +3,7 @@ using SpeakerRegistration.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 using System.IO;
 
-namespace transcriber.TranscribeAgent
+namespace Transcriber.TranscribeAgent
 {
     /// <summary>
     /// Represents a segment of an audio recording which has an offset in milliseconds from the beginning
