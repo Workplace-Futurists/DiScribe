@@ -21,4 +21,7 @@
     <PackageReference Include="System.Security.Principal.Windows" Version="4.6.0" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Graph\" />
+  </ItemGroup>
 </Project>
