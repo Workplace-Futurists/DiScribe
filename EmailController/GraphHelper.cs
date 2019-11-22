@@ -91,6 +91,14 @@ namespace twilio_caller.Graph
             }
 
         }
+
+        public static async Task DeleteEmailAsync(Message message)
+        {
+
+            await _graphClient.Me.Messages[message.Id]
+                .Request()
+                .DeleteAsync();
+        }
         public static async Task GetEmailMeetingNumAsync(TimeSpan runInterval)
         {
             try
