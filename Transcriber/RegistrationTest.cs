@@ -15,37 +15,35 @@ using SpeakerRegistration;
 
 namespace Transcriber.TranscribeAgent
 {
-    public class Program
+    public class TranscribeTest
     {
         private static readonly FileInfo TestRecording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
 
-        public static void Main(string[] args)
-        {
-            var voiceprints = MakeTestVoiceprints(TestRecording);                   //Make a test set of voiceprint objects
-
-            /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(TestRecording, voiceprints);
-
-            controller.EnrollVoiceProfiles();
-
-            /*Start the transcription of all audio segments to produce the meeting minutes file*/
-            if (controller.Perform())
-            {
-                controller.WriteTranscriptionFile();
-            }
-
-            Console.WriteLine("Please press <Return> to continue.");
-            Console.ReadLine();
-        }
+    
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
         /// </summary>
         /// <param name="audioFile"></param>
         /// <returns></returns>
-        public static List<User> MakeTestVoiceprints(FileInfo audioFile)
+        public static List<User> TestRegistration()
         {
             Console.WriteLine(">\tGenerating Test Voice prints...");
+
+            /*Set result with List<Voiceprint> containing both voiceprint objects */
+            string user1Email = "B.Kernighan@example.com";
+            string user2Email = "J.Shane@example.com";
+            string user3Email = "M.Tour@example.com";
+            string user4Email = "P.Shyu@example.com";
+
+         
+            /*Create registration controller with initially empty set of users */
+            RegistrationController regController = 
+                RegistrationController.BuildController(dbConnStr, userEmails,
+
+
+
+                );
 
             /*Pre-registered profiles.*/
             Guid user1GUID = new Guid("87aed609-b072-4fc5-bca6-87f8caa6dea9");
@@ -53,11 +51,7 @@ namespace Transcriber.TranscribeAgent
             Guid user3GUID = new Guid("5483bd0c-55b7-457d-9924-a3b0e76096dd");
             Guid user4GUID = new Guid("c00243a8-cba8-4a64-910b-8a9973c6c9c6");
 
-            /*Set result with List<Voiceprint> containing both voiceprint objects */
-            User user1 = new User("Brian Kernighan", "B.Kernighan@example.com", 1);
-            User user2 = new User("Janelle Shane", "J.Shane@example.com", 2);
-            User user3 = new User("Nick Smith", "N.Smith@example.com", 3);
-            User user4 = new User("Patrick Shyu", "P.Shyu@example.com", 4);
+            
 
             /*Offsets identifying times */
             ulong user1StartOffset = 1 * 1000;
