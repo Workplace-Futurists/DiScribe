@@ -75,19 +75,6 @@ namespace twilio_caller.dialer
             }
         }
 
-        // Given a a call sid, retrieve recording information for it
-        public async Task<string> GetRecordingResource(string callSid)
-        {
-            TwilioClient.Init(_accountSid, _authToken);
-            // get recording sid
-            RecordingList recList = client.getAccount().getCall(callSid).getRecordings();
-            for (Recording rec : recList)
-            {
-                recordingSid = rec.getSid();
-            }
-            return "";
-        }
-
         // delete a recording given an SID
         // If successful, DELETE returns HTTP 204 (No Content) with no body
         public async Task DeleteRecordingAsync(string rid)
@@ -101,6 +88,5 @@ namespace twilio_caller.dialer
             Debug.Assert(response == true);
             Console.WriteLine(rid + " has been deleted.");
         }
-
     }
 }

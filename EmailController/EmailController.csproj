@@ -22,4 +22,7 @@
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
+  </ItemGroup>
 </Project>
