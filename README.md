@@ -16,7 +16,7 @@ The bot could not only correctly transcribes the content of speech but also coul
 ### Scheduling Component
 * [ ]    **Listens** for emails containing scheduled meeting informations
 * [ ]    Saves meeting informations into **database**
-* [ ]    Able to retrieve meeting **attendees** email Lists
+* [x]    Able to retrieve meeting **attendees** email Lists
 * [ ]    Check if any attendees aren't **registered** in the **voice print database**
 * [ ]    Sends email to unregistered attendees with **link** to **voice print registration website**
 * [ ]    Bot automatically **Executes** the following processes when meeting time is near

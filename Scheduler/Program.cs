@@ -1,6 +1,6 @@
 ﻿using System;
-using EmailController.GraphHelper;
 using System.Threading.Tasks;
+using EmailController;
 
 namespace Scheduler
 {
