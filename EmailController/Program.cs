@@ -6,7 +6,8 @@ namespace EmailController
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            XMLHelper.GetMeetingAttendee("https://companykm.my.webex.com/WBXService/XMLService", "623686431");
+            // XMLHelper.PostXMLRequest("https://companykm.my.webex.com/WBXService/XMLService");
         }
     }
 }
