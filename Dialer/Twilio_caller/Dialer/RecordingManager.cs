@@ -7,6 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
+using Microsoft.Extensions.Configuration;
 
 namespace twilio_caller.dialer
 {
@@ -16,10 +17,13 @@ namespace twilio_caller.dialer
         private static string _authToken;
         private static string _recordingBaseURL;
 
-        public RecordingManager(string sid, string authTok)
+        public RecordingManager(IConfigurationRoot appConfig)
         {
-            _accountSid = sid;
-            _authToken = authTok;
+            // add twilio authentication values
+            _accountSid = appConfig["TWILIO_ACCOUNT_SID"];
+            _authToken = appConfig["TWILIO_AUTH_TOKEN"];
+
+            // set base url for api endpoint
             _recordingBaseURL = "https://" + _accountSid + ":" + _authToken +
             "@api.twilio.com/2010-04-01/Accounts/" + _accountSid +
             "/Recordings/";
@@ -32,7 +36,7 @@ namespace twilio_caller.dialer
         //    return result;
         //}
 
-        // TODO given an rid, download a recording
+        // given an rid, download a recording
         public async void DownloadRecordingHandler(string rid)
         {
             using (var httpClient = new HttpClient())
@@ -57,7 +61,7 @@ namespace twilio_caller.dialer
                     byte[] buffer = new byte[bufferSize];
                     int bytesRead = 0;
 
-                    string filePath = ("../../../Recordings/" + rid + ".wav");
+                    string filePath = ("../../Record/" + rid + ".wav");
 
                     // Read from response and write to file
                     using (FileStream fileStream = File.Create(filePath))
@@ -69,13 +73,19 @@ namespace twilio_caller.dialer
                     }
                 }
             }
+        }
 
-            //TwilioClient.Init(accountSid, authToken);
-
-            //var recording = RecordingResource.Fetch(
-            //    pathSid: rid
-            //    );
-            //Console.WriteLine(recording);
+        // Given a a call sid, retrieve recording information for it
+        public async Task<string> GetRecordingResource(string callSid)
+        {
+            TwilioClient.Init(_accountSid, _authToken);
+            // get recording sid
+            RecordingList recList = client.getAccount().getCall(callSid).getRecordings();
+            for (Recording rec : recList)
+            {
+                recordingSid = rec.getSid();
+            }
+            return "";
         }
 
         // delete a recording given an SID
@@ -91,5 +101,6 @@ namespace twilio_caller.dialer
             Debug.Assert(response == true);
             Console.WriteLine(rid + " has been deleted.");
         }
+
     }
 }

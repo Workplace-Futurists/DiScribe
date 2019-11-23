@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Twilio;
 using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
+using Microsoft.Extensions.Configuration;
 
 namespace twilio_caller.dialer
 {
@@ -13,18 +14,19 @@ namespace twilio_caller.dialer
     {
         private static string _accountSid;
         private static string _authToken;
-
-        public dialerManager(string sid, string authTok)
+        
+        public dialerManager(IConfigurationRoot appConfig)
         {
-            _accountSid = sid;
-            _authToken = authTok;
+
+            // add twilio authentication values
+            _accountSid = appConfig["TWILIO_ACCOUNT_SID"];
+            _authToken = appConfig["TWILIO_AUTH_TOKEN"];
         }
         // a function to add pauses ('w' characters) between meeting call in numbers and extensions
         // ex. 628079791
         private string formatDigits(string meetingNum)
         {
             // TODO: assert length of meeting number 
-
             // add necessary digits and pauses ('w') for send digits
             var result = "wwwwwwwwww1ww#wwww" +
                 meetingNum[0] + "w" +
