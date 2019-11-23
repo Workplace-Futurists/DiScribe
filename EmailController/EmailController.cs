@@ -78,10 +78,13 @@ namespace EmailController
         {
             foreach (EmailAddress email in emails)
             {
-                if (SpeakerRegistration.CheckProfileExists(email.Email) == null)
-                {
+                bool profileExist = false;
+
+                //if (SpeakerRegistration.CheckProfileExists(email.Email) != null)
+                //  profileExist = true;
+
+                if (!profileExist)
                     SendGridHelper.SendRegistrationEmail(OFFICIAL_EMAIL, email, "Voice Registration for your upcoming meeting").Wait();
-                }
             }
         }
 
