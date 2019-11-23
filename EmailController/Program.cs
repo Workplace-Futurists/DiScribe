@@ -17,7 +17,7 @@ namespace EmailController
 
             //Console.WriteLine();
 
-            XMLHelper.createWebExMeeting();
+            XMLHelper.CreateWebExMeeting();
         }
     }
 }

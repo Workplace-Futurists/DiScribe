@@ -16,7 +16,7 @@ namespace EmailController
 {
     public class XMLHelper
     {
-        
+
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -52,12 +52,8 @@ namespace EmailController
             string responseFromServer = reader.ReadToEnd();
             // Display the content.
             Console.WriteLine(responseFromServer);
+            List<EmailAddress> emailAddresses = GetEmails(responseFromServer);
 
-            List<string> emails = RetrieveEmails(responseFromServer);
-            List<string> names = RetrieveNames(responseFromServer);
-
-            List<EmailAddress> emailAddresses = GetEmails(emails, names);
-        
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
@@ -65,9 +61,9 @@ namespace EmailController
 
             return emailAddresses;
         }
-        
 
-        public static void createWebExMeeting()
+
+        public static void CreateWebExMeeting()
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
@@ -178,7 +174,6 @@ namespace EmailController
             return strXML;
         }
 
-
         public static string GenerateXML(string accessCode)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
@@ -203,7 +198,21 @@ namespace EmailController
             return strXML;
         }
 
-        public static List<string> RetrieveEmails(string myXML)
+        public static List<EmailAddress> GetEmails(string myXML)
+        {
+            var emails = RetrieveEmails(myXML);
+            var names = RetrieveNames(myXML);
+            List<EmailAddress> emailAddresses = new List<EmailAddress>();
+
+            for (int i = 0; i < emails.Count; i++)
+            {
+                emailAddresses.Add(new EmailAddress(emails[i], names[i]));
+            }
+
+            return emailAddresses;
+        }
+
+        private static List<string> RetrieveEmails(string myXML)
         {
             XmlDocument xml = new XmlDocument();
             xml.LoadXml(myXML);
@@ -220,7 +229,7 @@ namespace EmailController
             return emails;
         }
 
-        public static List<string> RetrieveNames(string myXML)
+        private static List<string> RetrieveNames(string myXML)
         {
             XmlDocument xml = new XmlDocument();
             xml.LoadXml(myXML);
@@ -236,18 +245,5 @@ namespace EmailController
 
             return names;
         }
-
-        public static List<EmailAddress> GetEmails(List<string> emails, List<string> names)
-        {
-            List<EmailAddress> emailAddresses = new List<EmailAddress>();
-
-            for (int i = 0; i < emails.Count; i++)
-            {
-                emailAddresses.Add(new EmailAddress(emails[i], names[i]));
-            }
-
-            return emailAddresses;
-        }
-
     }
 }
