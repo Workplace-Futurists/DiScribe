@@ -8,6 +8,9 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Graph;
+using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
+using File = System.IO.File;
 
 namespace EmailController
 {
@@ -64,8 +67,7 @@ namespace EmailController
         }
         
 
-        /*
-        public static string PostXMLRequest(string accessCode)
+        public static void createWebExMeeting()
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
@@ -76,7 +78,10 @@ namespace EmailController
             request.ContentType = "application/x-www-form-urlencoded";
 
             // Create POST data and convert it to a byte array.
-            string strXML = GenerateXML(accessCode);
+            // string strXML = GenerateXMLCreateMeeting();
+
+            String strXML = File.ReadAllText(@"createMeeting.xml");
+            // string strXML = GenerateXMLCreateMeeting();
 
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
@@ -106,19 +111,72 @@ namespace EmailController
             dataStream.Close();
             response.Close();
 
-            return responseFromServer;
+            Console.WriteLine("\tMeeting has been successfully created");
         }
 
-        public static List<EmailAddress> GetAttendeeEmails(string responseFromServer)
+        public static string GenerateXMLCreateMeeting()
         {
-            List<string> emails = RetrieveEmails(responseFromServer);
-            List<string> names = RetrieveNames(responseFromServer);
+            string strXML = "";
+            strXML += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
+            strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n";
+            strXML += "<header>\r\n";
+            strXML += "<securityContext>\r\n";
+            strXML += "<webExID>kengqiangmk</webExID>\r\n";
+            strXML += "<password>Cs319_A</password>\r\n";
+            strXML += "<siteName>companykm.my</siteName>\r\n";
+            strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
+            strXML += "</securityContext>\r\n";
+            strXML += "</header>\r\n";
+            strXML += "<body>\r\n";
+            strXML += "<bodyContent xsi:type=\"java:com.webex.service.binding.meeting.CreateMeeting\">\r\n";
+            strXML += "<accessControl>\r\n";
+            strXML += "<meetingPassword>pass123</meetingPassword>";
+            strXML += "</accessControl>\r\n";
+            strXML += "<metaData>\r\n";
+            strXML += "<confName>Sample Meeting</confName>\r\n";
+            strXML += "<agenda>Test</agenda>\r\n";
+            strXML += "</metaData>\r\n";
+            strXML += "<participants>\r\n";
+            strXML += "<maxUserNumber>10</maxUserNumber>\r\n";
+            strXML += "<attendees>\r\n";
+            strXML += "<attendee>\r\n";
+            strXML += "<person>\r\n";
+            strXML += "<name>Kevin Lee</name>\r\n";
+            strXML += "<email>seungwook.l95@gmail.com</email>\r\n";
+            strXML += "</person>\r\n";
+            strXML += "</attendee>\r\n";
+            strXML += "<attendee>\r\n";
+            strXML += "<person>\r\n";
+            strXML += "<name>Workplace</name>\r\n";
+            strXML += "<email>workplace-futurists@hotmail.com</email>\r\n";
+            strXML += "</person>\r\n";
+            strXML += "</attendee>\r\n";
+            strXML += "</attendees>\r\n";
+            strXML += "</participants>\r\n";
+            strXML += "<enableOptions>\r\n";
+            strXML += "<chat>true</chat>\r\n";
+            strXML += "<poll>true</poll>\r\n";
+            strXML += "<audioVideo>true</audioVideo>\r\n";
+            strXML += "<supportE2E>TRUE</supportE2E>\r\n";
+            strXML += "<autoRecord>TRUE</autoRecord>\r\n";
+            strXML += "</enableOptions>\r\n";
+            strXML += "<schedule>\r\n";
+            strXML += "<startDate>11/23/2019 15:00:00</startDate>\r\n";
+            strXML += "<openTime>900</openTime>\r\n";
+            strXML += "<joinTeleconfBeforeHost>true</joinTeleconfBeforeHost>\r\n";
+            strXML += "<duration>20</duration>\r\n";
+            strXML += "<timeZoneID>4</timeZoneID>\r\n";
+            strXML += "</schedule>\r\n";
+            strXML += "</telephony>\r\n";
+            strXML += "<telephonySupport>CALLIN</telephonySupport>\r\n";
+            strXML += "<extTelephonyDescription>Call 1-800-555-1234, Passcode 98765</extTelephonyDescription>";
+            strXML += "</telephony>\r\n";
+            strXML += "</bodyContent>\r\n";
+            strXML += "</body>\r\n";
+            strXML += "</serv:message>\r\n";
 
-            List<EmailAddress> emailAddresses = GetEmails(emails, names);
-
-            return emailAddresses;
+            return strXML;
         }
-        */
 
 
         public static string GenerateXML(string accessCode)
@@ -190,7 +248,6 @@ namespace EmailController
 
             return emailAddresses;
         }
-
 
     }
 }
