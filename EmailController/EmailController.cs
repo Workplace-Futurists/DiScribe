@@ -50,13 +50,41 @@ namespace EmailController
         {
             FileInfo minutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
             string subject = "Meeting minutes of " + meeting_info;
-            SendGridHelper.SendEmail(OFFICIAL_EMAIL, recipients, subject, minutes).Wait();
+            SendGridHelper.SendMinuteEmail(OFFICIAL_EMAIL, recipients, subject, minutes).Wait();
         }
 
         public static void SendMail(List<EmailAddress> recipients, string subject, FileInfo file = null)
         {
-            SendGridHelper.SendEmail(OFFICIAL_EMAIL, recipients, subject, file).Wait();
+            SendGridHelper.SendMinuteEmail(OFFICIAL_EMAIL, recipients, subject, file).Wait();
         }
 
-      }
+        public static List<EmailAddress> GetAttendeeEmails(string accessCode)
+        {
+            return XMLHelper.GetAttendeeEmails(accessCode);
+        }
+
+        public static List<string> GetAttendeeEmailsAsString(List<EmailAddress> emails)
+        {
+            List<string> emailsAsString = new List<String>();
+            foreach (EmailAddress email in emails)
+            {
+                emailsAsString.Add(email.Email);
+            }
+            return emailsAsString;
+        }
+
+        // SpeakerRegistration -> CheckProfileExists(string email)
+        public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
+        {
+            foreach (EmailAddress email in emails)
+            {
+                if (SpeakerRegistration.CheckProfileExists(email.Email) == null)
+                {
+                    SendGridHelper.SendRegistrationEmail(OFFICIAL_EMAIL, email, "Voice Registration for your upcoming meeting").Wait();
+                }
+            }
+        }
+
+    }
 }
+

@@ -10,6 +10,14 @@ namespace Main
     {
         static void Main(string[] args)
         {
+            // TODO retrieve accessCode correctly
+            string accessCode = EmailController.GraphHelper.GetEmailMeetingNumAsync().Result;
+
+            // send registration emails to whom did not register their voice into the system yet
+            List<EmailAddress> recipients = EmailController.EmailController.GetAttendeeEmails(accessCode);
+            EmailController.EmailController.SendEmailForVoiceRegistration(recipients);
+
+
             // TODO dial in
             // TODO record the meeting
             // TODO download the recording
@@ -19,13 +27,7 @@ namespace Main
             var controller = new TranscribeController(pseudo_recording, voiceprints);
             controller.EnrollVoiceProfiles();
 
-            // send meeting minutes to recipients
-            // TODO how are we going to know the recipients
-            var recipients = new List<EmailAddress>
-            {
-                new EmailAddress("jinhuang696@gmail.com", "Gmail")
-            };
-
+            // If Transcribing is done, send minutes to every attendees of the meeting
             Boolean success = controller.Perform();
             if (success)
             {
