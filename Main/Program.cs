@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Transcriber.TranscribeAgent;
+using SpeakerRegistration;
 using SendGrid.Helpers.Mail;
 using System.IO;
 
@@ -8,6 +9,7 @@ namespace Main
 {
     class Program
     {
+            
         static void Main(string[] args)
         {
             // TODO dial in
@@ -15,7 +17,10 @@ namespace Main
             // TODO download the recording
             // transcribe the meeting
             FileInfo pseudo_recording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
-            var voiceprints = Transcriber.TranscribeAgent.Program.MakeTestVoiceprints(pseudo_recording);
+
+            /*Make fake voice profiles and register those users to test user registration */
+            var voiceprints = Test.RegistrationTest.TestRegistration();
+
             var controller = new TranscribeController(pseudo_recording, voiceprints);
             controller.EnrollVoiceProfiles();
 

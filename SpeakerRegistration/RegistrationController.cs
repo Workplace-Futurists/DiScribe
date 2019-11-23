@@ -32,7 +32,6 @@ namespace SpeakerRegistration
         {
             /*Create REST client for enrolling users */
             EnrollmentClient = enrollmentClient;
-
             EnrollmentLocale = enrollmentLocale;
 
             DBController = dbController;
@@ -40,9 +39,11 @@ namespace SpeakerRegistration
             
             UserProfiles = userProfiles;
 
-            /*Ensure that all DiScribe users have profiles enrolled with the Azure Speaker Recognition endpoint */
-            EnrollVoiceProfiles().Wait();                                                         
-
+            if (userProfiles.Count > 0)
+            {
+                /*Ensure that all DiScribe users have profiles enrolled with the Azure Speaker Recognition endpoint */
+                EnrollVoiceProfiles().Wait();
+            }
         }
 
 
@@ -56,9 +57,20 @@ namespace SpeakerRegistration
         /// <param name="dbConnectionString"></param>
         /// <param name="userEmails"></param>
         /// <param name="speakerIDKeySub"></param>
-        public static RegistrationController BuildController(DatabaseController dbController, List<string> userEmails, string speakerIDKeySub,
+        public static RegistrationController BuildController(string dbConnStr, List<string> userEmails, string speakerIDKeySub,
             string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
+            DatabaseController dbController;
+            try
+            { 
+                dbController = new DatabaseController(dbConnStr);
+            } catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                throw new Exception("Unable to create Registration Controller due to database connection error");
+            }
+
+
             
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
             List<User> userProfiles = new List<User>();
@@ -103,12 +115,13 @@ namespace SpeakerRegistration
         /// Creates a new user profile for a User in the DiScribe database.
         /// 
         /// Also creates a corresponding profile with the Azure Speaker Recognition
-        /// endpoint and returns the GUID for that profile.
+        /// endpoint and returns the GUID for that profile on success.
+        /// 
         ///
         /// </summary>
         /// <param name="client"></param>
         /// <param name="locale"></param>
-        /// <returns></returns>
+        /// <returns>Created profile GUID or GUID {00000000-0000-0000-0000-000000000000} on fail</returns>
         public async Task<Guid> CreateUserProfile(UserParams userParams)
         {
             var taskComplete = new TaskCompletionSource<Guid>();
@@ -139,7 +152,7 @@ namespace SpeakerRegistration
             }
 
                 
-            UserProfiles.Add(registeredUser);
+            UserProfiles.Add(registeredUser);                         //Add profile to list of profiles managed by this instance
             taskComplete.SetResult(profileTask.Result.ProfileId);
             return profileTask.Result.ProfileId;
 
@@ -155,28 +168,61 @@ namespace SpeakerRegistration
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<Boolean> CheckProfileExists(string email)
+        public async Task<User> CheckProfileExists(string email)
         {
 
-            var taskComplete = new TaskCompletionSource<Boolean>();
-            Boolean result = false;
-            
+            var taskComplete = new TaskCompletionSource<User>();
+               
             /*Try to load a user with this email */
             User registeredUser = DBController.LoadUser(email);
                
             if (registeredUser == null)
             {
+               return null;
+            }
+
+            taskComplete.SetResult(registeredUser);
+            return registeredUser;
+            
+            
+        }
+
+
+
+        /// <summary>
+        /// Delete a profile from the Azure Speaker Recognition endpoint and delete
+        /// the matching record in the DiScribe database.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>True on success, false on fail</Boolean></returns>
+        public async Task<Boolean> DeleteProfile(string email)
+        {
+
+            var taskComplete = new TaskCompletionSource<Boolean>();
+
+            var user = await CheckProfileExists(email);
+
+            if (user == null)
+            {
                 taskComplete.SetResult(false);
                 return false;
             }
-
-            else
+            
+            /*Delete profile Azure Spekaer Recognition endpoint */
+            try
             {
-                taskComplete.SetResult(true);
-                return true;
+                await EnrollmentClient.DeleteProfileAsync(user.ProfileGUID);
+            } catch(Exception ex)
+            {
+                Console.Error.WriteLine($"Unable delete user from Azure Speaker Recognition endpoint. Continuing with DB profile delete {ex.Message}");
             }
 
-            
+            /*Delete user profile from DiScribe database */
+            Boolean dbDelete = user.Delete();
+
+            taskComplete.SetResult(dbDelete);
+            return dbDelete;
+
         }
 
 
