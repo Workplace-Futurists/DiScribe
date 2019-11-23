@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Transcriber.TranscribeAgent;
 using SendGrid.Helpers.Mail;
 using System.IO;
+using twilio_caller;
+using Microsoft.Extensions.Configuration;
 
 namespace Main
 {
@@ -19,6 +21,14 @@ namespace Main
 
 
             // TODO dial in
+            // Set Email configurations
+            var appConfig = Configurations.LoadAppSettings();
+
+            // new dialer manager
+            var dialManager = new twilio_caller.dialer.dialerManager(appConfig);
+            // new recording download manager
+            var recManager = new twilio_caller.dialer.RecordingManager(appConfig);
+
             // TODO record the meeting
             // TODO download the recording
             // transcribe the meeting
