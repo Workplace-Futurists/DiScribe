@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -56,5 +57,6 @@ namespace EmailController
         {
             SendGridHelper.SendEmail(OFFICIAL_EMAIL, recipients, subject, file).Wait();
         }
-    }
+
+      }
 }

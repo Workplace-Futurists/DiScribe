@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<serv:message xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <header>
+        <securityContext>
+            <email>kengqiangmk@gmail.com</email>
+            <password>Cs319_A</password>
+            <siteName>companykm.my</siteName>
+        </securityContext>
+    </header>
+    <body>
+        <bodyContent
+            xsi:type="java:com.webex.service.binding.attendee.LstMeetingAttendee">
+            <meetingKey>627397667</meetingKey>
+        </bodyContent>
+    </body>
+</serv:message>
