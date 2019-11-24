@@ -13,7 +13,21 @@ namespace Main
         static void Main(string[] args)
         {
             // TODO retrieve accessCode correctly
-            string accessCode = EmailController.GraphHelper.GetEmailMeetingNumAsync().Result;
+            // string accessCode = EmailController.GraphHelper.GetEmailMeetingNumAsync().Result;
+
+            //-------------------------------------- 
+            // FOR TESTING 
+            List<string> names = new List<string>();
+            names.Add("Workplace-futurists");
+
+            List<string> emails = new List<string>();
+            names.Add("workplace-futurists@hotmail.com");
+
+            string startDate = "11/26/2019 18:00:00";
+            string duration = "30";
+            //-------------------------------------- 
+
+            string accessCode = EmailController.XMLHelper.CreateWebExMeeting(names, emails, startDate, duration);
 
             // send registration emails to whom did not register their voice into the system yet
             List<EmailAddress> recipients = EmailController.EmailController.GetAttendeeEmails(accessCode);
