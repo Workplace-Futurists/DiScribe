@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
 using SpeakerRegistration;
-using DatabaseController.Data;
 
 namespace Transcriber.TranscribeAgent
 {
