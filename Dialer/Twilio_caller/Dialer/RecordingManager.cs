@@ -30,41 +30,48 @@ namespace twilio_caller.dialer
         }
 
         // given an rid, download a recording
-        public async void DownloadRecordingHandler(string rid)
+        public async Task DownloadRecordingAsync(string rid)
         {
-            using (var httpClient = new HttpClient())
+            try
             {
-                // set url    
-                string recordingURL = _recordingBaseURL + rid;
-                // make new uri with previous url
-                Uri recordingURI = new Uri(recordingURL);
-                Console.WriteLine("The following rid will be downloaded " + rid);
-
-                // get response content from api
-                var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
-
-                // make sure request worked once headers are read
-                response.EnsureSuccessStatusCode();
-
-                // Save file to disk
-                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var httpClient = new HttpClient())
                 {
-                    // Define buffer and buffer size
-                    int bufferSize = 1024;
-                    byte[] buffer = new byte[bufferSize];
-                    int bytesRead = 0;
+                    // set url    
+                    string recordingURL = _recordingBaseURL + rid;
+                    // make new uri with previous url
+                    Uri recordingURI = new Uri(recordingURL);
+                    Console.WriteLine("The following rid will be downloaded " + rid);
 
-                    string filePath = ("../../Record/" + rid + ".wav");
+                    // get response content from api
+                    var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
 
-                    // Read from response and write to file
-                    using (FileStream fileStream = File.Create(filePath))
+                    // make sure request worked once headers are read
+                    response.EnsureSuccessStatusCode();
+
+                    // Save file to disk
+                    using (var stream = await response.Content.ReadAsStreamAsync())
                     {
-                        while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                        // Define buffer and buffer size
+                        int bufferSize = 1024;
+                        byte[] buffer = new byte[bufferSize];
+                        int bytesRead = 0;
+
+                        string filePath = (@"../../../../Record/" + rid + ".wav");
+                        Console.WriteLine("The recording will be downloaded at: " + filePath);
+
+                        // Read from response and write to file
+                        using (FileStream fileStream = File.Create(filePath))
                         {
-                            await fileStream.WriteAsync(buffer, 0, bytesRead);
-                        } // end while
+                            while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                            {
+                                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                            } // end while
+                        }
                     }
                 }
+            } catch (Exception err)
+            {
+                Console.Error.WriteLine(err);
             }
         }
 

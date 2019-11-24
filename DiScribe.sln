@@ -13,13 +13,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transcriber", "Transcriber\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRecognitionClientLibrary", "SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj", "{C39CE9CA-9B29-4754-89E7-1A0A1E9812A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{4E2A65CB-D580-4716-B304-0840A7C1EA44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "Main\Main.csproj", "{4E2A65CB-D580-4716-B304-0840A7C1EA44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailController", "EmailController\EmailController.csproj", "{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailController", "EmailController\EmailController.csproj", "{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduler\Scheduler.csproj", "{E3652D38-94D2-44AA-83BE-91871AD6C993}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Scheduler.csproj", "{E3652D38-94D2-44AA-83BE-91871AD6C993}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseController", "DatabaseController\DatabaseController.csproj", "{4D6DF765-7522-459E-AC49-A8BE7020D2E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseController", "DatabaseController\DatabaseController.csproj", "{4D6DF765-7522-459E-AC49-A8BE7020D2E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Record", "Record", "{35E6CD1E-DC3E-40FC-84E2-E5B2DF63B71E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
