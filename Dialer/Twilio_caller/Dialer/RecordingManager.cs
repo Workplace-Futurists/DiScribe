@@ -30,8 +30,9 @@ namespace twilio_caller.dialer
         }
 
         // given an rid, download a recording
-        public async Task DownloadRecordingAsync(string rid)
+        public async Task<string> DownloadRecordingAsync(string rid)
         {
+            string filePath = (@"../../../../Record/" + rid + ".wav");
             try
             {
                 using (var httpClient = new HttpClient())
@@ -56,7 +57,6 @@ namespace twilio_caller.dialer
                         byte[] buffer = new byte[bufferSize];
                         int bytesRead = 0;
 
-                        string filePath = (@"../../../../Record/" + rid + ".wav");
                         Console.WriteLine("The recording will be downloaded at: " + filePath);
 
                         // Read from response and write to file
@@ -69,9 +69,12 @@ namespace twilio_caller.dialer
                         }
                     }
                 }
+
+            return filePath;
             } catch (Exception err)
             {
                 Console.Error.WriteLine(err);
+                return null;
             }
         }
 
