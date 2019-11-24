@@ -11,18 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Scheduler\Scheduler.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
        <ProjectReference Include="..\EmailController\EmailController.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Scheduler\obj\anycpu\Debug\TempPE\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="TaskScheduler" Version="2.8.17" />
   </ItemGroup>
 </Project>

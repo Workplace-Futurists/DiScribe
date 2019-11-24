@@ -10,13 +10,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transcriber", "Transcriber\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRecognitionClientLibrary", "SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj", "{C39CE9CA-9B29-4754-89E7-1A0A1E9812A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{4E2A65CB-D580-4716-B304-0840A7C1EA44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "Main\Main.csproj", "{4E2A65CB-D580-4716-B304-0840A7C1EA44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailController", "EmailController\EmailController.csproj", "{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailController", "EmailController\EmailController.csproj", "{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduler\Scheduler.csproj", "{95733875-49DA-4D61-8CC2-B40C565B8BC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRegistration", "SpeakerRegistration\SpeakerRegistration.csproj", "{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeakerRegistration", "SpeakerRegistration\SpeakerRegistration.csproj", "{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduling\Scheduler.csproj", "{2204E868-0412-4A9D-949E-BF1B81E07C14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,14 +74,6 @@ Global
 		{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}.Release|anycpu.Build.0 = Release|Any CPU
 		{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}.Release|x64.ActiveCfg = Release|Any CPU
 		{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}.Release|x64.Build.0 = Release|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Debug|anycpu.ActiveCfg = Debug|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Debug|anycpu.Build.0 = Debug|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Debug|x64.Build.0 = Debug|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Release|anycpu.ActiveCfg = Release|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Release|anycpu.Build.0 = Release|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Release|x64.ActiveCfg = Release|Any CPU
-		{95733875-49DA-4D61-8CC2-B40C565B8BC5}.Release|x64.Build.0 = Release|Any CPU
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Debug|anycpu.ActiveCfg = Debug|Any CPU
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Debug|anycpu.Build.0 = Debug|Any CPU
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -90,6 +82,14 @@ Global
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Release|anycpu.Build.0 = Release|Any CPU
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Release|x64.ActiveCfg = Release|Any CPU
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Release|x64.Build.0 = Release|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|x64.Build.0 = Debug|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|anycpu.Build.0 = Release|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|x64.ActiveCfg = Release|Any CPU
+		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
