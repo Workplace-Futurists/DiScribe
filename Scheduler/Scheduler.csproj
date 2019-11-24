@@ -1,12 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  
+  
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
-    <ProjectReference Include="..\EmailController\EmailController.csproj" />
+       <ProjectReference Include="..\EmailController\EmailController.csproj" />
   </ItemGroup>
 </Project>

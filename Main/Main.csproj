@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,7 +10,6 @@
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
     <ProjectReference Include="..\dialer\Twilio_caller\twilio_caller.csproj" />
     <ProjectReference Include="..\dialer\wip_link_dialer\dialer_01\dialer_01.csproj" />
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
     <ProjectReference Include="..\EmailController\EmailController.csproj" />
   </ItemGroup>
 </Project>

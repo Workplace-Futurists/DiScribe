@@ -5,10 +5,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <SkipValidatePackageReferences>true</SkipValidatePackageReferences>
     <Platforms>AnyCPU;x64</Platforms>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
+    <ProjectReference Include="..\SpeakerRegistration\SpeakerRegistration.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

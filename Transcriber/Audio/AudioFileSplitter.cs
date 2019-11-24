@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using DatabaseController.Data;
+using SpeakerRegistration.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
-using System.Collections;
 using NAudio.Wave.SampleProviders;
 
 namespace Transcriber.TranscribeAgent
@@ -23,7 +22,7 @@ namespace Transcriber.TranscribeAgent
         /// Create an AudioFileSplitter instance which uses a List of voiceprints for speaker recognition to
         /// divide an audio file. Allows the divided audio segment data to be accessed via streams.
         /// </summary>
-        /// <param name="voiceprints"><see cref="List{Voiceprint}"/>List of <see cref="Voiceprint"/> instances used for speaker recognition</param>
+        /// <param name="voiceprints"><see cref="List{Voiceprint}"/>List of <see cref="User"/> instances used for speaker recognition</param>
         /// <param name="audioFile"><see cref="FileInfo"/> instance with absolute path to audio file. File must be a WAV file
         /// with mono audio, 16kHz sampling rate, and 16 bits per sample.</param>
         public AudioFileSplitter(FileInfo audioFile)
@@ -179,7 +178,7 @@ namespace Transcriber.TranscribeAgent
 
             byte[] wavBuf = WriteWavToBuf(buf);                  //Write data to the wave data buffer
 
-            MemoryStream outputStream = new MemoryStream(wavBuf);
+            MemoryStream outputStream = new MemoryStream(wavBuf, 0, wavBuf.Length, true, true);
             outputStream.Position = 0;                          //Set stream position to 0;
 
             return outputStream;
