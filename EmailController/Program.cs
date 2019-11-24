@@ -8,20 +8,19 @@ namespace EmailController
     {
         static void Main(string[] args)
         {
-            // string accessCode = GraphHelper.GetEmailMeetingNumAsync().Result;
-            //List<EmailAddress> emails = EmailController.GetAttendeeEmails("624308408");
-            //foreach (EmailAddress email in emails)
-            //{
-            //    Console.WriteLine(email.Email);
-            //}
+            List<string> names = new List<string>();
+            names.Add("Kevin");
+            names.Add("Workplace-futurists");
 
-            //Console.WriteLine();
-            EmailController.Initialize();
-            var recipients = new List<EmailAddress>
-            {
-                new EmailAddress("jinhuang696@gmail.com", "Jin Huang")
-            };
-            EmailController.SendMinutes(recipients);
+            List<string> emails = new List<string>();
+            names.Add("seungwook.l95@gmail.com");
+            names.Add("workplace-futurists@hotmail.com");
+
+            string startDate = "11/26/2019 18:00:00";
+            string duration = "30";
+
+            string accessCode = XMLHelper.CreateWebExMeeting(names, emails, startDate, duration);
+            Console.WriteLine(accessCode);
         }
     }
 }

@@ -43,7 +43,7 @@
                 <autoRecord>TRUE</autoRecord>
             </enableOptions>
             <schedule>
-                <startDate>11/23/2019 15:00:00</startDate>
+                <startDate>11/24/2019 18:00:00</startDate>
                 <openTime>900</openTime>
                 <joinTeleconfBeforeHost>true</joinTeleconfBeforeHost>
                 <duration>20</duration>
