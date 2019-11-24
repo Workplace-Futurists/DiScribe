@@ -12,22 +12,22 @@ namespace Main
     {
         static void Main(string[] args)
         {
-            // TODO retrieve accessCode correctly
-            // string accessCode = EmailController.GraphHelper.GetEmailMeetingNumAsync().Result;
+            //// TODO retrieve accessCode correctly
+            string accessCode = EmailController.GraphHelper.GetEmailMeetingNumAsync().Result;
 
-            //-------------------------------------- 
-            // FOR TESTING 
-            List<string> names = new List<string>();
-            names.Add("Workplace-futurists");
+            ////-------------------------------------- 
+            //// FOR TESTING 
+            //List<string> names = new List<string>();
+            //names.Add("Workplace-futurists");
 
-            List<string> emails = new List<string>();
-            names.Add("workplace-futurists@hotmail.com");
+            //List<string> emails = new List<string>();
+            //names.Add("workplace-futurists@hotmail.com");
 
-            string startDate = "11/26/2019 18:00:00";
-            string duration = "30";
-            //-------------------------------------- 
+            //string startDate = "11/26/2019 18:00:00";
+            //string duration = "30";
+            ////-------------------------------------- 
 
-            string accessCode = EmailController.XMLHelper.CreateWebExMeeting(names, emails, startDate, duration);
+            //string accessCode = EmailController.XMLHelper.CreateWebExMeeting(names, emails, startDate, duration);
 
             // send registration emails to whom did not register their voice into the system yet
             List<EmailAddress> recipients = EmailController.EmailController.GetAttendeeEmails(accessCode);
@@ -40,11 +40,11 @@ namespace Main
             var dialManager = new twilio_caller.dialer.dialerManager(appConfig);
             // new recording download manager
             var recManager = new twilio_caller.dialer.RecordingManager(appConfig);
-            
+
             // dial into and record the meeting
             var rid = dialManager.CallMeetingAsync(accessCode).Result;
             // download the recording to the file
-            recManager.DownloadRecordingHandler(rid);
+            recManager.DownloadRecordingAsync(accessCode).Wait();
             // transcribe the meeting
             FileInfo pseudo_recording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
             var voiceprints = Transcriber.TranscribeAgent.Program.MakeTestVoiceprints(pseudo_recording);
@@ -64,7 +64,7 @@ namespace Main
                 EmailController.EmailController.Initialize();
                 EmailController.EmailController.SendMail(recipients, "Failed To Generate Meeting Transcription");
             }
- 
+
             Console.WriteLine(">\tTasks Complete!");
         }
     }

@@ -9,7 +9,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
-using DatabaseController.Data;
+using SpeakerRegistration.Data;
 using NAudio.Wave;
 
 
@@ -44,13 +44,13 @@ namespace Transcriber.TranscribeAgent
             SpeakerIdentificationServiceClient idClient = new SpeakerIdentificationServiceClient(Controller.SpeakerIDSubKey);
 
             /*Dictionary for efficient voiceprint lookup by enrollment GUID*/
-            Dictionary<Guid, Voiceprint> voiceprintDictionary = new Dictionary<Guid, Voiceprint>();
-            Guid[] userIDs = new Guid[Controller.VoicePrints.Count];
+            Dictionary<Guid, User> voiceprintDictionary = new Dictionary<Guid, User>();
+            Guid[] userIDs = new Guid[Controller.Voiceprints.Count];
 
             /*Add all voiceprints to the dictionary*/
-            foreach (var voiceprint in Controller.VoicePrints)
+            foreach (var voiceprint in Controller.Voiceprints)
             {
-                voiceprintDictionary.Add(voiceprint.UserGUID, voiceprint);
+                voiceprintDictionary.Add(voiceprint.ProfileGUID, voiceprint);
             }
 
             voiceprintDictionary.Keys.CopyTo(userIDs, 0);                  //Hold GUIDs in userIDs array
@@ -108,7 +108,6 @@ namespace Transcriber.TranscribeAgent
                     /*Set user as unrecognizable if API request resonse indicates failure */
                     if (outcome == Status.Failed)
                     {
-                        speaker = new User("Not recognized", "", -1);
                         Console.Error.WriteLine("Recognition operation failed for this phrase.");
                     }
 
@@ -120,7 +119,7 @@ namespace Transcriber.TranscribeAgent
                         if (outcome == Status.Succeeded
                             && profileID.ToString() == "00000000-0000-0000-0000-000000000000")
                         {
-                            speaker = new User("Not recognized", "", -1);
+                            speaker = null;
                         }
 
                         /*If task suceeded and the profile ID does match an ID in
@@ -128,7 +127,7 @@ namespace Transcriber.TranscribeAgent
                         else if (idOutcomeCheck.Result.Status == Status.Succeeded
                             && voiceprintDictionary.ContainsKey(profileID))
                         {
-                            speaker = voiceprintDictionary[profileID].AssociatedUser;
+                            speaker = voiceprintDictionary[profileID];
                         }
                     }
 
