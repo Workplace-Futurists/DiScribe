@@ -19,18 +19,18 @@ namespace Main
             List<EmailAddress> recipients = EmailController.EmailController.GetAttendeeEmails(accessCode);
             EmailController.EmailController.SendEmailForVoiceRegistration(recipients);
 
-
-            // TODO dial in
-            // Set Email configurations
+            // Set Authentication configurations
             var appConfig = Configurations.LoadAppSettings();
 
             // new dialer manager
             var dialManager = new twilio_caller.dialer.dialerManager(appConfig);
             // new recording download manager
             var recManager = new twilio_caller.dialer.RecordingManager(appConfig);
-
-            // TODO record the meeting
-            // TODO download the recording
+            
+            // dial into and record the meeting
+            var rid = dialManager.CallMeetingAsync(accessCode).Result;
+            // download the recording to the file
+            recManager.DownloadRecordingHandler(rid);
             // transcribe the meeting
             FileInfo pseudo_recording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
             var voiceprints = Transcriber.TranscribeAgent.Program.MakeTestVoiceprints(pseudo_recording);
