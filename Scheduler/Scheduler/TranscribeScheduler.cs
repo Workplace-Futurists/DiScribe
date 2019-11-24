@@ -16,7 +16,7 @@ namespace Scheduler
         /// <param name="meetingID"></param>
         /// <param name="startTime"></param>
         /// <returns></returns>
-        public static Boolean ScheduleTask(string meetingID, DateTime startTime, string appName, string rootDir = " ")
+        public static Boolean ScheduleTask(string meetingID, DateTime startTime, string appName, string rootDir = "")
         {
             // Create a new task
             string taskName = "Dial into webex meeting at " +startTime.ToLongDateString();

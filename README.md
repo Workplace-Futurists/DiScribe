@@ -14,11 +14,11 @@ The bot could not only correctly transcribes the content of speech but also coul
 * [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to update voice print samples, their email addresses or add alternative ones
 
 ### Scheduling Component
-* [ ]	 **Retrieves** the meeting informations
+* [ ]    **Listens** for emails containing scheduled meeting informations
 * [ ]    Saves meeting informations into **database**
-* [x]    Able to retrieve meeting **attendees** email Lists
+* [ ]    Able to retrieve meeting **attendees** email Lists
 * [ ]    Check if any attendees aren't **registered** in the **voice print database**
-* [x]    Sends email to unregistered attendees with **link** to **voice print registration website**
+* [ ]    Sends email to unregistered attendees with **link** to **voice print registration website**
 * [ ]    Bot automatically **Executes** the following processes when meeting time is near
 
 ### Call-in Component

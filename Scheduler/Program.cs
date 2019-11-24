@@ -8,8 +8,7 @@ namespace Scheduler
     {
         static void Main(string[] args)
         {
-
-                                   
+                       
             TranscribeScheduler.ScheduleTask("000000", DateTime.Now.AddSeconds(5), "DiScribe.exe", "..");
 
 

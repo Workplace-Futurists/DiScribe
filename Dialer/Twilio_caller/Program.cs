@@ -62,18 +62,17 @@ namespace twilio_caller
 
         static void ListCalendarEvents()
         {
-            //var events = Graph.GraphHelper.GetEventsAsync().Result;
-            //Console.WriteLine("Events:");
+            var events = Graph.GraphHelper.GetEventsAsync().Result;
+            Console.WriteLine("Events:");
 
-            //foreach (var calendarEvent in events)
-            //{
-            //    Console.WriteLine($"Subject: {calendarEvent.Subject}");
-            //    Console.WriteLine($"  Organizer: {calendarEvent.Organizer.EmailAddress.Name}");
-            //    Console.WriteLine($"  Start: {FormatDateTimeTimeZone(calendarEvent.Start)}");
-            //    Console.WriteLine($"  End: {FormatDateTimeTimeZone(calendarEvent.End)}");
-            //}
+            foreach (var calendarEvent in events)
+            {
+                Console.WriteLine($"Subject: {calendarEvent.Subject}");
+                Console.WriteLine($"  Organizer: {calendarEvent.Organizer.EmailAddress.Name}");
+                Console.WriteLine($"  Start: {FormatDateTimeTimeZone(calendarEvent.Start)}");
+                Console.WriteLine($"  End: {FormatDateTimeTimeZone(calendarEvent.End)}");
+            }
         }
-
         static string parseEmail(string email)
         {
             return "";
@@ -111,47 +110,47 @@ namespace twilio_caller
             string twilioAuthToken = appConfig["TWILIO_AUTH_TOKEN"];
 
             // Initialize the auth provider with values from appsettings.json
-            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, mailUser, mailPass, scopes, tenantId);
-
+            var authProvider = new GraphAuthentication.UserPassAuthProvider(appId, mailUser, mailPass, scopes,tenantId);
+           
             // Request a token to sign in the user
             var accessToken = authProvider.GetAccessToken().Result;
 
             // Initialize Graph client
-            //Graph.GraphHelper.Initialize(authProvider);
+            Graph.GraphHelper.Initialize(authProvider);
 
-            //// Get signed in user
-            //var user = Graph.GraphHelper.GetMeAsync().Result;
-            //Console.WriteLine($"Welcome {user.DisplayName}!\n");
-
-            ////// Get meeting number in email inbox
-            ////try
-            ////{
-            ////    string meetingNum = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
-            ////    Console.WriteLine($"The meeting number retrieved was {meetingNum};");
-            ////}
-            ////catch (Exception ex)  //Exceptions here or in the function will be caught here
-            ////{
-            ////    Console.WriteLine("Exception: " + ex.Message);
-
-            ////}
-            //// Try making subscription
+            // Get signed in user
+            var user = Graph.GraphHelper.GetMeAsync().Result;
+            Console.WriteLine($"Welcome {user.DisplayName}!\n");
+     
+            //// Get meeting number in email inbox
             //try
             //{
-            //    Subscription subscription = Graph.GraphHelper.AddMailSubscription().Result;
-            //    Console.WriteLine($"The subscriptioncreated, change type {subscription.ChangeType};");
-            //    Console.WriteLine($"The subscription is subscribed to {subscription.Resource};");
-            //    Console.WriteLine($"The subscription retrieved will expire at {subscription.ExpirationDateTime};");
+            //    string meetingNum = Graph.GraphHelper.GetEmailMeetingNumAsync().Result;
+            //    Console.WriteLine($"The meeting number retrieved was {meetingNum};");
             //}
             //catch (Exception ex)  //Exceptions here or in the function will be caught here
             //{
             //    Console.WriteLine("Exception: " + ex.Message);
+
             //}
+            // Try making subscription
+            try
+            {
+                Subscription subscription = Graph.GraphHelper.AddMailSubscription().Result;
+                Console.WriteLine($"The subscriptioncreated, change type {subscription.ChangeType};");
+                Console.WriteLine($"The subscription is subscribed to {subscription.Resource};");
+                Console.WriteLine($"The subscription retrieved will expire at {subscription.ExpirationDateTime};");
+            }
+            catch (Exception ex)  //Exceptions here or in the function will be caught here
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+            }
 
            
-            //TimeSpan interval = new TimeSpan(0, 0, 30);
-            //var test = Task.Run(() => Graph.GraphHelper.GetEmailMeetingNumAsync(interval));
+            TimeSpan interval = new TimeSpan(0, 0, 30);
+            var test = Task.Run(() => Graph.GraphHelper.GetEmailMeetingNumAsync(interval));
 
-            //test.Wait();
+            test.Wait();
 
 
             // Send email using SendGrid
@@ -209,5 +208,5 @@ namespace twilio_caller
             //}
 
         }
-    }
+        }
 }
