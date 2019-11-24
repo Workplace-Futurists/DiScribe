@@ -18,8 +18,9 @@ namespace EmailController
 
         static IConfigurationRoot LoadAppSettings()
         {
+            DirectoryInfo dir = new DirectoryInfo(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""));
             var appConfig = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""))
+                .SetBasePath(dir.Parent.FullName)
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
