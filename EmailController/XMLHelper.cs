@@ -14,9 +14,8 @@ using File = System.IO.File;
 
 namespace EmailController
 {
-    public class XMLHelper
+    public static class XMLHelper
     {
-
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -223,6 +222,7 @@ namespace EmailController
 
             foreach (XmlNode emailNode in emailNodes)
             {
+                Console.WriteLine(emailNode.InnerText);
                 emails.Add(emailNode.InnerText);
             }
 
@@ -240,6 +240,7 @@ namespace EmailController
 
             foreach (XmlNode nameNode in nameNodes)
             {
+                Console.WriteLine(nameNode.InnerText);
                 names.Add(nameNode.InnerText);
             }
 

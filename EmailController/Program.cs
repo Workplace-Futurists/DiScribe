@@ -16,8 +16,12 @@ namespace EmailController
             //}
 
             //Console.WriteLine();
-
-            XMLHelper.CreateWebExMeeting();
+            EmailController.Initialize();
+            var recipients = new List<EmailAddress>
+            {
+                new EmailAddress("jinhuang696@gmail.com", "Jin Huang")
+            };
+            EmailController.SendMinutes(recipients);
         }
     }
 }
