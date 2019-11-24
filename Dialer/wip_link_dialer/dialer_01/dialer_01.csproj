@@ -10,4 +10,8 @@
     <PackageReference Include="Twilio" Version="5.35.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="dialer_01\Properties\" />
+  </ItemGroup>
+
 </Project>
