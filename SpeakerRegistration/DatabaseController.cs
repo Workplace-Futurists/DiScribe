@@ -127,60 +127,56 @@ namespace SpeakerRegistration
         /// <returns>Matching User object for the specified email, or null if no such user exists.</returns>
         public User LoadUser(string email)
         {
-            SqlTransaction transaction = DBConnection.BeginTransaction();
-            string execStr = "dbo.stpLoadUser";
-
-            using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
+            using (SqlTransaction transaction = DBConnection.BeginTransaction())
             {
-                try
+                string execStr = "dbo.stpLoadUser";
+
+                using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
                 {
-                    command.CommandType = System.Data.CommandType.StoredProcedure;
-
-                    SqlParameter emailParam = new SqlParameter("@email", email);
-                    command.Parameters.Add(emailParam);
-
-                    User result = null; 
-                    
-                    using (var reader = command.ExecuteReader())
+                    try
                     {
-                        
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
 
-                        if (reader.HasRows)
+                        SqlParameter emailParam = new SqlParameter("@email", email);
+                        command.Parameters.Add(emailParam);
+
+                        User result = null;
+
+                        using (var reader = command.ExecuteReader())
                         {
-                            string firstName = Convert.ToString(reader["FirstName"]);
-                            string lastName = Convert.ToString(reader["LastName"]);
-                            string password = Convert.ToString(reader["Password"]);
+                            Boolean canRead = false;
+                            if (canRead = reader.Read())
+                            {
 
-                            Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
-                            int userID = Convert.ToInt32(reader["UserID"]);
+                                string firstName = Convert.ToString(reader["FirstName"]);
+                                string lastName = Convert.ToString(reader["LastName"]);
+                                string password = Convert.ToString(reader["Password"]);
 
-                            byte[] audioSample = (byte[])(reader["AudioSample"]);
-                            DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
+                                Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
+                                int userID = Convert.ToInt32(reader["UserID"]);
 
-                            result = new User(this, new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
+                                byte[] audioSample = (byte[])(reader["AudioSample"]);
+                                DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
+
+                                result = new User(this, new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
+                            }
+
+
                         }
-
-                        try
-                        {
-                            transaction.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Could not commit transaction " + ex.Message);
-                        }
-
 
                         return result;
 
 
-                    }
                 }
+
+
+                
                 catch (Exception ex)
                 {
                     Console.Error.Write($"Error loading user profile from database. {ex.Message}");
                     transaction.Rollback();
                 }
-
+            }
                 return null;
             }
         }
