@@ -11,15 +11,15 @@ using SendGrid.Helpers.Mail;
 
 namespace EmailController
 {
-    public class EmailController
+    public static class EmailController
     {
         // TODO we need one maybe?
-        private static EmailAddress OFFICIAL_EMAIL = new EmailAddress("workplace-futurists@hotmail.com", "Hotmail");
+        private static readonly EmailAddress OFFICIAL_EMAIL = new EmailAddress("workplace-futurists@hotmail.com", "Workplace Futurists");
 
         static IConfigurationRoot LoadAppSettings()
         {
             var appConfig = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""))
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
