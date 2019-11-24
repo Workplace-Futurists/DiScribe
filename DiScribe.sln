@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailController", "EmailCon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Scheduler.csproj", "{E3652D38-94D2-44AA-83BE-91871AD6C993}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseController", "DatabaseController\DatabaseController.csproj", "{4D6DF765-7522-459E-AC49-A8BE7020D2E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRegistration", "SpeakerRegistration\SpeakerRegistration.csproj", "{4D6DF765-7522-459E-AC49-A8BE7020D2E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Record", "Record", "{35E6CD1E-DC3E-40FC-84E2-E5B2DF63B71E}"
 EndProject
