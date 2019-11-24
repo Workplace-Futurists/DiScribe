@@ -20,7 +20,7 @@ namespace EmailController
             string duration = "30";
 
             string accessCode = XMLHelper.CreateWebExMeeting(names, emails, startDate, duration);
-            Console.WriteLine(accessCode);
+            Console.WriteLine("AccessCode: " + accessCode);
         }
     }
 }
