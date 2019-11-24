@@ -24,6 +24,9 @@ namespace Main
 
         static void Main(string[] args)
         {
+            Console.WriteLine(args.ToString());
+
+
             // TODO dial in
             // TODO record the meeting
             // TODO download the recording

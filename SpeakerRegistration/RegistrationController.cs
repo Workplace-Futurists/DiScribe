@@ -153,7 +153,6 @@ namespace SpeakerRegistration
                  return failGuid;
             }
 
-                
             UserProfiles.Add(registeredUser);                         //Add profile to list of profiles managed by this instance
             taskComplete.SetResult(profileTask.Result.ProfileId);
             return profileTask.Result.ProfileId;
