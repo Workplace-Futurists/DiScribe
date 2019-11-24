@@ -178,7 +178,7 @@ namespace Transcriber.TranscribeAgent
 
             byte[] wavBuf = WriteWavToBuf(buf);                  //Write data to the wave data buffer
 
-            MemoryStream outputStream = new MemoryStream(wavBuf);
+            MemoryStream outputStream = new MemoryStream(wavBuf, 0, wavBuf.Length, true, true);
             outputStream.Position = 0;                          //Set stream position to 0;
 
             return outputStream;

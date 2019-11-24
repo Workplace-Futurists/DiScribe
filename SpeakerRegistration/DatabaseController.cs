@@ -66,7 +66,7 @@ namespace SpeakerRegistration
            string password = "")
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
-            string execStr = "EXEC dbo.stpCreateUser";
+            string execStr = "dbo.stpCreateUser";
 
             using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
             {
@@ -88,6 +88,7 @@ namespace SpeakerRegistration
                         new SqlParameter("@LastName", lastName),
                         new SqlParameter("@Email", email),
                         new SqlParameter("@ProfileGUID", profileGUID),
+                        new SqlParameter("@AudioSample", audioSample),
                         new SqlParameter("@TimeStamp", timeStamp),
                         new SqlParameter("@Password", password)
                     };
@@ -119,39 +120,57 @@ namespace SpeakerRegistration
 
 
 
-
+        /// <summary>
+        /// Attempts to load a user with a matching email address from the DiScribe DB.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Matching User object for the specified email, or null if no such user exists.</returns>
         public User LoadUser(string email)
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
-            string execStr = "EXEC dbo.stpLoadUser";
+            string execStr = "dbo.stpLoadUser";
 
             using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
             {
                 try
                 {
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+
                     SqlParameter emailParam = new SqlParameter("@email", email);
                     command.Parameters.Add(emailParam);
 
+                    User result = null; 
                     
                     using (var reader = command.ExecuteReader())
                     {
-                        if (!reader.HasRows)
-                            throw new Exception($"Error. No user could be loaded for email {email}.");
+                        
 
-                        transaction.Commit();
+                        if (reader.HasRows)
+                        {
+                            string firstName = Convert.ToString(reader["FirstName"]);
+                            string lastName = Convert.ToString(reader["LastName"]);
+                            string password = Convert.ToString(reader["Password"]);
 
-                        string firstName = Convert.ToString(reader["FirstName"]);
-                        string lastName = Convert.ToString(reader["LastName"]);
-                        string password = Convert.ToString(reader["Password"]);
+                            Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
+                            int userID = Convert.ToInt32(reader["UserID"]);
 
-                        Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
-                        int userID = Convert.ToInt32(reader["UserID"]);
+                            byte[] audioSample = (byte[])(reader["AudioSample"]);
+                            DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
 
-                        byte[] audioSample = (byte[])(reader["AudioSample"]);
-                        DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
+                            result = new User(this, new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
+                        }
+
+                        try
+                        {
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Could not commit transaction " + ex.Message);
+                        }
 
 
-                        return new User(this, new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
+                        return result;
 
 
                     }
@@ -172,7 +191,7 @@ namespace SpeakerRegistration
         public Boolean UpdateUser(User user, string lookupEmail)
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
-            string execStr = "EXEC dbo.stpUpdateUserByEmail";
+            string execStr = "dbo.stpUpdateUserByEmail";
 
             using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
             {
@@ -230,7 +249,7 @@ namespace SpeakerRegistration
         public Boolean DeleteUser(string email)
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
-            string execStr = "EXEC dbo.stpDeleteUser";
+            string execStr = "dbo.stpDeleteUser";
             
             using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
             {

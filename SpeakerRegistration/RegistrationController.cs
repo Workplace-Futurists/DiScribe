@@ -140,7 +140,8 @@ namespace SpeakerRegistration
                 return failGuid;
             }
 
-
+            userParams.ProfileGUID = profileTask.Result.ProfileId;
+                           
             
             /*Attempt to Create user profile in DB and add to list of user profiles */
             User registeredUser = DBController.CreateUser(userParams);
@@ -197,6 +198,24 @@ namespace SpeakerRegistration
         /// <returns>True on success, false on fail</Boolean></returns>
         public async Task<Boolean> DeleteProfile(string email)
         {
+            List<int> removeIndexes = new List<int>();
+
+
+            for (int i=0; i < UserProfiles.Count; i++)
+            {
+                /*Remove the User from the list of user profiles managed by this instance */
+                if (UserProfiles[i].Email == email)
+                {
+                    removeIndexes.Add(i);
+                }
+
+            }
+
+            foreach (var index in removeIndexes)
+            {
+                UserProfiles.RemoveAt(index);
+            }
+
 
             var taskComplete = new TaskCompletionSource<Boolean>();
 
@@ -219,6 +238,9 @@ namespace SpeakerRegistration
 
             /*Delete user profile from DiScribe database */
             Boolean dbDelete = user.Delete();
+
+           
+
 
             taskComplete.SetResult(dbDelete);
             return dbDelete;
