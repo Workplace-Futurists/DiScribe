@@ -75,10 +75,12 @@ namespace SpeakerRegistration
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
             List<User> userProfiles = new List<User>();
 
+            string email = "";
             try
             {
                 foreach (var curEmail in userEmails)
                 {
+                    email = curEmail;
                     User curUser = dbController.LoadUser(curEmail);
                     userProfiles.Add(curUser);
                 }
@@ -86,8 +88,7 @@ namespace SpeakerRegistration
 
             }catch (Exception ex)
             {
-                Console.Error.WriteLine("Loading profiles from database failed. " + ex.Message);
-                throw new Exception("Unable to create Registration Controller due to database error");
+                Console.Error.WriteLine($"Loading profile from database failed for {email} {ex.Message}");
             }
 
 
