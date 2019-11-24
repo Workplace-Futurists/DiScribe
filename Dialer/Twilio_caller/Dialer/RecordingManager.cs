@@ -29,13 +29,6 @@ namespace twilio_caller.dialer
             "/Recordings/";
         }
 
-        // TODO method to get recordings from an account
-        //public async Task<String> ListRecordingsAsync()
-        //{
-        //    string result = "";
-        //    return result;
-        //}
-
         // given an rid, download a recording
         public async void DownloadRecordingHandler(string rid)
         {
