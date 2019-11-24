@@ -18,12 +18,12 @@ namespace Main.Test
     public class RegistrationTest
     {
         private static readonly FileInfo TestRecording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
-        private static string dbConnStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
+        private static readonly string dbConnStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
               "Initial Catalog=db_cs319_discribe;" +
               "Persist Security Info=False;" +
-              "User ID={obiermann};" +
-              "Password={your_password};" +
-              "MultipleActiveResultSets=False;" +
+              "User ID=obiermann;" +
+              "Password=JKm3rQ~t9sBiemann;" +
+              "MultipleActiveResultSets=True;" +
               "Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";

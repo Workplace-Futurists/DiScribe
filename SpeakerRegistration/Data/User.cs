@@ -38,7 +38,7 @@ namespace SpeakerRegistration.Data
             FirstName = firstName;
             LastName = lastName;
             Email = email;
-            ProfileGUID = ProfileGUID;
+            ProfileGUID = profileGUID;
             UserID = userID;
             TimeStamp = timeStamp;
             Password = password;
@@ -125,7 +125,6 @@ namespace SpeakerRegistration.Data
         public string Password { get; set; }
              
 
-        public DatabaseController Controller { get; private set; }
 
       
     }
@@ -139,18 +138,21 @@ namespace SpeakerRegistration.Data
            string email,
            Guid profileGUID = new Guid(),
            int userID = -1,
-           DateTime timeStamp = new DateTime(),
+           DateTime timeStamp = default,
            string password = "") 
           {
             AudioSample = audioSample;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
-            ProfileGUID = ProfileGUID;
+            ProfileGUID = profileGUID;
             UserID = userID;
-            TimeStamp = timeStamp;
+            TimeStamp = new DateTime(2019, 01, 01);
             Password = password;
         }
+
+
+       
 
 
         public byte[] AudioSample { get; set; }

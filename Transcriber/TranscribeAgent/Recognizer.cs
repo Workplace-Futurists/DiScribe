@@ -48,7 +48,7 @@ namespace Transcriber.TranscribeAgent
             Guid[] userIDs = new Guid[Controller.Voiceprints.Count];
 
             /*Add all voiceprints to the dictionary*/
-            foreach (var voiceprint in Controller.VoicePrints)
+            foreach (var voiceprint in Controller.Voiceprints)
             {
                 voiceprintDictionary.Add(voiceprint.ProfileGUID, voiceprint);
             }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
+using SpeakerRegistration;
 
 namespace Transcriber.TranscribeAgent
 {
@@ -23,7 +24,7 @@ namespace Transcriber.TranscribeAgent
             SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
             SpeakerIDSubKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
-            VoicePrints = voiceprints;
+            Voiceprints = voiceprints;
             FileSplitter = new AudioFileSplitter(meetingRecording);
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
@@ -44,12 +45,7 @@ namespace Transcriber.TranscribeAgent
 
         public String SpeakerIDSubKey { get; private set; }
 
-        public void EnrollVoiceProfiles()
-        {
-            Console.WriteLine(">\tEnrolling user voice profiles...");
-            SpeakerRegistration registration = new SpeakerRegistration(SpeakerIDSubKey, VoicePrints);
-            registration.EnrollVoiceProfiles().Wait();
-        }
+        
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
