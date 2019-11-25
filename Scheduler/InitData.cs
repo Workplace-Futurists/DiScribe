@@ -10,14 +10,10 @@ namespace Scheduler
         {
             MeetingAccessCode = meetingAccessCode;
             Debug = debug;
-
         }
 
         public string MeetingAccessCode { get; set; }
 
         public Boolean Debug { get; set; }
-
-    
-
     }
 }
