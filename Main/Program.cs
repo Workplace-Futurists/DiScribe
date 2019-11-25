@@ -33,7 +33,7 @@ namespace Main
         {
             EmailController.Initialize();
             // send registration emails to whom did not register their voice into the system yet
-            List<EmailAddress> recipients = EmailController.GetAttendeeEmails(accessCode);
+            List<EmailAddress> recipients = MeetingController.GetAttendeeEmails(accessCode);
             //EmailController.SendEmailForVoiceRegistration(recipients);
 
             // Set Authentication configurations
@@ -50,11 +50,11 @@ namespace Main
             var recording = recManager.DownloadRecordingAsync(accessCode).Result;
 
             // transcribe the meeting
-            Console.WriteLine(">\tBeginning transcriber...");
+            Console.WriteLine(">\tBeginning Transcribing...");
 
             /*Load all the profiles by email address for registered users */
             RegistrationController regController = RegistrationController.BuildController(dbConnectionStr,
-                EmailController.FromEmailAddressToString(recipients), speakerIDKeySub);
+                EmailController.FromEmailAddressListToStringList(recipients), speakerIDKeySub);
             List<User> voiceprints = regController.UserProfiles;
 
             TranscribeController transcribeController = new TranscribeController(recording, voiceprints);

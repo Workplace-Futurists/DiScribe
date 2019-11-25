@@ -14,7 +14,7 @@ namespace EmailControllers
     public static class EmailController
     {
         // TODO we need one maybe?
-        private static readonly EmailAddress OFFICIAL_EMAIL = new EmailAddress("workplace-futurists@hotmail.com", "Workplace Futurists");
+        private static readonly EmailAddress OFFICIAL_EMAIL = new EmailAddress("workplace-futurists@hotmail.com", "BOT Workplace Futurists");
 
         static IConfigurationRoot LoadAppSettings()
         {
@@ -59,21 +59,6 @@ namespace EmailControllers
             SendGridHelper.SendMinuteEmail(OFFICIAL_EMAIL, recipients, subject, file).Wait();
         }
 
-        public static List<EmailAddress> GetAttendeeEmails(string accessCode)
-        {
-            return XMLHelper.GetAttendeeEmails(accessCode);
-        }
-
-        public static List<string> GetAttendeeEmailsAsString(List<EmailAddress> emails)
-        {
-            List<string> emailsAsString = new List<String>();
-            foreach (EmailAddress email in emails)
-            {
-                emailsAsString.Add(email.Email);
-            }
-            return emailsAsString;
-        }
-
         // SpeakerRegistration -> CheckProfileExists(string email)
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
         {
@@ -89,14 +74,14 @@ namespace EmailControllers
             }
         }
 
-        public static List<string> FromEmailAddressToString(List<EmailAddress> emails)
+        public static List<string> FromEmailAddressListToStringList(List<EmailAddress> emails)
         {
-            List<string> email_strings = new List<string>();
+            List<string> emailsAsString = new List<String>();
             foreach (EmailAddress email in emails)
             {
-                email_strings.Add(email.Email);
+                emailsAsString.Add(email.Email);
             }
-            return email_strings;
+            return emailsAsString;
         }
     }
 }
