@@ -6,24 +6,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
+using Transcriber.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave;
 using DatabaseController.Data;
-using Transcriber.TranscribeAgent;
 
-namespace Transcriber.TranscribeAgent
+namespace Transcriber
 {
     /// <summary>
     /// Provides transcription of a set of an AudioSegment representing meeting audio to create a formatted text file
     /// of meeting minutes.
     /// Also supports speaker recognition to output names of meeting participants in meeting minutes.
-    /// <para>See <see cref="TranscribeAgent.AudioSegment"></see> documentation for more info on AudioSegment.</para>
+    /// <para>See <see cref="Audio.AudioSegment"></see> documentation for more info on AudioSegment.</para>
     /// <para>Uses the Microsoft Azure Cognitive Services Speech SDK to perform transcription of audio streams
     /// within each AudioSegment. </para>
     /// </summary>
-    public class SpeechTranscriber
+    class SpeechTranscriber
     {
         public SpeechTranscriber(TranscribeController controller)
         {
@@ -58,7 +58,7 @@ namespace Transcriber.TranscribeAgent
             /*Transcribe audio to create a set of TransciptionOutputs to represent sentences.
              * with the speakers identified
              */
-            await getTranscriptionOutputs();
+            await GetTranscriptionOutputs();
 
             /*Task failed if no TranscriptionOutput was added to sharedList*/
             if (TranscriptionOutputs.Count == 0)
@@ -73,7 +73,7 @@ namespace Transcriber.TranscribeAgent
         /// within each TranscriptionOutput.
         /// </summary>
         /// <returns>Task for transcription flow</returns>
-        private async Task getTranscriptionOutputs()
+        private async Task GetTranscriptionOutputs()
         {
             Console.WriteLine(">\tBegin Transcription...");
             /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */

@@ -11,11 +11,11 @@ using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using DatabaseController.Data;
 using NAudio.Wave;
+using Transcriber.Audio;
 
-
-namespace Transcriber.TranscribeAgent
+namespace Transcriber
 {
-    public class Recognizer
+    class Recognizer
     {
         public Recognizer(TranscribeController controller)
         {

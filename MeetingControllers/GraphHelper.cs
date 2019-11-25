@@ -7,12 +7,10 @@ using System.Timers;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
-//using twilio_caller.dialer;
-using System.Threading;
 
 namespace MeetingControllers
 {
-    public class GraphHelper
+    class GraphHelper
     {
         private static GraphServiceClient _graphClient;
 

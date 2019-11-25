@@ -8,7 +8,7 @@ using System.Web;
 
 namespace MeetingControllers
 {
-    public class SendGridHelper
+    class SendGridHelper
     {
         private static SendGridClient sendGridClient;
 

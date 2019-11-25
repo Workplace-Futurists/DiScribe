@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using DatabaseController.Data;
+using Transcriber.Audio;
 
-namespace Transcriber.TranscribeAgent
+namespace Transcriber
 {
-    public class TranscriptionOutput : IComparable
+    class TranscriptionOutput : IComparable
     {
         public TranscriptionOutput(string text, Boolean transcriptionSuccess, AudioSegment segment, User speaker = null)
         {
@@ -16,8 +17,6 @@ namespace Transcriber.TranscribeAgent
             Segment = segment;
             Speaker = speaker;
         }
-
-        
 
         public string Text { get; set; }
 
@@ -30,8 +29,6 @@ namespace Transcriber.TranscribeAgent
         public User Speaker { get; set; }
 
         public Boolean TranscriptionSuccess { get; set; }
-
-        
 
         public int CompareTo(object obj)
         {
@@ -53,10 +50,8 @@ namespace Transcriber.TranscribeAgent
             long hours = offsetMS / 3600000;
             long minutes = (offsetMS / 60000) % 60;
             long seconds = (offsetMS / 1000) % 60;
-            
+
             return $"{hours}:{minutes}:{seconds}";
         }
-
-
     }
 }
