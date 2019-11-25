@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Transcriber.TranscribeAgent;
-using SpeakerRegistration;
-using SpeakerRegistration.Data;
+using DatabaseController;
+using DatabaseController.Data;
 using SendGrid.Helpers.Mail;
 using System.IO;
 using twilio_caller;

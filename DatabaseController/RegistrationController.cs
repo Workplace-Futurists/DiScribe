@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SpeakerRegistration.Data;
+using DatabaseController.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 
-namespace SpeakerRegistration
+namespace DatabaseController
 {
     /// <summary>
     /// Provides access to profile registration functionality for DiScribe user profiles
@@ -16,7 +16,6 @@ namespace SpeakerRegistration
     /// </summary>
     public class RegistrationController
     {
-
         /// <summary>
         /// Ensures that all DiScribe User profiles have matching profiles in the
         /// the Azure Speaker Recognition service. Creates a valid RegistrationController
@@ -27,7 +26,7 @@ namespace SpeakerRegistration
         /// <param name="speakerIDKeySub"></param>
         /// <param name="enrollmentLocale"></param>
         /// <param name="apiInterval"></param>
-        public RegistrationController(DatabaseController dbController, List<User> userProfiles, SpeakerIdentificationServiceClient enrollmentClient, 
+        public RegistrationController(DatabaseManager dbController, List<User> userProfiles, SpeakerIdentificationServiceClient enrollmentClient,
             string enrollmentLocale, int apiInterval)
         {
             /*Create REST client for enrolling users */
@@ -35,7 +34,7 @@ namespace SpeakerRegistration
             EnrollmentLocale = enrollmentLocale;
 
             DBController = dbController;
-            
+
             UserProfiles = userProfiles;
 
             if (userProfiles.Count > 0)
@@ -58,16 +57,17 @@ namespace SpeakerRegistration
         public static RegistrationController BuildController(string dbConnStr, List<string> userEmails, string speakerIDKeySub,
             string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
-            DatabaseController dbController;
+            DatabaseManager dbController;
             try
-            { 
-                dbController = new DatabaseController(dbConnStr);
-            } catch (Exception ex)
+            {
+                dbController = new DatabaseManager(dbConnStr);
+            }
+            catch (Exception ex)
             {
                 Console.Error.WriteLine(ex.Message);
                 throw new Exception("Unable to create Registration Controller due to database connection error");
             }
-            
+
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
             List<User> userProfiles = new List<User>();
 
@@ -80,7 +80,8 @@ namespace SpeakerRegistration
                     User curUser = dbController.LoadUser(curEmail);
                     userProfiles.Add(curUser);
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.Error.WriteLine($"Loading profile from database failed for {email} {ex.Message}");
             }
@@ -91,12 +92,11 @@ namespace SpeakerRegistration
 
         public SpeakerIdentificationServiceClient EnrollmentClient { get; private set; }
 
-        public List<User> UserProfiles {get; private set; }
+        public List<User> UserProfiles { get; private set; }
 
-        public DatabaseController DBController { get; private set; }
+        public DatabaseManager DBController { get; private set; }
 
         public string EnrollmentLocale { get; private set; }
-
 
         /// <summary>
         /// Creates a new user profile for a User in the DiScribe database.
@@ -116,7 +116,7 @@ namespace SpeakerRegistration
             Guid failGuid = new Guid();
 
             try
-            { 
+            {
                 profileTask = EnrollmentClient.CreateProfileAsync(EnrollmentLocale);
                 await profileTask;
             }
@@ -128,24 +128,21 @@ namespace SpeakerRegistration
             }
 
             userParams.ProfileGUID = profileTask.Result.ProfileId;
-                           
-            
+
+
             /*Attempt to Create user profile in DB and add to list of user profiles */
             User registeredUser = DBController.CreateUser(userParams);
 
             if (registeredUser == null)
             {
-                 taskComplete.SetResult(failGuid);
-                 return failGuid;
+                taskComplete.SetResult(failGuid);
+                return failGuid;
             }
 
             UserProfiles.Add(registeredUser);                         //Add profile to list of profiles managed by this instance
             taskComplete.SetResult(profileTask.Result.ProfileId);
             return profileTask.Result.ProfileId;
-
         }
-
-
 
         /// <summary>
         /// Async check if a profile is regsitered for the email address.
@@ -159,22 +156,18 @@ namespace SpeakerRegistration
         {
 
             var taskComplete = new TaskCompletionSource<User>();
-               
+
             /*Try to load a user with this email */
             User registeredUser = DBController.LoadUser(email);
-               
+
             if (registeredUser == null)
             {
-               return null;
+                return null;
             }
 
             taskComplete.SetResult(registeredUser);
             return registeredUser;
-            
-            
         }
-
-
 
         /// <summary>
         /// Delete a profile from the Azure Speaker Recognition endpoint and delete
@@ -187,21 +180,19 @@ namespace SpeakerRegistration
             List<int> removeIndexes = new List<int>();
 
 
-            for (int i=0; i < UserProfiles.Count; i++)
+            for (int i = 0; i < UserProfiles.Count; i++)
             {
                 /*Remove the User from the list of user profiles managed by this instance */
                 if (UserProfiles[i].Email == email)
                 {
                     removeIndexes.Add(i);
                 }
-
             }
 
             foreach (var index in removeIndexes)
             {
                 UserProfiles.RemoveAt(index);
             }
-
 
             var taskComplete = new TaskCompletionSource<Boolean>();
 
@@ -212,12 +203,13 @@ namespace SpeakerRegistration
                 taskComplete.SetResult(false);
                 return false;
             }
-            
+
             /*Delete profile Azure Spekaer Recognition endpoint */
             try
             {
                 await EnrollmentClient.DeleteProfileAsync(user.ProfileGUID);
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.Error.WriteLine($"Unable delete user from Azure Speaker Recognition endpoint. Continuing with DB profile delete {ex.Message}");
             }
@@ -225,16 +217,9 @@ namespace SpeakerRegistration
             /*Delete user profile from DiScribe database */
             Boolean dbDelete = user.Delete();
 
-           
-
-
             taskComplete.SetResult(dbDelete);
             return dbDelete;
-
         }
-
-
-
 
         /// <summary>
         /// Function which registers voice profiles with the Azure Speaker Recognition API
@@ -251,7 +236,7 @@ namespace SpeakerRegistration
         /// <returns></returns>
         private async Task EnrollVoiceProfiles()
         {
-           
+
             /*Ensure Speaker Recognition Service profiles for each User exist with the Azure endpoint. 
              * Create any profiles that do not exist */
             await ConfirmProfiles();
@@ -259,14 +244,7 @@ namespace SpeakerRegistration
             /*Attempt to add a voice enrollment to each profile. If number of enrollments is exceeded,
              * enrollments will be cleared and another attempt will be made to add the enrollment */
             await EnrollVoiceSamples();
-
         }
-
-
-
-
-        
-
 
         /// <summary>
         /// Recreates the Azure Speaker Recognition API profile for an existing user.
@@ -283,15 +261,15 @@ namespace SpeakerRegistration
             var taskComplete = new TaskCompletionSource<Guid>();
             Task<CreateProfileResponse> profileTask = null;
 
-
             try
             {
                 profileTask = EnrollmentClient.CreateProfileAsync(locale);
                 await profileTask;
 
                 user.ProfileGUID = profileTask.Result.ProfileId;
-                                
-            } catch (AggregateException ex)
+
+            }
+            catch (AggregateException ex)
             {
                 Console.Error.WriteLine("Error creating user profile with Azure Speaker Recognition endpoint\n" + ex.InnerException.Message);
                 var failGUID = new Guid();
@@ -304,20 +282,15 @@ namespace SpeakerRegistration
              * execution will continue normally otherwise regardless. */
             try
             {
-                user.Update();                                                    
-            } catch(Exception ex)
-            {
-                Console.Error.WriteLine("Unable to update User record in database.");
+                user.Update();
             }
-             
-            
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("Unable to update User record in database:" + ex.ToString());
+            }
             taskComplete.SetResult(profileTask.Result.ProfileId);
             return user.ProfileGUID;
-            
-
         }
-
-
 
         /// <summary>
         /// 
@@ -334,10 +307,10 @@ namespace SpeakerRegistration
             catch (Exception ex)
             {
                 existingProfiles = null;
-                Console.Error.WriteLine(">\tFetching profiles failed. Executing fallback to recreate profiles.");
+                Console.Error.WriteLine(">\tFetching profiles failed. Executing fallback to recreate profiles: " + ex.ToString());
             }
 
-            
+
             if (existingProfiles != null)
             {
                 for (int i = 0; i < UserProfiles.Count; i++)
@@ -348,7 +321,7 @@ namespace SpeakerRegistration
                     {
                         /*Check that the profile is in a usable state and that
                          * it matches with the GUID of this voiceprint */
-                        if (existingProfiles[j].EnrollmentStatus != EnrollmentStatus.Unknown && 
+                        if (existingProfiles[j].EnrollmentStatus != EnrollmentStatus.Unknown &&
                             UserProfiles[i].ProfileGUID == existingProfiles[j].ProfileId)
                         {
                             profileExists = true;
@@ -356,8 +329,6 @@ namespace SpeakerRegistration
                         else
                             j++;
                     }
-                    
-
                     /*Create an Azure profile if the profile doesn't actually exist. Also change the
                      * profile ID in the voiceprint object to the new ID*/
                     if (!profileExists)
@@ -382,16 +353,7 @@ namespace SpeakerRegistration
                 }
 
             } //End else
-
-
-
-        }    
-
-        
-    
-
-
-
+        }
 
         private async Task EnrollVoiceSamples()
         {
@@ -411,7 +373,6 @@ namespace SpeakerRegistration
             }
 
             await Task.WhenAll(enrollmentTasks.ToArray());                                   //Await all enrollment tasks to complete.
-
 
             /*Confirm that enrollment was successful for all the profiles
             associated with the enrollment tasks in enrollmentOps. */
@@ -461,17 +422,8 @@ namespace SpeakerRegistration
                             done = true;
                         }
                     }
-
                 } while (!done);
-
             }
-
-
-
         }
-
-
-
-
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SpeakerRegistration.Data
+namespace DatabaseController.Data
 {
     /// <summary>
     /// Abstract class representing a generic data element. Mainly used as a container for database controller
@@ -11,12 +11,12 @@ namespace SpeakerRegistration.Data
     /// </summary>
     public abstract class DataElement
     {
-        public DataElement (DatabaseController controller)
+        public DataElement (DatabaseManager controller)
         {
             Controller = controller;
         }
 
-        protected DatabaseController Controller;
+        protected DatabaseManager Controller;
 
 
         public abstract Boolean Delete();

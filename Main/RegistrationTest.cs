@@ -6,12 +6,12 @@ using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
 using Transcriber.TranscribeAgent;
 using System.Collections.Generic;
-using SpeakerRegistration.Data;
+using DatabaseController.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 using NAudio.Wave;
-using SpeakerRegistration;
+using DatabaseController;
 
 namespace Main.Test
 {
@@ -44,7 +44,7 @@ namespace Main.Test
                 RegistrationController.BuildController(dbConnStr, new List<string>(), speakerIDKeySub);
 
             /*Try to register some profiles */
-            
+
 
             /*Offsets identifying times */
             ulong user1StartOffset = 1 * 1000;
@@ -94,7 +94,7 @@ namespace Main.Test
                     profileCreateTask.Wait();
 
                     Guid outcome = profileCreateTask.Result;
-                    
+
                     /*If default guid of all 0's is returned, then profile creation failed */
                     if (outcome.ToString() == new Guid().ToString())
                     {
