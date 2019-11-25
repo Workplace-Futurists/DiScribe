@@ -18,15 +18,6 @@ namespace Main.Test
     public class RegistrationTest
     {
         private static readonly FileInfo TestRecording = new FileInfo(@"../../../../Record/test_meeting.wav");
-        private static readonly string dbConnStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
-              "Initial Catalog=db_cs319_discribe;" +
-              "Persist Security Info=False;" +
-              "User ID=obiermann;" +
-              "Password=JKm3rQ~t9sBiemann;" +
-              "MultipleActiveResultSets=True;" +
-              "Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-
-        private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -40,7 +31,7 @@ namespace Main.Test
             /*Set result with List<Voiceprint> containing both voiceprint objects */
             /*Create registration controller where thare are no profiles loaded initially */
             RegistrationController regController =
-                RegistrationController.BuildController(dbConnStr, new List<string>(), speakerIDKeySub);
+                RegistrationController.BuildController(new List<string>());
 
             /*Try to register some profiles */
 
