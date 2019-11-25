@@ -23,7 +23,7 @@ namespace MeetingControllers
             strXML += "<header>\r\n";
             strXML += "<securityContext>\r\n";
             strXML += "<webExID>kengqiangmk</webExID>\r\n";
-            strXML += "<password>Cs319_A</password>\r\n";
+            strXML += "<password>Cs319_APP</password>\r\n";
             strXML += "<siteName>companykm.my</siteName>\r\n";
             strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
             strXML += "</securityContext>\r\n";
@@ -108,7 +108,7 @@ namespace MeetingControllers
             strXML += "<header>\r\n";
             strXML += "<securityContext>\r\n";
             strXML += "<webExID>kengqiangmk</webExID>\r\n";
-            strXML += "<password>Cs319_A</password>\r\n";
+            strXML += "<password>Cs319_APP</password>\r\n";
             strXML += "<siteName>companykm.my</siteName>\r\n";
             strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
             strXML += "</securityContext>\r\n";
