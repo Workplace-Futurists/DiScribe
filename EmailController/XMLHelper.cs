@@ -50,7 +50,7 @@ namespace EmailControllers
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
             // Display the content.
-            Console.WriteLine(responseFromServer);
+            //Console.WriteLine(responseFromServer);
             List<EmailAddress> emailAddresses = GetEmails(responseFromServer);
 
             // Clean up the streams.
@@ -265,7 +265,7 @@ namespace EmailControllers
 
             foreach (XmlNode nameNode in nameNodes)
             {
-                Console.WriteLine(nameNode.InnerText);
+                //Console.WriteLine(nameNode.InnerText);
                 names.Add(nameNode.InnerText);
             }
 

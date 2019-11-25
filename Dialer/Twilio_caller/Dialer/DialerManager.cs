@@ -60,6 +60,7 @@ namespace twilio_caller.dialer
             // This is the twilio number linked to our account
             var from = new PhoneNumber(twilioAccNum);
 
+            Console.WriteLine(">\tCalling In...");
             // makes the call resource to send
             var call = CallResource.Create(to, from,
                 //method: Twilio.Http.HttpMethod.Get,
@@ -93,6 +94,7 @@ namespace twilio_caller.dialer
                 // check if the record is 
                 if (pendingStatus == CallResource.StatusEnum.Completed)
                 {
+                    Console.WriteLine(">\tCall Completed");
                     // if the call has been completed return the completed status
                     status = pendingStatus;
                 }
@@ -100,7 +102,7 @@ namespace twilio_caller.dialer
                   status == CallResource.StatusEnum.Failed ||
                   status == CallResource.StatusEnum.NoAnswer)
                 {
-                    Console.Error.WriteLine("The call was not completed.");
+                    Console.Error.WriteLine(">\tThe call was not completed.");
                     break;
                 }
             }

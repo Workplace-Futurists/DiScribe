@@ -53,7 +53,7 @@ namespace EmailControllers
         public static async Task SendRegistrationEmail(EmailAddress from, EmailAddress recipient,
             string subject)
         {
-            Console.WriteLine(">\tSending Emails to ..." + recipient.Name);
+            Console.WriteLine(">\tSending Emails to [" + recipient.Name + "]");
             var plainTextContent = "Workplace-Futurists";
             var defaultURL = "http://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
             var registrationURL = defaultURL + recipient.Email;
