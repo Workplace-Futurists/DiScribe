@@ -7,6 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
+using Microsoft.Extensions.Configuration;
 
 namespace twilio_caller.dialer
 {
@@ -16,66 +17,62 @@ namespace twilio_caller.dialer
         private static string _authToken;
         private static string _recordingBaseURL;
 
-        public RecordingManager(string sid, string authTok)
+        public RecordingManager(IConfigurationRoot appConfig)
         {
-            _accountSid = sid;
-            _authToken = authTok;
+            // add twilio authentication values
+            _accountSid = appConfig["TWILIO_ACCOUNT_SID"];
+            _authToken = appConfig["TWILIO_AUTH_TOKEN"];
+
+            // set base url for api endpoint
             _recordingBaseURL = "https://" + _accountSid + ":" + _authToken +
             "@api.twilio.com/2010-04-01/Accounts/" + _accountSid +
             "/Recordings/";
         }
 
-        // TODO method to get recordings from an account
-        //public async Task<String> ListRecordingsAsync()
-        //{
-        //    string result = "";
-        //    return result;
-        //}
-
-        // TODO given an rid, download a recording
-        public async void DownloadRecordingHandler(string rid)
+        // given an rid, download a recording
+        public async Task DownloadRecordingAsync(string rid)
         {
-            using (var httpClient = new HttpClient())
+            try
             {
-                // set url    
-                string recordingURL = _recordingBaseURL + rid;
-                // make new uri with previous url
-                Uri recordingURI = new Uri(recordingURL);
-                Console.WriteLine("The following rid will be downloaded " + rid);
-
-                // get response content from api
-                var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
-
-                // make sure request worked once headers are read
-                response.EnsureSuccessStatusCode();
-
-                // Save file to disk
-                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var httpClient = new HttpClient())
                 {
-                    // Define buffer and buffer size
-                    int bufferSize = 1024;
-                    byte[] buffer = new byte[bufferSize];
-                    int bytesRead = 0;
+                    // set url    
+                    string recordingURL = _recordingBaseURL + rid;
+                    // make new uri with previous url
+                    Uri recordingURI = new Uri(recordingURL);
+                    Console.WriteLine("The following rid will be downloaded " + rid);
 
-                    string filePath = ("../../../Recordings/" + rid + ".wav");
+                    // get response content from api
+                    var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
 
-                    // Read from response and write to file
-                    using (FileStream fileStream = File.Create(filePath))
+                    // make sure request worked once headers are read
+                    response.EnsureSuccessStatusCode();
+
+                    // Save file to disk
+                    using (var stream = await response.Content.ReadAsStreamAsync())
                     {
-                        while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                        // Define buffer and buffer size
+                        int bufferSize = 1024;
+                        byte[] buffer = new byte[bufferSize];
+                        int bytesRead = 0;
+
+                        string filePath = (@"../../../../Record/" + rid + ".wav");
+                        Console.WriteLine("The recording will be downloaded at: " + filePath);
+
+                        // Read from response and write to file
+                        using (FileStream fileStream = File.Create(filePath))
                         {
-                            await fileStream.WriteAsync(buffer, 0, bytesRead);
-                        } // end while
+                            while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                            {
+                                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                            } // end while
+                        }
                     }
                 }
+            } catch (Exception err)
+            {
+                Console.Error.WriteLine(err);
             }
-
-            //TwilioClient.Init(accountSid, authToken);
-
-            //var recording = RecordingResource.Fetch(
-            //    pathSid: rid
-            //    );
-            //Console.WriteLine(recording);
         }
 
         // delete a recording given an SID
