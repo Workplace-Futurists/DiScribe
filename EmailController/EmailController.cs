@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace EmailController
+namespace EmailControllers
 {
     public static class EmailController
     {
@@ -89,6 +89,15 @@ namespace EmailController
             }
         }
 
+        public static List<string> FromEmailAddressToString(List<EmailAddress> emails)
+        {
+            List<string> email_strings = new List<string>();
+            foreach (EmailAddress email in emails)
+            {
+                email_strings.Add(email.Email);
+            }
+            return email_strings;
+        }
     }
 }
 

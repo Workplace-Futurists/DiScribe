@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SendGrid.Helpers.Mail;
 
-namespace EmailController
+namespace EmailControllers
 {
     class Program
     {
