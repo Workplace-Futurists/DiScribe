@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 
-namespace EmailController
+namespace EmailControllers
 {
     public class SendGridHelper
     {

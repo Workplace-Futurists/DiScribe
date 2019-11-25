@@ -12,7 +12,7 @@ using Microsoft.Graph;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using File = System.IO.File;
 
-namespace EmailController
+namespace EmailControllers
 {
     public static class XMLHelper
     {
