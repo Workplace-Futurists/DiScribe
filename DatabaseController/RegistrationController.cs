@@ -16,6 +16,17 @@ namespace DatabaseController
     /// </summary>
     public class RegistrationController
     {
+        /*Temporary DB connection string. In production, this will be a different connection string. */
+        public static readonly string dbConnectionStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
+            "Initial Catalog=db_cs319_discribe;" +
+            "Persist Security Info=False;User ID=obiermann;" +
+            "Password=JKm3rQ~t9sBiemann;" +
+            "MultipleActiveResultSets=True;" +
+            "Encrypt=True;TrustServerCertificate=False;" +
+            "Connection Timeout=30";
+
+        private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
+
         /// <summary>
         /// Ensures that all DiScribe User profiles have matching profiles in the
         /// the Azure Speaker Recognition service. Creates a valid RegistrationController
@@ -54,13 +65,13 @@ namespace DatabaseController
         /// <param name="dbConnectionString"></param>
         /// <param name="userEmails"></param>
         /// <param name="speakerIDKeySub"></param>
-        public static RegistrationController BuildController(string dbConnStr, List<string> userEmails, string speakerIDKeySub,
+        public static RegistrationController BuildController(List<string> userEmails,
             string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
             DatabaseManager dbController;
             try
             {
-                dbController = new DatabaseManager(dbConnStr);
+                dbController = new DatabaseManager(dbConnectionStr);
             }
             catch (Exception ex)
             {
@@ -169,6 +180,11 @@ namespace DatabaseController
             return registeredUser;
         }
 
+        public Boolean IfProfileExists(string email)
+        {
+            return CheckProfileExists(email).Result != null;
+        }
+
         /// <summary>
         /// Delete a profile from the Azure Speaker Recognition endpoint and delete
         /// the matching record in the DiScribe database.
@@ -196,7 +212,7 @@ namespace DatabaseController
 
             var taskComplete = new TaskCompletionSource<Boolean>();
 
-            var user = await CheckProfileExists(email);
+            var user = CheckProfileExists(email).Result;
 
             if (user == null)
             {

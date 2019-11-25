@@ -13,17 +13,6 @@ namespace Main
 {
     static class Program
     {
-        /*Temporary DB connection string. In production, this will be a different connection string. */
-        public static readonly string dbConnectionStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
-            "Initial Catalog=db_cs319_discribe;" +
-            "Persist Security Info=False;User ID=obiermann;" +
-            "Password=JKm3rQ~t9sBiemann;" +
-            "MultipleActiveResultSets=True;" +
-            "Encrypt=True;TrustServerCertificate=False;" +
-            "Connection Timeout=30";
-
-        private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
-
         static void Main(string[] args)
         {
             Run("628576562");
@@ -53,8 +42,8 @@ namespace Main
             Console.WriteLine(">\tBeginning Transcribing...");
 
             /*Load all the profiles by email address for registered users */
-            RegistrationController regController = RegistrationController.BuildController(dbConnectionStr,
-                EmailController.FromEmailAddressListToStringList(recipients), speakerIDKeySub);
+            var emails = EmailController.FromEmailAddressListToStringList(recipients);
+            RegistrationController regController = RegistrationController.BuildController(emails);
             List<User> voiceprints = regController.UserProfiles;
 
             TranscribeController transcribeController = new TranscribeController(recording, voiceprints);
