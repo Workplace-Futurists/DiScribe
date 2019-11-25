@@ -161,14 +161,5 @@ namespace EmailControllers
             return names;
         }
 
-        public static List<string> FromEmailAddressListToStringList(List<EmailAddress> emails)
-        {
-            List<string> emailsAsString = new List<String>();
-            foreach (EmailAddress email in emails)
-            {
-                emailsAsString.Add(email.Email);
-            }
-            return emailsAsString;
-        }
     }
 }
