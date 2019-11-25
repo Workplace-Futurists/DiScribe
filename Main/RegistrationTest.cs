@@ -4,7 +4,7 @@ using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
-using Transcriber.TranscribeAgent;
+using Transcriber.Audio;
 using System.Collections.Generic;
 using DatabaseController.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
@@ -27,7 +27,6 @@ namespace Main.Test
               "Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
-
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -70,8 +69,8 @@ namespace Main.Test
                  new UserParams(user1Audio.GetBuffer(), "Brian", "Kernighan", "B.Kernighan@Example.com"),
                  new UserParams(user2Audio.GetBuffer(), "Janelle", "Shane", "J.Shane@Example.com"),
                  new UserParams(user3Audio.GetBuffer(), "Nick", "Smith", "N.Smith@Example.com"),
-                 new UserParams(user4Audio.GetBuffer(), "Patrick", "Shyu", "P.Shyu@Example.com") };
-
+                 new UserParams(user4Audio.GetBuffer(), "Patrick", "Shyu", "P.Shyu@Example.com")
+            };
 
             /*- Check if any user voice profiles already exist (should be false)
              *- Register the profiles
@@ -105,15 +104,12 @@ namespace Main.Test
                     {
                         Console.WriteLine($">\tProfile creation successful for {curParam.Email} with Azure profile Guid {outcome}");
                     }
-
-
                 }
 
                 /*Test DeleteProfile() method */
                 Console.WriteLine($">\tTesting DeleteProfile() for {curParam.Email}");
                 Task<Boolean> profileDelete = regController.DeleteProfile(curParam.Email);
                 profileDelete.Wait();
-
 
                 /*Check if this profile exists after delete*/
                 Task<User> verifyDelete = regController.CheckProfileExists(curParam.Email);
@@ -127,14 +123,11 @@ namespace Main.Test
                     Console.WriteLine($"Recreating profile for { curParam.Email} after delete");
                     regController.CreateUserProfile(curParam).Wait();
                 }
-
                 else
                 {
                     Console.WriteLine($">\tDelete failed for {curParam.Email}.");
                 }
-
             }
-
             return regController.UserProfiles;                             //Return the created User profiles created by the RegistrationController
         }
     }
