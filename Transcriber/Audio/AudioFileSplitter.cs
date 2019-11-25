@@ -5,13 +5,13 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace Transcriber.TranscribeAgent
+namespace Transcriber.Audio
 {
     /// <summary>
-    /// Provides meeting audio file splitting. An audio file is split into <see cref="TranscribeAgent.AudioSegment"></see>
+    /// Provides meeting audio file splitting. An audio file is split into <see cref="AudioSegment"></see>
     /// instances.
     /// Splitting is performed by determining when speakers change. Only speakers with a known
-    /// voice profile <see cref="Data.Voiceprint"></see> will be identified.    
+    /// voice profile <see cref="Data.Voiceprint"></see> will be identified.
     /// <para>Uses Speaker Recognition API in <see cref="Microsoft.CognitiveServices.Speech"/> for speaker recognition.</para>
     /// <para>Note that audio file must be a WAV file with the following characteristics: PCM/WAV mono with 16kHz sampling rate and 16 bits per sample. </para>
     /// </summary>
@@ -44,7 +44,7 @@ namespace Transcriber.TranscribeAgent
         public FileInfo AudioFile { get; set; }
 
         /// <summary>
-        /// WAV audio data without header. References the buffer backing MainStream. 
+        /// WAV audio data without header. References the buffer backing MainStream.
         /// </summary>
         public byte[] AudioData { get; set; }
 
@@ -139,7 +139,7 @@ namespace Transcriber.TranscribeAgent
             using (var inputReader = new WaveFileReader(inFile.FullName))
             {
                 outData = new byte[inputReader.Length];                      //Buffer size is size of data section in wav file.
-                inputReader.Read(outData, 0, (int)(inputReader.Length));     //Read entire data section of file into buffer. 
+                inputReader.Read(outData, 0, (int)(inputReader.Length));     //Read entire data section of file into buffer.
             }
 
             AudioData = outData;
@@ -149,7 +149,7 @@ namespace Transcriber.TranscribeAgent
 
 
         /// <summary>
-        /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/> 
+        /// Creates an AudioSegment containing the specified stream in a <see cref="PullAudioInputStream"/>
         /// wrapper. The stream has the specified int offset.
         /// </summary>
         /// <param name="start">Offset in bytes where this audio segment starts</param>
