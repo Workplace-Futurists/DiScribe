@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Main;
+
 
 namespace Scheduler
 {
@@ -19,7 +19,7 @@ namespace Scheduler
             if (difference > 0)
                 Task.Delay(difference).Wait();
 
-            Main.Program.Run(meetingAccessCode);
+            //Main.Program.Run(meetingAccessCode);
         }
     }
 }

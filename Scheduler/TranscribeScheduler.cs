@@ -17,7 +17,7 @@ namespace Scheduler
 			// Create a new task
 			string taskName = "Dial into webex meeting at " + startTime.ToLongDateString();
 
-			Task t = TaskService.Instance.AddTask(taskName,
+			TaskService.Instance.AddTask(taskName,
 			new TimeTrigger()
 			{
 				StartBoundary = startTime,

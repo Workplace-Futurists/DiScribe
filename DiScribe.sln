@@ -11,6 +11,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRecognitionClientLibrary", "SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj", "{C39CE9CA-9B29-4754-89E7-1A0A1E9812A4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "Main\Main.csproj", "{4E2A65CB-D580-4716-B304-0840A7C1EA44}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2204E868-0412-4A9D-949E-BF1B81E07C14} = {2204E868-0412-4A9D-949E-BF1B81E07C14}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeetingControllers", "MeetingControllers\MeetingControllers.csproj", "{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}"
 EndProject
