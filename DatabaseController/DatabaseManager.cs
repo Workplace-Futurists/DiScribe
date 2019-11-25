@@ -143,7 +143,6 @@ namespace DatabaseController
                             Boolean canRead = false;
                             if (canRead = reader.Read())
                             {
-
                                 string firstName = Convert.ToString(reader["FirstName"]);
                                 string lastName = Convert.ToString(reader["LastName"]);
                                 string password = Convert.ToString(reader["Password"]);
@@ -256,6 +255,17 @@ namespace DatabaseController
                 }
             }
             return false;
+        }
+
+        public static List<string> GetUnregisteredUsersFrom(List<string> emails)
+        {
+            var unregistered = new List<string>();
+            foreach (string email in emails)
+            {
+                if (LoadUser(email) == null)
+                    unregistered.Add(email);
+            }
+            return unregistered;
         }
     }
 }

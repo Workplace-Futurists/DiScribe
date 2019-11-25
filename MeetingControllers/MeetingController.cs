@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Graph;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using File = System.IO.File;
+using DatabaseController;
 
 namespace MeetingControllers
 {
@@ -64,6 +65,15 @@ namespace MeetingControllers
 
             Console.WriteLine("\tMeeting has been successfully created");
             return accessCode;
+        }
+
+        /* This function sends email to all unregistered users
+         * given all the meeting attendees
+         */
+        public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees)
+        {
+            var unregistered = DatabaseManager.GetUnregisteredUsersFrom(EmailController.FromEmailAddressListToStringList(attendees));
+            EmailController.SendEmailForVoiceRegistration(EmailController.FromStringListToEmailAddressList(unregistered));
         }
 
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
@@ -160,6 +170,5 @@ namespace MeetingControllers
 
             return names;
         }
-
     }
 }
