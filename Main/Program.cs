@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Main
 {
-    static class Program
+    public static class Program
     {
         static void Main(string[] args)
         {
