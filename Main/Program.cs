@@ -19,13 +19,7 @@ namespace Main
         }
 
         public static void Run(string accessCode)
-        {            
-            EmailController.Initialize();
-            // send registration emails to whom did not register their voice into the system yet
-            List<EmailAddress> recipients = MeetingController.GetAttendeeEmails(accessCode);
-            //EmailController.SendEmailForVoiceRegistration(recipients);
-
-            // Set Authentication configurations
+        {// Set Authentication configurations
             var appConfig = Configurations.LoadAppSettings();
 
             // new dialer manager
@@ -37,6 +31,9 @@ namespace Main
             var rid = dialManager.CallMeetingAsync(accessCode).Result;
             // download the recording to the file
             var recording = recManager.DownloadRecordingAsync(accessCode).Result;
+
+            // send registration emails to whom did not register their voice into the system yet
+            List<EmailAddress> recipients = MeetingController.GetAttendeeEmails(accessCode);
 
             // transcribe the meeting
             Console.WriteLine(">\tBeginning Transcribing...");
@@ -52,13 +49,11 @@ namespace Main
             if (transcribeController.Perform())
             {
                 transcribeController.WriteTranscriptionFile();
-                EmailController.Initialize();
                 EmailController.SendMinutes(recipients);
             }
             else
             {
-                EmailController.Initialize();
-                EmailController.SendMail(recipients, "Failed To Generate Meeting Transcription");
+                EmailController.SendEMail(recipients, "Failed To Generate Meeting Transcription", "");
             }
 
             Console.WriteLine(">\tTasks Complete!");
