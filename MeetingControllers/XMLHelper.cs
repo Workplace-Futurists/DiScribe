@@ -67,6 +67,9 @@ namespace MeetingControllers
             strXML += "Call 1-800-555-1234, Passcode 98765";
             strXML += "</extTelephonyDescription>\r\n";
             strXML += "</telephony>\r\n";
+            strXML += "<attendeeOptions>";
+            strXML += "<emailInvitations>TRUE</emailInvitations>\r\n";
+            strXML += "</attendeeOptions>\r\n";
             strXML += "</bodyContent>\r\n";
             strXML += "</body>\r\n";
             strXML += "</serv:message>\r\n";
@@ -81,6 +84,7 @@ namespace MeetingControllers
             {
                 xml += GenerateAttendeeSingleElement(names[i], emails[i]);
             }
+
             return xml;
         }
 

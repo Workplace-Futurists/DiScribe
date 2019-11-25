@@ -43,7 +43,7 @@
                 <autoRecord>TRUE</autoRecord>
             </enableOptions>
             <schedule>
-                <startDate>11/24/2019 18:00:00</startDate>
+                <startDate>11/26/2019 12:00:00</startDate>
                 <openTime>900</openTime>
                 <joinTeleconfBeforeHost>true</joinTeleconfBeforeHost>
                 <duration>20</duration>
@@ -55,6 +55,9 @@
                     Call 1-800-555-1234, Passcode 98765
                 </extTelephonyDescription>
             </telephony>
+            <attendeeOptions>
+                <emailInvitations>TRUE</emailInvitations>
+            </attendeeOptions>
         </bodyContent>
     </body>
 </serv:message>

@@ -74,7 +74,7 @@ namespace MeetingControllers
             // Create POST data and convert it to a byte array.
             // string strXML = GenerateXMLCreateMeeting();
 
-            // String strXML = File.ReadAllText(@"createMeeting.xml");
+            // string strXML = File.ReadAllText(@"createMeeting.xml");
             string strXML = XMLHelper.GenerateMeetingXML(names, emails, startDate, duration);
 
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
