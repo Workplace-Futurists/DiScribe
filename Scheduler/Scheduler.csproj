@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Main\Main.csproj" />
-    <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
+      <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
   </ItemGroup>
 </Project>
