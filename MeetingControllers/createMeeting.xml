@@ -3,7 +3,7 @@
     <header>
         <securityContext>
             <webExID>kengqiangmk</webExID>
-            <password>Cs319_A</password>
+            <password>Cs319_APP</password>
             <siteName>companykm.my</siteName>
             <email>kengqiangmk@gmail.com</email>
         </securityContext>
