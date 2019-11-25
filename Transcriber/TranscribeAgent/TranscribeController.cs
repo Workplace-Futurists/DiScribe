@@ -1,10 +1,10 @@
-﻿using SpeakerRegistration.Data;
+﻿using DatabaseController.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
-using SpeakerRegistration;
+using DatabaseController;
 
 namespace Transcriber.TranscribeAgent
 {
@@ -45,7 +45,7 @@ namespace Transcriber.TranscribeAgent
 
         public String SpeakerIDSubKey { get; private set; }
 
-        
+
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.

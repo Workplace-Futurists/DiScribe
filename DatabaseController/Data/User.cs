@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace SpeakerRegistration.Data
+namespace DatabaseController.Data
 {   
     /// <summary>
     /// Represents a Voiceprint associated with a specific user. Contains raw audio data, the time stamp
@@ -24,7 +24,7 @@ namespace SpeakerRegistration.Data
        /// <param name="userID"></param>
        /// <param name="timeStamp"></param>
        /// <param name="password"></param>
-       public User(DatabaseController controller,
+       public User(DatabaseManager controller,
             MemoryStream stream,
             string firstName,
             string lastName,
@@ -58,7 +58,7 @@ namespace SpeakerRegistration.Data
         /// <param name="userID"></param>
         /// <param name="timestamp"></param>
         /// <param name="password"></param>
-        public User(DatabaseController controller, UserParams userParams) : 
+        public User(DatabaseManager controller, UserParams userParams) : 
             this(controller, 
                 new MemoryStream(userParams.AudioSample),
                 userParams.FirstName,

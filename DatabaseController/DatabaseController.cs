@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using SpeakerRegistration.Data;
+using DatabaseController.Data;
 
-namespace SpeakerRegistration
+namespace DatabaseController
 {
     /// <summary>
     /// Provides access to the stored procedures provided by the MS SQL registration database.
     /// This supports the standard CRUD operations on User objects for registration/lookup/update/deregistraiton.
     /// </summary>
-    public class DatabaseController
+    public class DatabaseManager
     {
-        public DatabaseController(string connectionStr)
+        public DatabaseManager(string connectionStr)
         {
             DBConnection = new SqlConnection(connectionStr);
             DBConnection.Open();
         }
 
-        public SqlConnection DBConnection {get; set;}
-
-
-
-
-
+        public SqlConnection DBConnection { get; set; }
 
         /// <summary>
         /// Stores a user with params matching userParams in the database.
@@ -34,15 +29,11 @@ namespace SpeakerRegistration
             return CreateUser(userParams.AudioSample,
                 userParams.FirstName,
                 userParams.LastName,
-                userParams.Email, 
-                userParams.ProfileGUID, 
-                userParams.TimeStamp, 
+                userParams.Email,
+                userParams.ProfileGUID,
+                userParams.TimeStamp,
                 userParams.Password);
         }
-
-
-
-
 
         /// <summary>
         /// Stores a user record in the database and returns an object representing that User.
@@ -112,13 +103,9 @@ namespace SpeakerRegistration
                     Console.Error.Write($"Error creating user profile in database. {ex.Message}");
                     transaction.Rollback();
                 }
-
             }
-
             return null;
         }
-
-
 
         /// <summary>
         /// Attempts to load a user with a matching email address from the DiScribe DB.
@@ -160,29 +147,18 @@ namespace SpeakerRegistration
 
                                 result = new User(this, new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
                             }
-
-
                         }
-
                         return result;
-
-
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.Write($"Error loading user profile from database. {ex.Message}");
+                        transaction.Rollback();
+                    }
                 }
-
-
-                
-                catch (Exception ex)
-                {
-                    Console.Error.Write($"Error loading user profile from database. {ex.Message}");
-                    transaction.Rollback();
-                }
-            }
                 return null;
             }
         }
-
-
-
 
         public Boolean UpdateUser(User user, string lookupEmail)
         {
@@ -233,20 +209,15 @@ namespace SpeakerRegistration
                     Console.Error.Write($"Error updating user profile in database. {ex.Message}");
                     transaction.Rollback();
                 }
-                
             }
-
             return false;
-
         }
-
-
 
         public Boolean DeleteUser(string email)
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpDeleteUser";
-            
+
             using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
             {
                 try
@@ -274,21 +245,8 @@ namespace SpeakerRegistration
                     Console.Error.Write($"Error deleting user profile from database. {ex.Message}");
                     transaction.Rollback();
                 }
-
             }
-            
-
             return false;
-
-
         }
-
-
-
-
-
-
-
-
     }
 }

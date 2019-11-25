@@ -10,7 +10,7 @@ using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave;
-using SpeakerRegistration.Data;
+using DatabaseController.Data;
 using Transcriber.TranscribeAgent;
 
 namespace Transcriber.TranscribeAgent

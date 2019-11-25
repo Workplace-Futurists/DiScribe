@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
     <PackageReference Include="Microsoft.Graph" Version="1.20.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.7.1" />
     <PackageReference Include="Twilio" Version="5.35.1" />
     <PackageReference Include="Sendgrid" Version="9.12.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.1" />
@@ -23,6 +23,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SpeakerRegistration\SpeakerRegistration.csproj" />
+    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
   </ItemGroup>
 </Project>
