@@ -22,9 +22,7 @@ namespace Main
 
             if (!init.Debug)
                 Run(init.MeetingAccessCode);
-
         }
-
 
         public static void Run(string accessCode)
         {
@@ -72,26 +70,7 @@ namespace Main
             {
                 EmailController.SendEMail(invitedUsers, "Failed To Generate Meeting Transcription", "");
             }
-
             Console.WriteLine(">\tTasks Complete!");
         }
-
-
-       
-
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
 }

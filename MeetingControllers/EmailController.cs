@@ -78,7 +78,7 @@ namespace MeetingControllers
             Console.WriteLine(">\tSending Emails to Unregistered Users...");
             foreach (EmailAddress email in emails)
             {
-                var defaultURL = "http://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
+                var defaultURL = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
                 var registrationURL = defaultURL + email.Email;
 
                 var htmlContent = "<h2>Please register your voice to Voice Registration Website</h2><h4>Link: ";
