@@ -9,7 +9,6 @@ namespace MeetingControllers
         static void Main(string[] args)
         {
             List<string> names = new List<string>();
-            names.Add("Kevin");
             names.Add("Workplace-futurists");
 
             foreach (string name in names)
@@ -19,7 +18,6 @@ namespace MeetingControllers
             
 
             List<string> emails = new List<string>();
-            emails.Add("seungwook.l95@gmail.com");
             emails.Add("workplace-futurists@hotmail.com");
 
             foreach (string email in emails)
