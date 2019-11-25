@@ -47,9 +47,6 @@ namespace Main
             // transcribe the meeting
             Console.WriteLine(">\tBeginning Transcribing...");
 
-
-
-            /*Load all the profiles by email address for registered users */
             var emails = EmailController.FromEmailAddressListToStringList(invitedUsers);
 
             /*Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint*/
@@ -61,15 +58,11 @@ namespace Main
             TranscribeController transcribeController = new TranscribeController(recording, voiceprints);
 
             /*Do the transcription with speaker recognition*/
-            if (transcribeController.Perform())
-            {
-                transcribeController.WriteTranscriptionFile();
-                EmailController.SendMinutes(invitedUsers);
-            }
-            else
-            {
+            if (transcribeController.Perform())                            
+                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));            
+            else            
                 EmailController.SendEMail(invitedUsers, "Failed To Generate Meeting Transcription", "");
-            }
+            
             Console.WriteLine(">\tTasks Complete!");
         }
     }

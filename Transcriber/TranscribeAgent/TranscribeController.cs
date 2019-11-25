@@ -70,13 +70,17 @@ namespace Transcriber
             return true;
         }
 
-        public void WriteTranscriptionFile(FileInfo meetingMinutes = null, int lineLength = 120)
+        public FileInfo WriteTranscriptionFile(string rid = "", int lineLength = 120)
         {
-            if (meetingMinutes is null)
-                meetingMinutes = MeetingMinutes;
+            FileInfo transcript;
+            if (rid.Equals(""))
+                transcript = MeetingMinutes;
+            else            
+                transcript = new FileInfo(MeetingMinutes.FullName.Replace("minutes.txt", "minutes_" + rid + ".txt"));
+            
 
             Console.WriteLine(">\tBegin Writing Transcription " +
-                "& Speaker Recognition Result into File [" + meetingMinutes.FullName + "]...");
+                "& Speaker Recognition Result into File [" + transcript.FullName + "]...");
             StringBuilder output = new StringBuilder();
 
             try
@@ -100,23 +104,25 @@ namespace Transcriber
                 /* Overwrite any existing MeetingMinutes file with the same name,
                  * else create file. Output results to text file.
                  */
-                if (!meetingMinutes.Exists)
+                if (!transcript.Exists)
                 {
-                    Console.WriteLine(">\tFile [" + meetingMinutes.Name + "] Does Not Exist, " +
-                        "Creating the File Under the Directory: " + meetingMinutes.DirectoryName);
-                    meetingMinutes.Directory.Create();
-                    meetingMinutes.Create().Close();
+                    Console.WriteLine(">\tFile [" + transcript.Name + "] Does Not Exist, " +
+                        "Creating the File Under the Directory: " + transcript.DirectoryName);
+                    transcript.Directory.Create();
+                    transcript.Create().Close();
                 }
                 using (System.IO.StreamWriter file =
-                    new System.IO.StreamWriter(meetingMinutes.FullName, false))
+                    new System.IO.StreamWriter(transcript.FullName, false))
                 {
                     file.Write(output.ToString());
                 }
                 Console.WriteLine(">\tTranscript Successfully Written.");
+                return transcript;
             }
             catch (Exception WriteException)
             {
                 Console.Error.WriteLine("Error occurred during Write: " + WriteException.Message);
+                return null;
             }
         }
     }

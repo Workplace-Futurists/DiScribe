@@ -62,15 +62,14 @@ namespace MeetingControllers
             SendEmailHelper(OFFICIAL_EMAIL, recipients, subject, htmlContent, file).Wait();
         }
 
-        public static void SendMinutes(List<EmailAddress> recipients, string meeting_info = "your recent meeting")
+        public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string meeting_info = "your recent meeting")
         {
             Console.WriteLine(">\tSending the Transcription Results to users...");
-            FileInfo minutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
             string subject = "Meeting minutes of " + meeting_info;
 
             // TODO need the infos
             var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: </h4>";
-            SendEMail(recipients, htmlContent, subject, minutes);
+            SendEMail(recipients, htmlContent, subject, file);
         }
 
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
