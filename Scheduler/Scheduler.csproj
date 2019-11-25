@@ -1,28 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
-
-
-  <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Scheduler\Scheduler.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-       <ProjectReference Include="..\MeetingController\MeetingController.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Scheduler\obj\anycpu\Debug\TempPE\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="TaskScheduler" Version="2.8.17" />
   </ItemGroup>
+
 </Project>
