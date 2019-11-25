@@ -36,6 +36,8 @@ namespace Main
             // new recording download manager
             var recManager = new twilio_caller.dialer.RecordingManager(appConfig);
 
+            Console.WriteLine("Dialing into webex meeting with access code " + accessCode);
+
             // dial into and record the meeting
             var rid = dialManager.CallMeetingAsync(accessCode).Result;
             // download the recording to the file
