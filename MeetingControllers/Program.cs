@@ -8,10 +8,7 @@ namespace MeetingControllers
     {
         static void Main(string[] args)
         {
-            EmailController.Initialize();
-            EmailController.SendMail(new List<EmailAddress> {
-                new EmailAddress("jinhuang696@gmail.com", "Jin Huang")
-            }, "Hi");
+            EmailController.SendEMail(new EmailAddress("jinhuang696@gmail.com", "Jin Huang"), "Hi", "");
             //List<string> names = new List<string>();
             //names.Add("Workplace-futurists");
 
@@ -19,7 +16,6 @@ namespace MeetingControllers
             //{
             //    Console.WriteLine("name: " + name);
             //}
-
 
             //List<string> emails = new List<string>();
             //emails.Add("workplace-futurists@hotmail.com");
