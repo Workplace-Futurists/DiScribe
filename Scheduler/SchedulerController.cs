@@ -7,6 +7,16 @@ namespace Scheduler
 {
     public static class SchedulerController
     {
+        public static void CreateMeeting()
+        {
+            // TODOs
+            // create the webex meeting
+            // send meeting invitations
+            // check if any of them are unregistered
+            // send emails to them
+            // schedule the task
+        }
+
         public static void Schedule(string meetingAccessCode, DateTime dateTime)
         {
             Thread thread = new Thread(() => ScheduleHelperAsync(meetingAccessCode, dateTime));
