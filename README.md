@@ -10,15 +10,14 @@ The bot could not only correctly transcribes the content of speech but also coul
 ## Main Components
 ### Website Component
 * [ ]    Allows unregistered users to **register in the voice print** database with their email
+* [ ]	 <span style="color:red">*(stretch goal)*</span> Able to save meeting informations into the Database
 * [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to **manage** meeting recordings and their corresponding transcription results
 * [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to update voice print samples, their email addresses or add alternative ones
 
 ### Scheduling Component
-* [ ]    **Listens** for emails containing scheduled meeting informations
-* [ ]    Saves meeting informations into **database**
-* [ ]    Able to retrieve meeting **attendees** email Lists
-* [ ]    Check if any attendees aren't **registered** in the **voice print database**
-* [ ]    Sends email to unregistered attendees with **link** to **voice print registration website**
+* [x]    Able to retrieve meeting **attendees** email Lists
+* [x]    Check if any attendees aren't **registered** in the **voice print database**
+* [x]    Sends email to unregistered attendees with **link** to **voice print registration website**
 * [ ]    Bot automatically **Executes** the following processes when meeting time is near
 
 ### Call-in Component
