@@ -125,6 +125,16 @@ namespace MeetingControllers
             }
             return emailsAsString;
         }
+
+        public static List<EmailAddress> FromStringListToEmailAddressList(List<string> emails)
+        {
+            List<EmailAddress> emailsAsEmailAddress = new List<EmailAddress>();
+            foreach (string email in emails)
+            {
+                emailsAsEmailAddress.Add(new EmailAddress(email));
+            }
+            return emailsAsEmailAddress;
+        }
     }
 }
 
