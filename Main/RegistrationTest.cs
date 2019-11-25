@@ -17,7 +17,7 @@ namespace Main.Test
 {
     public class RegistrationTest
     {
-        private static readonly FileInfo TestRecording = new FileInfo(@"../../../../Record/MultipleSpeakers.wav");
+        private static readonly FileInfo TestRecording = new FileInfo(@"../../../../Record/test_meeting.wav");
         private static readonly string dbConnStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
               "Initial Catalog=db_cs319_discribe;" +
               "Persist Security Info=False;" +

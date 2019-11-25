@@ -4,35 +4,35 @@ using System.IO;
 using System.Text;
 
 namespace DatabaseController.Data
-{   
+{
     /// <summary>
     /// Represents a Voiceprint associated with a specific user. Contains raw audio data, the time stamp
     /// for audio recording, an instance ID, and the associated user ID.
     /// </summary>
-    
+
     public class User : DataElement
     {
-       /// <summary>
-       /// Construct a User which uses the specified controller to interact with the DB.
-       /// </summary>
-       /// <param name="controller"></param>
-       /// <param name="stream"></param>
-       /// <param name="firstName"></param>
-       /// <param name="lastName"></param>
-       /// <param name="email"></param>
-       /// <param name="profileGUID"></param>
-       /// <param name="userID"></param>
-       /// <param name="timeStamp"></param>
-       /// <param name="password"></param>
-       public User(DatabaseManager controller,
-            MemoryStream stream,
-            string firstName,
-            string lastName,
-            string email,
-            Guid profileGUID = new Guid(),
-            int userID = -1,
-            DateTime timeStamp = new DateTime(),
-            string password = "") : base(controller)
+        /// <summary>
+        /// Construct a User which uses the specified controller to interact with the DB.
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="stream"></param>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="email"></param>
+        /// <param name="profileGUID"></param>
+        /// <param name="userID"></param>
+        /// <param name="timeStamp"></param>
+        /// <param name="password"></param>
+        public User(DatabaseManager controller,
+             MemoryStream stream,
+             string firstName,
+             string lastName,
+             string email,
+             Guid profileGUID = new Guid(),
+             int userID = -1,
+             DateTime timeStamp = new DateTime(),
+             string password = "") : base(controller)
         {
             AudioStream = stream;
             FirstName = firstName;
@@ -50,16 +50,9 @@ namespace DatabaseController.Data
         /// for convenience and readability.
         /// </summary>
         /// <param name="controller"></param>
-        /// <param name="audioSample"></param>
-        /// <param name="firstName"></param>
-        /// <param name="lastName"></param>
-        /// <param name="email"></param>
-        /// <param name="profileGUID"></param>
-        /// <param name="userID"></param>
-        /// <param name="timestamp"></param>
-        /// <param name="password"></param>
-        public User(DatabaseManager controller, UserParams userParams) : 
-            this(controller, 
+        /// <param name="userParams"></param>
+        public User(DatabaseManager controller, UserParams userParams) :
+            this(controller,
                 new MemoryStream(userParams.AudioSample),
                 userParams.FirstName,
                 userParams.LastName,
@@ -70,9 +63,6 @@ namespace DatabaseController.Data
                 userParams.Password)
         { }
 
-
-
-
         /// <summary>
         /// Deletes the Voiceprint from the associated database.
         /// </summary>
@@ -80,7 +70,7 @@ namespace DatabaseController.Data
         override public Boolean Delete()
         {
             return Controller.DeleteUser(this.Email);
-            
+
         }
 
         /// <summary>
@@ -98,7 +88,7 @@ namespace DatabaseController.Data
             }
 
             return Controller.UpdateUser(this, email);
-            
+
         }
 
         public string FirstName { get; set; }
@@ -112,26 +102,18 @@ namespace DatabaseController.Data
         /// </summary>
         public System.Guid ProfileGUID { get; set; }
 
-               
         public int UserID { get; private set; }
-
 
         public MemoryStream AudioStream { get; set; }
 
-
         public DateTime TimeStamp { get; set; }
 
-
         public string Password { get; set; }
-             
-
-
-      
     }
 
     public class UserParams
     {
-        public UserParams (
+        public UserParams(
            byte[] audioSample,
            string firstName,
            string lastName,
@@ -139,8 +121,8 @@ namespace DatabaseController.Data
            Guid profileGUID = new Guid(),
            int userID = -1,
            DateTime timeStamp = default,
-           string password = "") 
-          {
+           string password = "")
+        {
             AudioSample = audioSample;
             FirstName = firstName;
             LastName = lastName;
@@ -151,10 +133,6 @@ namespace DatabaseController.Data
             Password = password;
         }
 
-
-       
-
-
         public byte[] AudioSample { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -163,8 +141,5 @@ namespace DatabaseController.Data
         public int UserID { get; set; }
         public DateTime TimeStamp { get; set; }
         public string Password { get; set; }
-
-
-
     }
 }

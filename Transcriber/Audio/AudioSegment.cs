@@ -1,5 +1,4 @@
 ﻿using System;
-using DatabaseController.Data;
 using Microsoft.CognitiveServices.Speech.Audio;
 using System.IO;
 
@@ -22,15 +21,12 @@ namespace Transcriber.Audio
 
             AudioData = audioData;
             StartOffset = startOffset;
-            EndOffset = endOffset;
-            
+            EndOffset = endOffset;            
         }
-
 
         const uint SAMPLE_RATE = 16000;
         const byte BITS_PER_SAMPLE = 16;
         const byte CHANNELS = 1;
-
 
         /// <summary>
         /// Stream providing access to the audio data for this instance.
@@ -47,10 +43,7 @@ namespace Transcriber.Audio
         /// </summary>
         public long StartOffset { get; set; }
 
-        public long EndOffset { get; set; }
-
-        
-
+        public long EndOffset { get; set; }       
 
         public int CompareTo(object obj)
         {
