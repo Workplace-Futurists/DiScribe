@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Transcriber.TranscribeAgent;
+using Transcriber;
 using DatabaseController;
 using DatabaseController.Data;
 using SendGrid.Helpers.Mail;
@@ -30,7 +30,7 @@ namespace Main
         }
 
         public static void Run(string accessCode)
-        {
+        {            
             EmailController.Initialize();
             // send registration emails to whom did not register their voice into the system yet
             List<EmailAddress> recipients = MeetingController.GetAttendeeEmails(accessCode);

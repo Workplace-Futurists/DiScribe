@@ -10,9 +10,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Transcriber.TranscribeAgent
+namespace Transcriber
 {
-    public static class Helper
+    static class Helper
     {
         public static string WrapText(string text, int lineLength)
         {
@@ -181,10 +181,6 @@ namespace Transcriber.TranscribeAgent
             disposed = true;
             base.Dispose(disposing);
         }
-
-
         private bool disposed;
-    }
-
-    
+    }    
 }

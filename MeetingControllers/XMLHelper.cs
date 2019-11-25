@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
 using System.Xml;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using System.Xml.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Graph;
-using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
-using File = System.IO.File;
 
 namespace MeetingControllers
 {
-    public static class XMLHelper
+    static class XMLHelper
     {
         public static string GenerateMeetingXML(List<string> names, List<string> emails, string startDate, string duration)
         {
