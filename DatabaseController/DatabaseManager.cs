@@ -43,7 +43,6 @@ namespace DatabaseController
         /// <param name="lastName"></param>
         /// <param name="email"></param>
         /// <param name="profileGUID"></param>
-        /// <param name="userID"></param>
         /// <param name="timeStamp"></param>
         /// <param name="password"></param>
         /// <returns></returns>
