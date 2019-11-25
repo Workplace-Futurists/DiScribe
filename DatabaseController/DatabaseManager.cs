@@ -9,22 +9,32 @@ namespace DatabaseController
     /// Provides access to the stored procedures provided by the MS SQL registration database.
     /// This supports the standard CRUD operations on User objects for registration/lookup/update/deregistraiton.
     /// </summary>
-    public class DatabaseManager
+    public static class DatabaseManager
     {
-        public DatabaseManager(string connectionStr)
-        {
-            DBConnection = new SqlConnection(connectionStr);
-            DBConnection.Open();
-        }
+        /*Temporary DB connection string. In production, this will be a different connection string. */
+        private static readonly string dbConnectionStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
+            "Initial Catalog=db_cs319_discribe;" +
+            "Persist Security Info=False;User ID=obiermann;" +
+            "Password=JKm3rQ~t9sBiemann;" +
+            "MultipleActiveResultSets=True;" +
+            "Encrypt=True;TrustServerCertificate=False;" +
+            "Connection Timeout=30";
 
-        public SqlConnection DBConnection { get; set; }
+        private static SqlConnection DBConnection = Initialize(dbConnectionStr);
+
+        private static SqlConnection Initialize(string connectionStr)
+        {
+            var connection = new SqlConnection(connectionStr);
+            connection.Open();
+            return connection;
+        }
 
         /// <summary>
         /// Stores a user with params matching userParams in the database.
         /// </summary>
         /// <param name="userParams"></param>
         /// <returns></returns>
-        public User CreateUser(UserParams userParams)
+        public static User CreateUser(UserParams userParams)
         {
             return CreateUser(userParams.AudioSample,
                 userParams.FirstName,
@@ -46,7 +56,7 @@ namespace DatabaseController
         /// <param name="timeStamp"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public User CreateUser(
+        public static User CreateUser(
            byte[] audioSample,
            string firstName,
            string lastName,
@@ -95,7 +105,7 @@ namespace DatabaseController
                     int rowID = Convert.ToInt32(command.Parameters["@RowID"].Value);
 
                     /*Return User object representing this user */
-                    return new User(this, new UserParams(audioSample, firstName, lastName, email, profileGUID, rowID, timeStamp, password));
+                    return new User(new UserParams(audioSample, firstName, lastName, email, profileGUID, rowID, timeStamp, password));
                 }
                 catch (Exception ex)
                 {
@@ -111,7 +121,7 @@ namespace DatabaseController
         /// </summary>
         /// <param name="email"></param>
         /// <returns>Matching User object for the specified email, or null if no such user exists.</returns>
-        public User LoadUser(string email)
+        public static User LoadUser(string email)
         {
             using (SqlTransaction transaction = DBConnection.BeginTransaction())
             {
@@ -144,7 +154,7 @@ namespace DatabaseController
                                 byte[] audioSample = (byte[])(reader["AudioSample"]);
                                 DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
 
-                                result = new User(this, new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
+                                result = new User(new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
                             }
                         }
                         return result;
@@ -159,7 +169,7 @@ namespace DatabaseController
             }
         }
 
-        public Boolean UpdateUser(User user, string lookupEmail)
+        public static Boolean UpdateUser(User user, string lookupEmail)
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpUpdateUserByEmail";
@@ -212,7 +222,7 @@ namespace DatabaseController
             return false;
         }
 
-        public Boolean DeleteUser(string email)
+        public static Boolean DeleteUser(string email)
         {
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpDeleteUser";

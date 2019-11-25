@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using DatabaseController;
 
 namespace DatabaseController.Data
 {
@@ -24,15 +25,14 @@ namespace DatabaseController.Data
         /// <param name="userID"></param>
         /// <param name="timeStamp"></param>
         /// <param name="password"></param>
-        public User(DatabaseManager controller,
-             MemoryStream stream,
+        public User(MemoryStream stream,
              string firstName,
              string lastName,
              string email,
              Guid profileGUID = new Guid(),
              int userID = -1,
              DateTime timeStamp = new DateTime(),
-             string password = "") : base(controller)
+             string password = "")
         {
             AudioStream = stream;
             FirstName = firstName;
@@ -51,9 +51,8 @@ namespace DatabaseController.Data
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="userParams"></param>
-        public User(DatabaseManager controller, UserParams userParams) :
-            this(controller,
-                new MemoryStream(userParams.AudioSample),
+        public User(UserParams userParams) :
+            this(new MemoryStream(userParams.AudioSample),
                 userParams.FirstName,
                 userParams.LastName,
                 userParams.Email,
@@ -69,7 +68,7 @@ namespace DatabaseController.Data
         /// <returns></returns>
         override public Boolean Delete()
         {
-            return Controller.DeleteUser(this.Email);
+            return DatabaseManager.DeleteUser(this.Email);
 
         }
 
@@ -87,7 +86,7 @@ namespace DatabaseController.Data
                 email = this.Email;
             }
 
-            return Controller.UpdateUser(this, email);
+            return DatabaseManager.UpdateUser(this, email);
 
         }
 

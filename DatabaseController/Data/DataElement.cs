@@ -11,22 +11,12 @@ namespace DatabaseController.Data
     /// </summary>
     public abstract class DataElement
     {
-        public DataElement (DatabaseManager controller)
+        public DataElement()
         {
-            Controller = controller;
         }
 
-        protected DatabaseManager Controller;
-
-
         public abstract Boolean Delete();
-      
-        
+
         public abstract Boolean Update(string lookup);
-     
-
-        
-
-
     }
 }

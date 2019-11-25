@@ -16,15 +16,6 @@ namespace DatabaseController
     /// </summary>
     public class RegistrationController
     {
-        /*Temporary DB connection string. In production, this will be a different connection string. */
-        public static readonly string dbConnectionStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
-            "Initial Catalog=db_cs319_discribe;" +
-            "Persist Security Info=False;User ID=obiermann;" +
-            "Password=JKm3rQ~t9sBiemann;" +
-            "MultipleActiveResultSets=True;" +
-            "Encrypt=True;TrustServerCertificate=False;" +
-            "Connection Timeout=30";
-
         private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
 
         /// <summary>
@@ -37,14 +28,12 @@ namespace DatabaseController
         /// <param name="speakerIDKeySub"></param>
         /// <param name="enrollmentLocale"></param>
         /// <param name="apiInterval"></param>
-        public RegistrationController(DatabaseManager dbController, List<User> userProfiles, SpeakerIdentificationServiceClient enrollmentClient,
+        public RegistrationController(List<User> userProfiles, SpeakerIdentificationServiceClient enrollmentClient,
             string enrollmentLocale, int apiInterval)
         {
             /*Create REST client for enrolling users */
             EnrollmentClient = enrollmentClient;
             EnrollmentLocale = enrollmentLocale;
-
-            DBController = dbController;
 
             UserProfiles = userProfiles;
 
@@ -68,17 +57,6 @@ namespace DatabaseController
         public static RegistrationController BuildController(List<string> userEmails,
             string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
-            DatabaseManager dbController;
-            try
-            {
-                dbController = new DatabaseManager(dbConnectionStr);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                throw new Exception("Unable to create Registration Controller due to database connection error");
-            }
-
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
             List<User> userProfiles = new List<User>();
 
@@ -88,7 +66,7 @@ namespace DatabaseController
                 foreach (var curEmail in userEmails)
                 {
                     email = curEmail;
-                    User curUser = dbController.LoadUser(curEmail);
+                    User curUser = DatabaseManager.LoadUser(curEmail);
                     userProfiles.Add(curUser);
                 }
             }
@@ -96,7 +74,7 @@ namespace DatabaseController
             {
                 Console.Error.WriteLine($"Loading profile from database failed for {email} {ex.Message}");
             }
-            return new RegistrationController(dbController, userProfiles, enrollmentClient, enrollmentLocale, apiInterval);
+            return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);
         }
 
         public const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                               //Min time between consecutive requests.
@@ -104,8 +82,6 @@ namespace DatabaseController
         public SpeakerIdentificationServiceClient EnrollmentClient { get; private set; }
 
         public List<User> UserProfiles { get; private set; }
-
-        public DatabaseManager DBController { get; private set; }
 
         public string EnrollmentLocale { get; private set; }
 
@@ -142,7 +118,7 @@ namespace DatabaseController
 
 
             /*Attempt to Create user profile in DB and add to list of user profiles */
-            User registeredUser = DBController.CreateUser(userParams);
+            User registeredUser = DatabaseManager.CreateUser(userParams);
 
             if (registeredUser == null)
             {
@@ -169,7 +145,7 @@ namespace DatabaseController
             var taskComplete = new TaskCompletionSource<User>();
 
             /*Try to load a user with this email */
-            User registeredUser = DBController.LoadUser(email);
+            User registeredUser = DatabaseManager.LoadUser(email);
 
             if (registeredUser == null)
             {
