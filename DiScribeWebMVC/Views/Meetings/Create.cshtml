@@ -1,0 +1,46 @@
+﻿@model DiScribeWebMVC.Models.MeetingClass
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h5>Schedule Meeting</h5>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="MeetingSubject" class="control-label"></label>
+                <input asp-for="MeetingSubject" class="form-control" />
+                <span asp-validation-for="MeetingSubject" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MeetingStartDate" class="control-label"></label>
+                <input asp-for="MeetingStartDate" class="form-control" />
+                <span asp-validation-for="MeetingStartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MeetingEndDate" class="control-label"></label>
+                <input asp-for="MeetingEndDate" class="form-control" />
+                <span asp-validation-for="MeetingEndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Please enter participant email addresses below, separated by commas.</label>
+                <!--<div>
+        <input id="inviteall" type="checkbox" checked> Invite all participants to register audio.
+    </div>-->
+                <textarea id="Participants" rows="5" cols="100" asp-for="Participants"></textarea>
+                <span asp-validation-for="Participants" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
