@@ -10,7 +10,7 @@ using System.Collections;
 //using twilio_caller.dialer;
 using System.Threading;
 
-namespace EmailControllers
+namespace MeetingControllers
 {
     public class GraphHelper
     {
@@ -100,7 +100,7 @@ namespace EmailControllers
             }
 
         }
-        
+
         public static async Task DeleteEmailAsync(Message message)
         {
 

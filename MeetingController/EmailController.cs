@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace EmailControllers
+namespace MeetingControllers
 {
     public static class EmailController
     {

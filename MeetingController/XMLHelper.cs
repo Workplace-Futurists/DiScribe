@@ -12,10 +12,10 @@ using Microsoft.Graph;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using File = System.IO.File;
 
-namespace EmailControllers
+namespace MeetingControllers
 {
     public static class XMLHelper
-    {      
+    {
         public static string GenerateMeetingXML(List<string> names, List<string> emails, string startDate, string duration)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
@@ -99,7 +99,7 @@ namespace EmailControllers
             strXML += "</attendee>\r\n";
 
             return strXML;
-        }        
+        }
 
         public static string GenerateXML(string accessCode)
         {

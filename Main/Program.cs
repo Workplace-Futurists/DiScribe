@@ -6,7 +6,7 @@ using SpeakerRegistration.Data;
 using SendGrid.Helpers.Mail;
 using System.IO;
 using twilio_caller;
-using EmailControllers;
+using MeetingControllers;
 using Microsoft.Extensions.Configuration;
 
 namespace Main
