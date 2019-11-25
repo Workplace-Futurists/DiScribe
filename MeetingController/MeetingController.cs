@@ -12,7 +12,7 @@ using Microsoft.Graph;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using File = System.IO.File;
 
-namespace EmailControllers
+namespace MeetingControllers
 {
     public static class MeetingController
     {
