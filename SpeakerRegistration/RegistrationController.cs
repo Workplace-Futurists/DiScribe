@@ -16,6 +16,7 @@ namespace SpeakerRegistration
     /// </summary>
     public class RegistrationController
     {
+
         /// <summary>
         /// Ensures that all DiScribe User profiles have matching profiles in the
         /// the Azure Speaker Recognition service. Creates a valid RegistrationController
@@ -34,7 +35,6 @@ namespace SpeakerRegistration
             EnrollmentLocale = enrollmentLocale;
 
             DBController = dbController;
-
             
             UserProfiles = userProfiles;
 
@@ -44,7 +44,6 @@ namespace SpeakerRegistration
                 EnrollVoiceProfiles().Wait();
             }
         }
-
 
         /// <summary>
         /// Builder to create a Registration controller. Creates a connection to the database
@@ -68,8 +67,6 @@ namespace SpeakerRegistration
                 Console.Error.WriteLine(ex.Message);
                 throw new Exception("Unable to create Registration Controller due to database connection error");
             }
-
-
             
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
             List<User> userProfiles = new List<User>();
@@ -83,22 +80,12 @@ namespace SpeakerRegistration
                     User curUser = dbController.LoadUser(curEmail);
                     userProfiles.Add(curUser);
                 }
-
-
             }catch (Exception ex)
             {
                 Console.Error.WriteLine($"Loading profile from database failed for {email} {ex.Message}");
             }
-
-
             return new RegistrationController(dbController, userProfiles, enrollmentClient, enrollmentLocale, apiInterval);
-
-
         }
-
-
-
-
 
         public const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                               //Min time between consecutive requests.
 
