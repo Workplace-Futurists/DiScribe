@@ -36,15 +36,17 @@ namespace MeetingControllers
                                                                        htmlContent,
                                                                        showAllRecipients
                                                                        );
-
-            if (!File.Exists(file.FullName) || file == null)
+            if (file != null)
             {
-                Console.WriteLine(">\tminutes.txt does not exists");
-                return;
+                if (!File.Exists(file.FullName))
+                {
+                    Console.WriteLine(">\tminutes.txt does not exists");
+                    return;
+                }
+                var bytes = File.ReadAllBytes(file.FullName);
+                var content = Convert.ToBase64String(bytes);
+                msg.AddAttachment("attachment", content);
             }
-            var bytes = File.ReadAllBytes(file.FullName);
-            var content = Convert.ToBase64String(bytes);
-            msg.AddAttachment("attachment", content);
 
             await sendGridClient.SendEmailAsync(msg);
             Console.WriteLine(">\tEmail sent successfully");
