@@ -8,6 +8,7 @@ using System.IO;
 using twilio_caller;
 using Scheduler;
 using MeetingControllers;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Main
@@ -18,13 +19,10 @@ namespace Main
         {
             /*Deserialize the init data for dialing in to meeting */
             InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
-                       
-            
+
             if (!init.Debug)
-               Run(init.MeetingAccessCode);
-
+                Run(init.MeetingAccessCode);
         }
-
 
         public static void Run(string accessCode)
         {
@@ -49,9 +47,6 @@ namespace Main
             // transcribe the meeting
             Console.WriteLine(">\tBeginning Transcribing...");
 
-
-
-            /*Load all the profiles by email address for registered users */
             var emails = EmailController.FromEmailAddressListToStringList(invitedUsers);
 
             /*Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint*/
@@ -63,29 +58,12 @@ namespace Main
             TranscribeController transcribeController = new TranscribeController(recording, voiceprints);
 
             /*Do the transcription with speaker recognition*/
-            if (transcribeController.Perform())
-            {
-                transcribeController.WriteTranscriptionFile();
-                EmailController.SendMinutes(invitedUsers);
-            }
-            else
-            {
+            if (transcribeController.Perform())                            
+                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));            
+            else            
                 EmailController.SendEMail(invitedUsers, "Failed To Generate Meeting Transcription", "");
-            }
-
+            
             Console.WriteLine(">\tTasks Complete!");
         }
-
-
-
-
-
     }
-
-
-
-
-
-
-
 }

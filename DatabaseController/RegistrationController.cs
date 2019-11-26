@@ -75,11 +75,6 @@ namespace DatabaseController
             return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);
         }
 
-
-
-
-
-
         public const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                               //Min time between consecutive requests.
 
         public SpeakerIdentificationServiceClient EnrollmentClient { get; private set; }
@@ -89,8 +84,6 @@ namespace DatabaseController
         public string EnrollmentLocale { get; private set; }
 
         private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
-
-
 
         /// <summary>
         /// Creates a new user profile for a User in the DiScribe database.
@@ -137,8 +130,6 @@ namespace DatabaseController
             taskComplete.SetResult(profileTask.Result.ProfileId);
             return profileTask.Result.ProfileId;
         }
-
-
 
         /// <summary>
         /// Async check if a profile is regsitered for the email address.

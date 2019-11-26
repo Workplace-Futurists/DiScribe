@@ -62,15 +62,14 @@ namespace MeetingControllers
             SendEmailHelper(OFFICIAL_EMAIL, recipients, subject, htmlContent, file).Wait();
         }
 
-        public static void SendMinutes(List<EmailAddress> recipients, string meeting_info = "your recent meeting")
+        public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string meeting_info = "your recent meeting")
         {
             Console.WriteLine(">\tSending the Transcription Results to users...");
-            FileInfo minutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
             string subject = "Meeting minutes of " + meeting_info;
 
             // TODO need the infos
             var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: </h4>";
-            SendEMail(recipients, htmlContent, subject, minutes);
+            SendEMail(recipients, htmlContent, subject, file);
         }
 
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
@@ -78,7 +77,7 @@ namespace MeetingControllers
             Console.WriteLine(">\tSending Emails to Unregistered Users...");
             foreach (EmailAddress email in emails)
             {
-                var defaultURL = "http://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
+                var defaultURL = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
                 var registrationURL = defaultURL + email.Email;
 
                 var htmlContent = "<h2>Please register your voice to Voice Registration Website</h2><h4>Link: ";
