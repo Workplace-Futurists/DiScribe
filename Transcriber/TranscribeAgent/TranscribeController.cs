@@ -30,13 +30,13 @@ namespace Transcriber
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
 
-            Console.WriteLine(">\tTranscription Controller initialized " +
+            Console.WriteLine(">\tTranscription Controller initialized \n\t" +
                 "on Audio Recording [" + meetingRecording.FullName + "].");
         }
 
         public List<User> Voiceprints { get; set; }
 
-        public AudioFileSplitter FileSplitter { get; private set; }
+        internal AudioFileSplitter FileSplitter { get; set; }
 
         SpeechTranscriber Transcriber { get; set; }
 
@@ -44,7 +44,7 @@ namespace Transcriber
 
         public SpeechConfig SpeechConfig { get; private set; }
 
-        public String SpeakerIDSubKey { get; private set; }
+        public string SpeakerIDSubKey { get; private set; }
 
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
@@ -66,7 +66,7 @@ namespace Transcriber
 
             /*Do speaker recognition concurrently for each TranscriptionOutput. */
             Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
-            Console.WriteLine(">\tTranscription && Recognition = Success");
+            Console.WriteLine(">\tTranscription && Recognition Complete");
             return true;
         }
 
@@ -75,12 +75,12 @@ namespace Transcriber
             FileInfo transcript;
             if (rid.Equals(""))
                 transcript = MeetingMinutes;
-            else            
+            else
                 transcript = new FileInfo(MeetingMinutes.FullName.Replace("minutes.txt", "minutes_" + rid + ".txt"));
-            
+
 
             Console.WriteLine(">\tBegin Writing Transcription " +
-                "& Speaker Recognition Result into File [" + transcript.FullName + "]...");
+                "& Speaker Recognition Result into File \n\t[" + transcript.Name + "]");
             StringBuilder output = new StringBuilder();
 
             try
@@ -106,8 +106,8 @@ namespace Transcriber
                  */
                 if (!transcript.Exists)
                 {
-                    Console.WriteLine(">\tFile [" + transcript.Name + "] Does Not Exist, " +
-                        "Creating the File Under the Directory: " + transcript.DirectoryName);
+                    Console.WriteLine(">\tFile [" + transcript.Name + "] Does Not Exist\n\t " +
+                        "Creating the File Under the Directory \n\t [" + transcript.DirectoryName + "]");
                     transcript.Directory.Create();
                     transcript.Create().Close();
                 }

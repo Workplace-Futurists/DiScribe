@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
-using twilio_caller.dialer;
+using twilio_caller;
 using System.IO;
 using Microsoft.Graph;
 using HtmlAgilityPack;

@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace twilio_caller
 {
-    public static class Function
+    internal static class Function
     {
         [FunctionName("CreateSubscription")]
         public static async Task<IActionResult> Run(

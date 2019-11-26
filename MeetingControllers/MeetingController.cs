@@ -78,6 +78,7 @@ namespace MeetingControllers
 
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
         {
+            Console.WriteLine(">\tRetrieving All Attendees' Emails...");
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
             WebRequest request = WebRequest.Create(strXMLServer);
@@ -146,7 +147,7 @@ namespace MeetingControllers
 
             foreach (XmlNode emailNode in emailNodes)
             {
-                Console.WriteLine(emailNode.InnerText);
+                Console.WriteLine("\t-\t" + emailNode.InnerText);
                 emails.Add(emailNode.InnerText);
             }
 

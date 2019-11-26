@@ -20,61 +20,54 @@ namespace Main
             //Deserialize the init data for dialing in to meeting 
             InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
 
-            
-
             if (!init.Debug)
                 Run(init.MeetingAccessCode);
-           
-        }
-        
+        }        
 
         public static void Run(string accessCode)
         {
             // Set Authentication configurations
             var appConfig = Configurations.LoadAppSettings();
 
-            // new dialer manager
-            var dialManager = new twilio_caller.dialer.dialerManager(appConfig);
-            // new recording download manager
-            var recManager = new twilio_caller.dialer.RecordingManager(appConfig);
+            // dialing & recording
+            var rid = new DialerManager(appConfig).CallMeetingAsync(accessCode).Result;
+            var recording = new RecordingManager(appConfig).DownloadRecordingAsync(rid).Result;
 
-            Console.WriteLine("Dialing into webex meeting with access code " + accessCode);
+            LineBreak();
 
-            // dial into and record the meeting
-            var rid = dialManager.CallMeetingAsync(accessCode).Result;
-            // download the recording to the file
-            var recording = recManager.DownloadRecordingAsync(rid).Result;
-
-            Console.Write("Press <return> to continue");
-            Console.ReadLine();
-            // Get email addresses for all users who are attending the meeting
+            // retrieving all attendees' emails as a List
             List<EmailAddress> invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
 
-            // transcribe the meeting
-            Console.WriteLine(">\tBeginning Transcribing...");
+            // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
+            var regController = RegistrationController.BuildController(
+                EmailController.FromEmailAddressListToStringList(invitedUsers));
 
-            var emails = EmailController.FromEmailAddressListToStringList(invitedUsers);
-            /*Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint*/
-            RegistrationController regController = RegistrationController.BuildController(emails);
-            /*Get registered profiles */
-            List<User> voiceprints = regController.UserProfiles;
+            // initializing the transcribe controller 
+            var transcribeController = new TranscribeController(recording, regController.UserProfiles);
 
-            TranscribeController transcribeController = new TranscribeController(recording, voiceprints);
+            LineBreak();
 
-            Console.Write("Press <return> to continue");
-            Console.ReadLine();
-            /*Do the transcription with speaker recognition*/
+            // performs transcription and speaker recognition
             if (transcribeController.Perform())
             {
+                // writes the transcription result if successful
                 var file = transcribeController.WriteTranscriptionFile(rid);
-                Console.Write("Press <return> to continue");
-                Console.ReadLine();
-                EmailController.SendMinutes(invitedUsers, file );
+
+                LineBreak();
+
+                // sends email to all meeting attendees
+                EmailController.SendMinutes(invitedUsers, file);
             }
             else
-                EmailController.SendEMail(invitedUsers, "Failed To Generate Meeting Transcription", "");
+                EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
 
-            Console.WriteLine(">\tTasks Complete!");
+            Console.WriteLine(">\tTask Complete!");
+        }
+
+        private static void LineBreak()
+        {
+            Console.Write("Press <return> to continue");
+            Console.ReadLine();
         }
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace twilio_caller
 {
-    public class Startup
+    internal class Startup
     {
         /*
          * This method gets called by the runtime. Use this method to add services to the container.

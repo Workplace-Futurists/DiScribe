@@ -53,12 +53,12 @@ namespace MeetingControllers
             return new SendGridClient(sendGridAPI);
         }
 
-        public static void SendEMail(EmailAddress recipient, string subject, string htmlContent, FileInfo file = null)
+        public static void SendEmail(EmailAddress recipient, string subject, string htmlContent, FileInfo file = null)
         {
             SendEmailHelper(OFFICIAL_EMAIL, new List<EmailAddress> { recipient }, subject, htmlContent, file).Wait();
         }
 
-        public static void SendEMail(List<EmailAddress> recipients, string subject, string htmlContent, FileInfo file = null)
+        public static void SendEmail(List<EmailAddress> recipients, string subject, string htmlContent, FileInfo file = null)
         {
             SendEmailHelper(OFFICIAL_EMAIL, recipients, subject, htmlContent, file).Wait();
         }
@@ -70,7 +70,7 @@ namespace MeetingControllers
 
             // TODO need the infos
             var htmlContent = "<h2>Meeting information</h2>\n<h4>Meeting Number: </h4>\n";
-            SendEMail(recipients, subject, htmlContent, file);
+            SendEmail(recipients, subject, htmlContent, file);
         }
 
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
@@ -84,7 +84,7 @@ namespace MeetingControllers
                 var htmlContent = "<h2>Please register your voice to Voice Registration Website(Recommend using Chrome)</h2><h4>Link: ";
                 htmlContent += "<a href=\""+ registrationURL + "\">"+ registrationURL + "</a>";
                 htmlContent += "</h4>";
-                SendEMail(email, "Voice Registration for Your Upcoming Meeting", htmlContent);
+                SendEmail(email, "Voice Registration for Your Upcoming Meeting", htmlContent);
             }
         }
 

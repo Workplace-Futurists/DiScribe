@@ -8,14 +8,14 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using Microsoft.Extensions.Configuration;
 
-namespace twilio_caller.dialer
+namespace twilio_caller
 {
-    public class dialerManager
+    public class DialerManager
     {
         private static string _accountSid;
         private static string _authToken;
-        
-        public dialerManager(IConfigurationRoot appConfig)
+
+        public DialerManager(IConfigurationRoot appConfig)
         {
 
             // add twilio authentication values
@@ -45,6 +45,7 @@ namespace twilio_caller.dialer
 
         public async Task<string> CallMeetingAsync(string mNum)
         {
+            Console.WriteLine("Dialing into webex meeting with access code " + mNum);
             TwilioClient.Init(_accountSid, _authToken);
 
             // call in number and call from number
@@ -69,8 +70,8 @@ namespace twilio_caller.dialer
                 record: true,
                 // I think this is a default message that plays from the url?
                 url: new Uri("http://lonelycompany.ca/test.xml")
-                // default demo uri
-                //url: new Uri("http://demo.twilio.com/docs/voice.xml")
+             // default demo uri
+             //url: new Uri("http://demo.twilio.com/docs/voice.xml")
              );
 
             var callSid = call.Sid;

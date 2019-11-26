@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace twilio_caller.GraphAuthentication
 {
-    public class DeviceCodeAuthProvider : IAuthenticationProvider
+    internal class DeviceCodeAuthProvider : IAuthenticationProvider
     {
         private IPublicClientApplication _msalClient;
         private string[] _scopes;

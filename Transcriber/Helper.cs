@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Transcriber
 {
-    static class Helper
+    internal static class Helper
     {
         public static string WrapText(string text, int lineLength)
         {
