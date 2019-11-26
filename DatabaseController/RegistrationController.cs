@@ -16,8 +16,6 @@ namespace DatabaseController
     /// </summary>
     public class RegistrationController
     {
-        private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
-
         /// <summary>
         /// Ensures that all DiScribe User profiles have matching profiles in the
         /// the Azure Speaker Recognition service. Creates a valid RegistrationController
