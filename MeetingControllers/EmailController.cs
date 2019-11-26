@@ -69,8 +69,8 @@ namespace MeetingControllers
             string subject = "Meeting minutes of " + meeting_info;
 
             // TODO need the infos
-            var htmlContent = "<h2>Meeting information</h2><h4>Meeting Number: </h4>";
-            SendEMail(recipients, htmlContent, subject, file);
+            var htmlContent = "<h2>Meeting information</h2>\n<h4>Meeting Number: </h4>\n";
+            SendEMail(recipients, subject, htmlContent, file);
         }
 
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
