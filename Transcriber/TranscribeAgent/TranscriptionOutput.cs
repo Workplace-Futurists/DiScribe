@@ -37,7 +37,12 @@ namespace Transcriber
 
         public override string ToString()
         {
-            return $"{Speaker.FirstName} {Speaker.LastName}\t{FormatTime(StartOffset)}\t{Text}";
+            string speaker_string;
+            if (Speaker is null)
+                speaker_string = $"UNRECOGNIZED";
+            else
+                speaker_string = $"{Speaker.FirstName} {Speaker.LastName}";
+            return "[" + speaker_string + $"]\t{FormatTime(StartOffset)}\t{Text}";
         }
 
         /// <summary>

@@ -361,3 +361,6 @@ Transcripts/
 
 *.sln
 !DiScribe.sln
+
+*.wav
+!test_meeting.wav

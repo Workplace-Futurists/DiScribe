@@ -57,16 +57,16 @@ namespace Transcriber
             {
                 //Wait synchronously for transcript to be finished and written to minutes file.
                 Transcriber.DoTranscription().Wait();
-
-                /*Do speaker recognition concurrently for each TranscriptionOutput. */
-                Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
-                Console.WriteLine(">\tTranscription && Recognition = Success");
             }
             catch (Exception transcribeEx)
             {
                 Console.Error.Write(">\tTranscription Failed: " + transcribeEx.Message);
                 return false;
             }
+
+            /*Do speaker recognition concurrently for each TranscriptionOutput. */
+            Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
+            Console.WriteLine(">\tTranscription && Recognition = Success");
             return true;
         }
 

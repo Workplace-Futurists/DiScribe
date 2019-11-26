@@ -47,12 +47,17 @@ namespace Transcriber
             Dictionary<Guid, User> voiceprintDictionary = new Dictionary<Guid, User>();
             Guid[] userIDs = new Guid[Controller.Voiceprints.Count];
 
-            /*Add all voiceprints to the dictionary*/
             foreach (var voiceprint in Controller.Voiceprints)
             {
+                Console.WriteLine("Adding profile to voice print dictionary");
                 voiceprintDictionary.Add(voiceprint.ProfileGUID, voiceprint);
             }
 
+            if (voiceprintDictionary.Count == 0)
+            {
+                Console.WriteLine(">\tNo Voice Profiles Detected");
+                return;
+            }
             voiceprintDictionary.Keys.CopyTo(userIDs, 0);                  //Hold GUIDs in userIDs array
 
             int p = 0;
@@ -82,7 +87,6 @@ namespace Transcriber
 
                     await idTask;
 
-
                     var resultLoc = idTask.Result;                                      //URL wrapper to check recognition status
 
                     /*Continue to check task status until it is completed */
@@ -97,7 +101,6 @@ namespace Transcriber
                         await idOutcomeCheck;
 
                         outcome = idOutcomeCheck.Result.Status;
-
 
                         /*If recognition is complete or failed, stop checking for status*/
                         done = (outcome == Status.Succeeded || outcome == Status.Failed);
@@ -134,16 +137,12 @@ namespace Transcriber
                     curPhrase.Value.Speaker = speaker;                     //Set speaker property in TranscriptionOutput object based on result.
 
                 }//End-foreach
-
             }
             catch (AggregateException ex)
             {
                 Console.Error.WriteLine("Id failed: " + ex.Message);
             }
-
-
             recognitionComplete.SetResult(0);
-
         }
     }
 }

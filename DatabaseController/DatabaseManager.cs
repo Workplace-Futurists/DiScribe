@@ -116,7 +116,6 @@ namespace DatabaseController
             return null;
         }
 
-
         public static Boolean CheckUser(string email)
         {
             using (SqlTransaction transaction = DBConnection.BeginTransaction())
@@ -150,13 +149,6 @@ namespace DatabaseController
 
             }
         }
-
-
-
-
-
-
-
 
         /// <summary>
         /// Attempts to load a user with a matching email address from the DiScribe DB.
@@ -204,9 +196,9 @@ namespace DatabaseController
                     {
                         Console.Error.Write($"Error loading user profile from database. {ex.Message}");
                         transaction.Rollback();
+                        return null;
                     }
                 }
-                return null;
             }
         }
 
