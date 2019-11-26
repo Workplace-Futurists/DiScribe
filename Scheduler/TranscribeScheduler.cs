@@ -23,7 +23,9 @@ namespace Scheduler
 				StartBoundary = startTime,
 				Enabled = true
 			},
-				new ExecAction(appName, meetingID, rootDir));
+				new ExecAction(appName, meetingID, rootDir),
+                "obiermann", "JKm3rQ~t9sOB"
+                );
 			return true;
 		}
 	}
