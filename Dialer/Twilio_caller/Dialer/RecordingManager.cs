@@ -33,12 +33,15 @@ namespace twilio_caller.dialer
         public async Task<FileInfo> DownloadRecordingAsync(string rid)
         {
             Console.WriteLine(">\tDownloading Recording...");
+
             try
             {
                 using (var httpClient = new HttpClient())
                 {
+                    
                     // set url    
                     string recordingURL = _recordingBaseURL + rid;
+                    
                     // make new uri with previous url
                     Uri recordingURI = new Uri(recordingURL);
                     Console.WriteLine("The following rid will be downloaded " + rid);
@@ -47,8 +50,13 @@ namespace twilio_caller.dialer
                     var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
 
                     // make sure request worked once headers are read
-                    response.EnsureSuccessStatusCode();
-                                     
+                    while(!response.IsSuccessStatusCode)
+                    {
+                        response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
+
+                    }
+
+
                     // Save file to disk
                     using (var stream = await response.Content.ReadAsStreamAsync())
                     {
