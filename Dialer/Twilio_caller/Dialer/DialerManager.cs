@@ -48,8 +48,8 @@ namespace twilio_caller.dialer
             TwilioClient.Init(_accountSid, _authToken);
 
             // call in number and call from number
-            const string vancouverTollNum = "+12268289662";
-            const string twilioAccNum = "+17787444195";
+            const string vancouverTollNum = "+14084189388";
+            const string twilioAccNum = "+15046366992";
             //string meetingNum = "628079791";
 
             // this is the webex call vancouver toll number
@@ -64,13 +64,13 @@ namespace twilio_caller.dialer
             // makes the call resource to send
             var call = CallResource.Create(to, from,
                 //method: Twilio.Http.HttpMethod.Get,
-                sendDigits: formatDigits(mNum),
+                sendDigits: formatDigits(mNum) + "wwww#",
                 // Records the outgoing call
                 record: true,
                 // I think this is a default message that plays from the url?
-                //url: new Uri("http://lonelycompany.ca/test.xml")
+                url: new Uri("http://lonelycompany.ca/test.xml")
                 // default demo uri
-                url: new Uri("http://demo.twilio.com/docs/voice.xml")
+                //url: new Uri("http://demo.twilio.com/docs/voice.xml")
              );
 
             var callSid = call.Sid;

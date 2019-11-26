@@ -17,12 +17,14 @@ namespace Main
     {
         static void Main(string[] args)
         {
-            /*Deserialize the init data for dialing in to meeting */
+            //Deserialize the init data for dialing in to meeting 
             InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
 
             if (!init.Debug)
                 Run(init.MeetingAccessCode);
+           
         }
+        
 
         public static void Run(string accessCode)
         {
@@ -39,7 +41,8 @@ namespace Main
             // dial into and record the meeting
             var rid = dialManager.CallMeetingAsync(accessCode).Result;
             // download the recording to the file
-            var recording = recManager.DownloadRecordingAsync(accessCode).Result;
+            var recording = recManager.DownloadRecordingAsync(rid).Result;
+            
 
             // Get email addresses for all users who are attending the meeting
             List<EmailAddress> invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
