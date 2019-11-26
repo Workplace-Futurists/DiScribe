@@ -9,7 +9,7 @@ namespace Transcriber.Audio
     /// of the recording. Provides access to the audio data via an audio stream. Also includes a
     /// representation of the user who is speaking in the segment.
     /// </summary>
-    class AudioSegment : System.IComparable
+    public class AudioSegment : System.IComparable
     {
         public AudioSegment(byte[] audioData, long startOffset, long endOffset,
             uint sampleRate = SAMPLE_RATE, byte bitsPerSample = BITS_PER_SAMPLE, byte channels = CHANNELS)

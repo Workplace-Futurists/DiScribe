@@ -66,6 +66,7 @@ namespace Transcriber
 
             /*Do speaker recognition concurrently for each TranscriptionOutput. */
             Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
+
             Console.WriteLine(">\tTranscription && Recognition Complete");
             return true;
         }
