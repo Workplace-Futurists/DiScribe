@@ -8,7 +8,6 @@ using System.IO;
 using twilio_caller;
 using Scheduler;
 using MeetingControllers;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Main
@@ -19,9 +18,10 @@ namespace Main
         {
             /*Deserialize the init data for dialing in to meeting */
             InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
-
+                       
+            
             if (!init.Debug)
-                Run(init.MeetingAccessCode);
+               Run(init.MeetingAccessCode);
 
         }
 
@@ -75,12 +75,6 @@ namespace Main
 
             Console.WriteLine(">\tTasks Complete!");
         }
-
-
-       
-
-
-
 
 
 
