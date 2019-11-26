@@ -47,6 +47,8 @@ namespace Main
             var recording = recManager.DownloadRecordingAsync(rid).Result;
             
 
+            Console.WriteLine("Press <return> to continue");
+            Console.ReadLine();
             // Get email addresses for all users who are attending the meeting
             List<EmailAddress> invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
 
@@ -61,9 +63,16 @@ namespace Main
 
             TranscribeController transcribeController = new TranscribeController(recording, voiceprints);
 
+            Console.WriteLine("Press <return> to continue");
+            Console.ReadLine();
             /*Do the transcription with speaker recognition*/
             if (transcribeController.Perform())
-                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));
+            {
+                var file = transcribeController.WriteTranscriptionFile(rid);
+                Console.WriteLine("Press <return> to continue");
+                Console.ReadLine();
+                EmailController.SendMinutes(invitedUsers, file );
+            }
             else
                 EmailController.SendEMail(invitedUsers, "Failed To Generate Meeting Transcription", "");
 
