@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiScribeWebMVC.Models;
+using MeetingControllers;
+using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
+using Nito.AsyncEx;
+using SendGrid.Helpers.Mail;
+using System.Diagnostics;
+using Scheduler;
 
 namespace DiScribeWebMVC.Controllers
 {
@@ -28,12 +34,36 @@ namespace DiScribeWebMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(MeetingClass mc, string Participants)
+        public IActionResult Create(MeetingClass mc, string Participants, string ParticiNames)
         {
-            string[] emails = Participants.Split(',');
+            List<string> emails = new List<string>(Participants.Split(','));
+            List<string> names = new List<string>(ParticiNames.Split(','));
             string startDateTimeStr = mc.MeetingStartDate.ToString("MM/dd/yyyy HH:mm:ss");
             string endDateTimeStr = mc.MeetingEndDate.ToString("MM/dd/yyyy HH:mm:ss");
-            Int64 duration = (Int64)(mc.MeetingEndDate - mc.MeetingStartDate).TotalMilliseconds;
+            Int64 duration = (Int64)(mc.MeetingEndDate - mc.MeetingStartDate).TotalMinutes;
+            var access_code = MeetingController.CreateWebExMeeting(mc.MeetingSubject, names, emails, startDateTimeStr, duration.ToString());
+            try
+            {
+                var attendees = MeetingController.GetAttendeeEmails(access_code);
+                MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine(ex);
+                Trace.WriteLine(ex);
+            }
+
+            try
+            {
+                TranscribeScheduler.ScheduleTask(access_code, mc.MeetingStartDate, "Main.exe", @"C:\cs319_main");
+            }
+            catch (Exception ex)
+            {
+                
+            }
+
+            //MeetingControllers.EmailController.Initialize();
+            //EmailController.SendEmailForVoiceRegistration(emailAddresses);
             _amc.Add(mc);
             _amc.SaveChanges();
             ViewBag.message = "The Meeting " + mc.MeetingSubject + " Is Saved Successfully!";

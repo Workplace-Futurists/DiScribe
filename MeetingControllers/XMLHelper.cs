@@ -6,7 +6,7 @@ namespace MeetingControllers
 {
     static class XMLHelper
     {
-        public static string GenerateMeetingXML(List<string> names, List<string> emails, string startDate, string duration)
+        public static string GenerateMeetingXML(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
             strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n";
@@ -24,7 +24,7 @@ namespace MeetingControllers
             strXML += "<meetingPassword>pZGiw4JU</meetingPassword>\r\n";
             strXML += "</accessControl>\r\n";
             strXML += "<metaData>\r\n";
-            strXML += "<confName>Sample Meeting</confName>\r\n";
+            strXML += "<confName>"+ meetingSubject + "</confName>\r\n";
             strXML += "<agenda>Test</agenda>\r\n";
             strXML += "</metaData>\r\n";
             strXML += "<participants>\r\n";

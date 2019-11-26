@@ -41,13 +41,14 @@ namespace MeetingControllers
             var appConfig = LoadAppSettings();
 
             // Throws warning if no appsettings.json exists
-            if (appConfig == null)
+            /*if (appConfig == null)
             {
                 Console.WriteLine(">\tMissing or invalid appsettings.json!");
                 return null;
-            }
+            }*/
 
-            string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+            //string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+            string sendGridAPI = "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";
 
             return new SendGridClient(sendGridAPI);
         }
@@ -80,8 +81,8 @@ namespace MeetingControllers
                 var defaultURL = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
                 var registrationURL = defaultURL + email.Email;
 
-                var htmlContent = "<h2>Please register your voice to Voice Registration Website</h2><h4>Link: ";
-                htmlContent += registrationURL;
+                var htmlContent = "<h2>Please register your voice to Voice Registration Website(Recommend using Chrome)</h2><h4>Link: ";
+                htmlContent += "<a href=\""+ registrationURL + "\">"+ registrationURL + "</a>";
                 htmlContent += "</h4>";
                 SendEMail(email, "Voice Registration for Your Upcoming Meeting", htmlContent);
             }
@@ -136,4 +137,3 @@ namespace MeetingControllers
         }
     }
 }
-

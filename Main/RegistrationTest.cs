@@ -12,8 +12,7 @@ namespace Main.Test
 {
     public class TranscriptionTest
     {
-        private const string TestRecording = @"../../../../Record/MultipleSpeakers.wav";
-
+        private static readonly string TestRecording = @"../../../../Record/test_meeting.wav";
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -40,25 +39,14 @@ namespace Main.Test
             RegistrationController regController =
                 RegistrationController.BuildController(emails);
 
-
-
             var profiles = regController.UserProfiles;
-
-
             TranscribeController controller = new TranscribeController(recording, profiles);
 
             if(controller.Perform())                                //Perform the transcription.
             {
                 controller.WriteTranscriptionFile();
             }
-
-
             return profiles;
-
-            
-
-
-
         }
     }
 }

@@ -132,13 +132,13 @@ namespace DatabaseController
                         SqlParameter emailParam = new SqlParameter("@email", email);
                         command.Parameters.Add(emailParam);
 
-                        
+
                         using (var reader = command.ExecuteReader())
                         {
                             Boolean canRead = reader.Read();
                             return canRead;
                         }
-                        
+
                     }
                     catch (Exception ex)
                     {
@@ -147,13 +147,13 @@ namespace DatabaseController
                         return false;
                     }
                 }
-               
+
             }
         }
 
 
 
-    
+
 
 
 
@@ -195,7 +195,7 @@ namespace DatabaseController
                                 byte[] audioSample = (byte[])(reader["AudioSample"]);
                                 //DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
 
-                                result = new User(new UserParams(audioSample, firstName, lastName, email));
+                                result = new User(new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
                             }
                         }
                         return result;
