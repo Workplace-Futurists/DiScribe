@@ -9,7 +9,7 @@ using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Microsoft.Extensions.Configuration;
 
-namespace twilio_caller.dialer
+namespace twilio_caller
 {
     public class RecordingManager
     {
@@ -38,24 +38,20 @@ namespace twilio_caller.dialer
             {
                 using (var httpClient = new HttpClient())
                 {
-                    
-                    // set url    
+                    // set url
                     string recordingURL = _recordingBaseURL + rid;
-                    
+
                     // make new uri with previous url
                     Uri recordingURI = new Uri(recordingURL);
-                    Console.WriteLine("The following rid will be downloaded " + rid);
 
                     // get response content from api
                     var response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
 
                     // make sure request worked once headers are read
-                    while(!response.IsSuccessStatusCode)
+                    while (!response.IsSuccessStatusCode)
                     {
                         response = await httpClient.GetAsync(recordingURI, HttpCompletionOption.ResponseHeadersRead);
-
                     }
-
 
                     // Save file to disk
                     using (var stream = await response.Content.ReadAsStreamAsync())
@@ -66,7 +62,8 @@ namespace twilio_caller.dialer
                         int bytesRead = 0;
 
                         string filePath = (@"../../../../Record/" + rid + ".wav");
-                        Console.WriteLine("The recording will be downloaded at: " + filePath);
+                        Console.WriteLine(">\tDownloading Recording as\n\t[" +
+                            new FileInfo(@"../../../../Record/" + rid + ".wav").FullName + "]");
 
                         // Read from response and write to file
                         using (FileStream fileStream = File.Create(filePath))
@@ -79,7 +76,8 @@ namespace twilio_caller.dialer
                     }
                 }
                 return new FileInfo(@"../../../../Record/" + rid + ".wav");
-            } catch (Exception err)
+            }
+            catch (Exception err)
             {
                 Console.Error.WriteLine(err);
                 return null;

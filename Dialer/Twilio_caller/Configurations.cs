@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace twilio_caller
 {
-    public class Configurations
+    public static class Configurations
     {
         // TODO make this a proper class with get functions if we have time
         public static IConfigurationRoot LoadAppSettings()
@@ -28,7 +28,6 @@ namespace twilio_caller
             {
                 return null;
             }
-
             return appConfig;
         }
     }
