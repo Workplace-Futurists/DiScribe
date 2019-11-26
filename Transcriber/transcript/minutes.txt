@@ -1,0 +1,52 @@
+Brian Kernighan	0:0:0	Newer machines instead of having everything in the machine be a single size of in effect integer. Let's
+say 16 bits or something like that. They had different sizes that were in the machine would efficiently and naturally manipulate
+8 bit 16 bit maybe 32 bit.
+
+
+Brian Kernighan	0:0:17	And the language be didn't reflect that and so Dennis Ritchie undertook to design what amounted to
+a version of be that was richer and head mechanisms in the language to say this is an 8 bit quantity. This is a 16 bit quantity.
+Basically, they care. An int types that you see in the early versions of C and so he wrote a compiler for that and then with
+the compiler in hand. They started to rewrite the operating system itself in C and this took a while, but
+
+
+.
+
+
+Janelle Shane	0:0:56	Or is it trying to do what we asked and there was a problem.
+
+Janelle Shane	0:1:1	So, in movies when something goes wrong with AI. It's usually because the AI has decided that doesn't
+want to obey the humans anymore. And it's got his own goals. Thank you very much so in real life, though the AI that we actually
+have is not nearly smart enough for that. It has the approximate computing power of an earthworm or maybe at most single
+honeybee.
+
+
+Nick Smith	0:1:25	And actually probably maybe less like we're constantly learning new things about brains that make it clear
+how much are a eyes don't measure up to real brains, so today's AI can do some a task like identify pedestrian and first
+thing that we're going to start doing is talk a little bit about what store is and why it is important for the pilots to
+be able to control and approaching stalled condition so there are thousands. Maybe not thousands, but there are several good
+.
+
+
+Nick Smith	0:2:0	But you need to understand is that an aircraft wing works when the air is flowing freely around it right
+so the air flows underwing and on Top of the wing and if the aircraft starts taking out a higher angle of attack which means
+that it's increasing the angle towards the ongoing wind well, then it's going to be harder and harder for the air to stay
+following the oversight of wing and at some point, which is called the critical angle of attack the air will not now. The
+second reason that coding is difficult.
+
+
+Patrick Shyu	0:2:32	I believe is because they requires an inordinate amount of time sitting in front of the computer and
+just staring at that screen.
+
+
+Patrick Shyu	0:2:39	And this is going to be probably far more time than you may be used to write for most other disciplines.
+You don't need to be sitting down for a large amount of time focused on something like say 2 to 3 hours. You can learn on
+the go right, you could go to a restaurant while you're eating. Maybe you could read up on the little bit of biology right
+learn a little bit of chemistry while you're in the car spent 20 minutes at the beach reading a chapter of your history book.
+That's OK. That's fine, then that type of learning can be done in segments, but for computer programming. You really need
+to be sedated.
+
+
+Patrick Shyu	0:3:9	A single place at your desk at the computer for a long period of time. Many people are just not used to
+being with.
+
+
