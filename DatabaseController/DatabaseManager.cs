@@ -116,6 +116,48 @@ namespace DatabaseController
             return null;
         }
 
+
+        public static Boolean CheckUser(string email)
+        {
+            using (SqlTransaction transaction = DBConnection.BeginTransaction())
+            {
+                string execStr = "dbo.stpLoadUser";
+
+                using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
+                {
+                    try
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        SqlParameter emailParam = new SqlParameter("@email", email);
+                        command.Parameters.Add(emailParam);
+
+                        
+                        using (var reader = command.ExecuteReader())
+                        {
+                            Boolean canRead = reader.Read();
+                            return canRead;
+                        }
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.Write($"Error checking profile in database  {ex.Message}");
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+               
+            }
+        }
+
+
+
+    
+
+
+
+
         /// <summary>
         /// Attempts to load a user with a matching email address from the DiScribe DB.
         /// </summary>
