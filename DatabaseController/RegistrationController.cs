@@ -59,18 +59,20 @@ namespace DatabaseController
             List<User> userProfiles = new List<User>();
 
             string email = "";
-            try
+            foreach (var curEmail in userEmails)
             {
-                foreach (var curEmail in userEmails)
+                try
                 {
                     email = curEmail;
                     User curUser = DatabaseManager.LoadUser(curEmail);
+                    if (curUser is null)
+                        continue;
                     userProfiles.Add(curUser);
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Loading profile from database failed for {email} {ex.Message}");
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Loading profile from database failed for {email}");
+                }
             }
             return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);
         }
@@ -302,7 +304,6 @@ namespace DatabaseController
                 Console.Error.WriteLine(">\tFetching profiles failed. Executing fallback to recreate profiles: " + ex.ToString());
             }
 
-
             if (existingProfiles != null)
             {
                 for (int i = 0; i < UserProfiles.Count; i++)
@@ -359,6 +360,9 @@ namespace DatabaseController
             {
                 await Task.Delay(SPEAKER_RECOGNITION_API_INTERVAL);                          //Do not exceed max requests per second.
 
+                if (UserProfiles[i].AudioStream is null)
+                    continue;
+
                 var curTask = EnrollmentClient.EnrollAsync(UserProfiles[i].AudioStream, UserProfiles[i].ProfileGUID, true);
                 taskTuples.Add(new Tuple<User, Task<OperationLocation>>(UserProfiles[i], curTask));
                 enrollmentTasks.Add(curTask);
@@ -382,7 +386,6 @@ namespace DatabaseController
                     await enrollmentCheck;
 
                     var reqStatus = enrollmentCheck.Result.Status;
-
 
                     /*If second request fails, do not try again */
                     if (reqStatus == Status.Failed && !reAttempt)
