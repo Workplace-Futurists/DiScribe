@@ -20,12 +20,6 @@ namespace Main
             //Deserialize the init data for dialing in to meeting 
             InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
 
-
-            
-
-
-
-
             if (!init.Debug)
                 Run(init.MeetingAccessCode);
            
@@ -43,6 +37,7 @@ namespace Main
             var recManager = new twilio_caller.dialer.RecordingManager(appConfig);
 
             Console.WriteLine("Dialing into webex meeting with access code " + accessCode);
+
 
             // dial into and record the meeting
             var rid = dialManager.CallMeetingAsync(accessCode).Result;
