@@ -189,13 +189,13 @@ namespace DatabaseController
                                 string lastName = Convert.ToString(reader["LastName"]);
                                 string password = Convert.ToString(reader["Password"]);
 
-                                Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
-                                int userID = Convert.ToInt32(reader["UserID"]);
+                                //Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
+                                //int userID = Convert.ToInt32(reader["UserID"]);
 
                                 byte[] audioSample = (byte[])(reader["AudioSample"]);
-                                DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
+                                //DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
 
-                                result = new User(new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
+                                result = new User(new UserParams(audioSample, firstName, lastName, email));
                             }
                         }
                         return result;
@@ -304,7 +304,7 @@ namespace DatabaseController
             var unregistered = new List<string>();
             foreach (string email in emails)
             {
-                if (LoadUser(email) == null)
+                if (!CheckUser(email))
                     unregistered.Add(email);
             }
             return unregistered;
