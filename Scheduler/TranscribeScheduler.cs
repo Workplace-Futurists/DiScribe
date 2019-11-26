@@ -4,7 +4,9 @@ using Microsoft.Win32.TaskScheduler;
 
 namespace Scheduler
 {
-	static class TranscribeScheduler
+
+   
+    public static class TranscribeScheduler
 	{
 		/// <summary>
 		/// Schedule a Task through Windows Task Scheduler

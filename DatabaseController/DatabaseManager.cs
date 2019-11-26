@@ -116,6 +116,48 @@ namespace DatabaseController
             return null;
         }
 
+
+        public static Boolean CheckUser(string email)
+        {
+            using (SqlTransaction transaction = DBConnection.BeginTransaction())
+            {
+                string execStr = "dbo.stpLoadUser";
+
+                using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
+                {
+                    try
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        SqlParameter emailParam = new SqlParameter("@email", email);
+                        command.Parameters.Add(emailParam);
+
+                        
+                        using (var reader = command.ExecuteReader())
+                        {
+                            Boolean canRead = reader.Read();
+                            return canRead;
+                        }
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.Write($"Error checking profile in database  {ex.Message}");
+                        transaction.Rollback();
+                        return false;
+                    }
+                }
+               
+            }
+        }
+
+
+
+    
+
+
+
+
         /// <summary>
         /// Attempts to load a user with a matching email address from the DiScribe DB.
         /// </summary>
@@ -147,13 +189,13 @@ namespace DatabaseController
                                 string lastName = Convert.ToString(reader["LastName"]);
                                 string password = Convert.ToString(reader["Password"]);
 
-                                Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
-                                int userID = Convert.ToInt32(reader["UserID"]);
+                                //Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
+                                //int userID = Convert.ToInt32(reader["UserID"]);
 
                                 byte[] audioSample = (byte[])(reader["AudioSample"]);
-                                DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
+                                //DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
 
-                                result = new User(new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
+                                result = new User(new UserParams(audioSample, firstName, lastName, email));
                             }
                         }
                         return result;
@@ -262,7 +304,7 @@ namespace DatabaseController
             var unregistered = new List<string>();
             foreach (string email in emails)
             {
-                if (LoadUser(email) == null)
+                if (!CheckUser(email))
                     unregistered.Add(email);
             }
             return unregistered;
