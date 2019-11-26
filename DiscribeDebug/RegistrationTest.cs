@@ -8,7 +8,7 @@ using DatabaseController.Data;
 using Transcriber;
 using DatabaseController;
 
-namespace Main.Test
+namespace DiscribeDebug
 {
     public class TranscriptionTest
     {

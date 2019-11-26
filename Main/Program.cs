@@ -20,6 +20,8 @@ namespace Main
             //Deserialize the init data for dialing in to meeting 
             InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
 
+            
+
             if (!init.Debug)
                 Run(init.MeetingAccessCode);
            
