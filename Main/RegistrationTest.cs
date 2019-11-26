@@ -12,14 +12,12 @@ namespace Main.Test
 {
     public class TranscriptionTest
     {
-        private static readonly string TestRecording = @"../../../../Record/test_meeting.wav";
-
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
         /// </summary>
         /// <param name="audioFile"></param>
         /// <returns></returns>
-        public static List<User> TestTranscription(string recordingLoc = TestRecording)
+        public static List<User> TestTranscription(string recordingLoc = @"../../../../Record/test_meeting.wav")
         {
             Console.WriteLine(">\tGenerating Test Voice prints...");
 
