@@ -17,7 +17,7 @@ namespace MeetingControllers
 {
     public static class MeetingController
     {
-        public static string CreateWebExMeeting(List<string> names, List<string> emails, string startDate, string duration)
+        public static string CreateWebExMeeting(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration)
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
@@ -31,7 +31,7 @@ namespace MeetingControllers
             // string strXML = GenerateXMLCreateMeeting();
 
             // string strXML = File.ReadAllText(@"createMeeting.xml");
-            string strXML = XMLHelper.GenerateMeetingXML(names, emails, startDate, duration);
+            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, startDate, duration);
 
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 

@@ -44,5 +44,9 @@ namespace DiScribeWebMVC.Models
         [NotMapped]
         [Required(ErrorMessage = "Please enter participants emails separated by comma")]
         public string Participants { get; set; }
+
+        [NotMapped]
+        [Required(ErrorMessage = "Please enter participants names separated by comma")]
+        public string ParticiNames { get; set; }
     }
 }
