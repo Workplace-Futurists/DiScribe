@@ -1,4 +1,4 @@
-# Main
+# The Main Execution Component
 ## Introduction
 This component integrates all the components together. It will,
 

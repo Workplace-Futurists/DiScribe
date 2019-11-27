@@ -1,4 +1,4 @@
-# Transcriber Module
+# Transcriber & Speaker Recognizer Component
 
 The purpose of this module is to
 
