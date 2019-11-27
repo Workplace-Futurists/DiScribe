@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DiScribe.Scheduler
 {
-    public class InitData
+    class InitData
     {
         public InitData(string meetingAccessCode, Boolean debug)
         {

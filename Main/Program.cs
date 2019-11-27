@@ -15,7 +15,7 @@ namespace DiScribe.Main
     public static class Program
     {
         static void Main(string[] args)
-        {
+        {            
             Console.Write("Enter the meeting access code now: ");
             Run(Console.ReadLine());
         }        
