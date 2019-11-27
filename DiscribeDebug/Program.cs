@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using DiScribe.DiscribeDebug;
+using DiScribe.DiScribeDebug;
 
 
-namespace DiScribe.DiscribeDebug
+namespace DiScribe.DiScribeDebug
 {
     class Program
     {

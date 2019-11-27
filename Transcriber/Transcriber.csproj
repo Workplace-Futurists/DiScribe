@@ -3,6 +3,7 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ReleaseVersion>1.0</ReleaseVersion>
+    <RootNamespace>DiScribe.Transcriber</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>

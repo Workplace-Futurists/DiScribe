@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ReleaseVersion>1.0</ReleaseVersion>
+    <RootNamespace>DiScribe.Debug</RootNamespace>
   </PropertyGroup>
 
 
@@ -11,5 +12,5 @@
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
     <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
   </ItemGroup>
-  
+
 </Project>

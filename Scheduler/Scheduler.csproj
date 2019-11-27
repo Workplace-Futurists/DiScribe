@@ -6,6 +6,7 @@
     <ApplicationIcon />
     <StartupObject />
     <ReleaseVersion>1.0</ReleaseVersion>
+    <RootNamespace>DiScribe.Scheduler</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

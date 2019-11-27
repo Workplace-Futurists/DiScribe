@@ -5,7 +5,7 @@ using NAudio.Wave;
 using DiScribe.DatabaseManager;
 using DiScribe.DatabaseManager.Data;
 
-namespace DiScribe.DiscribeDebug
+namespace DiScribe.DiScribeDebug
 {
     public class RegAudioTest
     {

@@ -13,7 +13,7 @@ using NAudio.Wave;
 using DiScribe.Transcriber;
 using DiScribe.Transcriber.Audio;
 
-namespace DiScribe.DiscribeDebug
+namespace DiScribe.DiScribeDebug
 {
     public static class TrancriptionTest
     {
