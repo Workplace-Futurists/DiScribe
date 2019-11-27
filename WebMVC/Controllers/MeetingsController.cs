@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DiScribeWebMVC.Models;
-using MeetingManager;
+using DiScribe.WebMVC.Models;
+using DiScribe.MeetingManager;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using Nito.AsyncEx;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
-using Scheduler;
+using DiScribe.Scheduler;
 
-namespace DiScribeWebMVC.Controllers
+namespace DiScribe.WebMVC.Controllers
 {
     public class MeetingsController : Controller
     {

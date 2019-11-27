@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SendGrid.Helpers.Mail;
 
-namespace MeetingManager
+namespace DiScribe.MeetingManager
 {
     class Program
     {

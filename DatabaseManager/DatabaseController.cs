@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using DatabaseManager.Data;
+using DiScribe.DatabaseManager.Data;
 
-namespace DatabaseManager
+namespace DiScribe.DatabaseManager
 {
     /// <summary>
     /// Provides access to the stored procedures provided by the MS SQL registration database.

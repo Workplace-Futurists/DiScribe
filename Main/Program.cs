@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Transcriber;
-using DatabaseManager;
-using DatabaseManager.Data;
+using DiScribe.Transcriber;
+using DiScribe.DatabaseManager;
+using DiScribe.DatabaseManager.Data;
 using SendGrid.Helpers.Mail;
 using System.IO;
-using Dialer;
-using MeetingManager;
+using DiScribe.Dialer;
+using DiScribe.MeetingManager;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace Main
+namespace DiScribe.Main
 {
     public static class Program
     {

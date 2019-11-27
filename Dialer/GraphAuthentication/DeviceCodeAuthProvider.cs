@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace Dialer.GraphAuthentication
+namespace DiScribe.Dialer.GraphAuthentication
 {
     internal class DeviceCodeAuthProvider : IAuthenticationProvider
     {

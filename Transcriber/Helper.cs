@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Transcriber
+namespace DiScribe.Transcriber
 {
     internal static class Helper
     {

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
-using Dialer;
+using DiScribe.Dialer;
 using System.IO;
 using Microsoft.Graph;
 using HtmlAgilityPack;
@@ -19,7 +19,7 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 // using twilio_caller.SendEmailCsharp;
 
-namespace Dialer
+namespace DiScribe.Dialer
 {
     class Program
     {

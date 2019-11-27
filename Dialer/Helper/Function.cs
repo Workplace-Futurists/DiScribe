@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Dialer
+namespace DiScribe.Dialer
 {
     internal static class Function
     {

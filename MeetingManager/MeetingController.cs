@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Graph;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using File = System.IO.File;
-using DatabaseManager;
+using DiScribe.DatabaseManager;
 
-namespace MeetingManager
+namespace DiScribe.MeetingManager
 {
     public static class MeetingController
     {

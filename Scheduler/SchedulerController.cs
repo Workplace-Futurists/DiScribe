@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace Scheduler
+namespace DiScribe.Scheduler
 {
     public static class SchedulerController
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace DiScribeWebMVC.Models
+namespace DiScribe.WebMVC.Models
 {
     public class ApplicationMeetingClass : DbContext
     {

@@ -8,7 +8,7 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using Microsoft.Extensions.Configuration;
 
-namespace Dialer
+namespace DiScribe.Dialer
 {
     public class DialerController
     {

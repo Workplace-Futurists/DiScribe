@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace MeetingManager
+namespace DiScribe.MeetingManager
 {
     public static class EmailController
     {

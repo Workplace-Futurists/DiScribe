@@ -5,15 +5,15 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
 using System.Collections.Generic;
-using DatabaseManager.Data;
+using DiScribe.DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 using NAudio.Wave;
-using Transcriber;
-using Transcriber.Audio;
+using DiScribe.Transcriber;
+using DiScribe.Transcriber.Audio;
 
-namespace DiscribeDebug
+namespace DiScribe.DiscribeDebug
 {
     public static class TrancriptionTest
     {

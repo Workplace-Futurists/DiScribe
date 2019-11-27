@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scheduler
+namespace DiScribe.Scheduler
 {
     public class InitData
     {

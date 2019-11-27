@@ -2,7 +2,7 @@ using System;
 using Microsoft.Win32.TaskScheduler;
 
 
-namespace Scheduler
+namespace DiScribe.Scheduler
 {
 	public static class TranscribeScheduler
 	{

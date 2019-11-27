@@ -1,6 +1,6 @@
 using System;
 
-namespace DiScribeWebMVC.Models
+namespace DiScribe.WebMVC.Models
 {
     public class ErrorViewModel
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using DatabaseManager;
+using DiScribe.DatabaseManager;
 
-namespace DatabaseManager.Data
+namespace DiScribe.DatabaseManager.Data
 {
     /// <summary>
     /// Represents a Voiceprint associated with a specific user. Contains raw audio data, the time stamp

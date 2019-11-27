@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseManager", "Database
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Scheduler.csproj", "{2204E868-0412-4A9D-949E-BF1B81E07C14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiScribeWebMVC", "DiScribeWebMVC\DiScribeWebMVC.csproj", "{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebMVC", "WebMVC\WebMVC.csproj", "{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscribeDebug", "DiscribeDebug\DiscribeDebug.csproj", "{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}"
 	ProjectSection(ProjectDependencies) = postProject

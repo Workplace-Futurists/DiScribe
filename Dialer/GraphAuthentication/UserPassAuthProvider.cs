@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace Dialer.GraphAuthentication
+namespace DiScribe.Dialer.GraphAuthentication
 {
     internal class UserPassAuthProvider : IAuthenticationProvider
     {

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DiScribeWebMVC.Models;
+using DiScribe.WebMVC.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace DiScribeWebMVC.Controllers
+namespace DiScribe.WebMVC.Controllers
 {
     public class UsersController : Controller
     {

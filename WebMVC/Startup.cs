@@ -11,9 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using DiScribeWebMVC.Models;
+using DiScribe.WebMVC.Models;
 
-namespace DiScribeWebMVC
+namespace DiScribe.WebMVC
 {
     public class Startup
     {

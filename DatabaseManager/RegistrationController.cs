@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using DatabaseManager.Data;
+using DiScribe.DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 
-namespace DatabaseManager
+namespace DiScribe.DatabaseManager
 {
     /// <summary>
     /// Provides access to profile registration functionality for DiScribe user profiles

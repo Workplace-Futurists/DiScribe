@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DiScribeWebMVC.Models
+namespace DiScribe.WebMVC.Models
 {
     public class UserClass
     {

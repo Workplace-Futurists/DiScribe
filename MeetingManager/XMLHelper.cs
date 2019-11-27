@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 
-namespace MeetingManager
+namespace DiScribe.MeetingManager
 {
     static class XMLHelper
     {

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
-using DatabaseManager.Data;
+using DiScribe.DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave;
-using Transcriber.Audio;
+using DiScribe.Transcriber.Audio;
 
-namespace Transcriber
+namespace DiScribe.Transcriber
 {
     class Recognizer
     {

@@ -2,7 +2,7 @@
 using Microsoft.CognitiveServices.Speech.Audio;
 using System.IO;
 
-namespace Transcriber.Audio
+namespace DiScribe.Transcriber.Audio
 {
     /// <summary>
     /// Represents a segment of an audio recording which has an offset in milliseconds from the beginning

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using NAudio.Wave;
-using DatabaseManager;
-using DatabaseManager.Data;
+using DiScribe.DatabaseManager;
+using DiScribe.DatabaseManager.Data;
 
-namespace DiscribeDebug
+namespace DiScribe.DiscribeDebug
 {
     public class RegAudioTest
     {

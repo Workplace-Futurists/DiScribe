@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace Scheduler
+namespace DiScribe.Scheduler
 {
     /// <summary>
     /// Testing the Scheduler
