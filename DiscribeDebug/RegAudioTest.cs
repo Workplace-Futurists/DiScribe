@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using NAudio.Wave;
-using DatabaseController;
-using DatabaseController.Data;
+using DatabaseManager;
+using DatabaseManager.Data;
 
 namespace DiscribeDebug
 {
@@ -15,7 +15,7 @@ namespace DiscribeDebug
             using (WaveFileWriter writer = new WaveFileWriter("test.wav", format))
             {
 
-                User user = DatabaseManager.LoadUser(userEmail);
+                User user = DatabaseManager.DatabaseController.LoadUser(userEmail);
                 byte[] audioData = user.AudioStream.ToArray(); ;
 
                 writer.Write(audioData, 0, audioData.Length);               //Write audio data to test.wav;.

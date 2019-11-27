@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using DatabaseController.Data;
+using DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 
-namespace DatabaseController
+namespace DatabaseManager
 {
     /// <summary>
     /// Provides access to profile registration functionality for DiScribe user profiles
@@ -65,7 +65,7 @@ namespace DatabaseController
                 try
                 {
                     email = curEmail;
-                    User curUser = DatabaseManager.LoadUser(curEmail);
+                    User curUser = DatabaseController.LoadUser(curEmail);
                     if (curUser is null)
                         continue;
                     userProfiles.Add(curUser);
@@ -122,7 +122,7 @@ namespace DatabaseController
 
 
             /*Attempt to Create user profile in DB and add to list of user profiles */
-            User registeredUser = DatabaseManager.CreateUser(userParams);
+            User registeredUser = DatabaseController.CreateUser(userParams);
 
             if (registeredUser == null)
             {
@@ -149,7 +149,7 @@ namespace DatabaseController
             var taskComplete = new TaskCompletionSource<User>();
 
             /*Try to load a user with this email */
-            User registeredUser = DatabaseManager.LoadUser(email);
+            User registeredUser = DatabaseController.LoadUser(email);
 
             if (registeredUser == null)
             {

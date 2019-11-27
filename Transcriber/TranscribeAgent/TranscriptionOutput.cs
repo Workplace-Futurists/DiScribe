@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DatabaseController.Data;
+using DatabaseManager.Data;
 using Transcriber.Audio;
 
 namespace Transcriber

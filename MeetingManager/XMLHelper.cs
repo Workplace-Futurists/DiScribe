@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 
-namespace MeetingControllers
+namespace MeetingManager
 {
     static class XMLHelper
     {
@@ -24,7 +24,7 @@ namespace MeetingControllers
             strXML += "<meetingPassword>pZGiw4JU</meetingPassword>\r\n";
             strXML += "</accessControl>\r\n";
             strXML += "<metaData>\r\n";
-            strXML += "<confName>"+ meetingSubject + "</confName>\r\n";
+            strXML += "<confName>" + meetingSubject + "</confName>\r\n";
             strXML += "<agenda>Test</agenda>\r\n";
             strXML += "</metaData>\r\n";
             strXML += "<participants>\r\n";

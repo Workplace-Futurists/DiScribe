@@ -1,11 +1,11 @@
-﻿using DatabaseController.Data;
+﻿using DatabaseManager.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
 using Transcriber.Audio;
-using DatabaseController;
+using DatabaseManager;
 
 namespace Transcriber
 {

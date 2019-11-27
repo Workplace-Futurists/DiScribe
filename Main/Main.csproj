@@ -14,7 +14,7 @@
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
     <ProjectReference Include="..\dialer\Twilio_caller\twilio_caller.csproj" />
     <ProjectReference Include="..\dialer\wip_link_dialer\dialer_01\dialer_01.csproj" />
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
-    <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
+    <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
+    <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
   </ItemGroup>
 </Project>

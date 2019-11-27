@@ -8,7 +8,7 @@ using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 
-namespace MeetingControllers
+namespace MeetingManager
 {
     class GraphHelper
     {

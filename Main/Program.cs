@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Transcriber;
-using DatabaseController;
-using DatabaseController.Data;
+using DatabaseManager;
+using DatabaseManager.Data;
 using SendGrid.Helpers.Mail;
 using System.IO;
 using twilio_caller;
-using MeetingControllers;
+using MeetingManager;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 

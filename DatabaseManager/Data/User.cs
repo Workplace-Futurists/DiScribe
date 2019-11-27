@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using DatabaseController;
+using DatabaseManager;
 
-namespace DatabaseController.Data
+namespace DatabaseManager.Data
 {
     /// <summary>
     /// Represents a Voiceprint associated with a specific user. Contains raw audio data, the time stamp
@@ -68,7 +68,7 @@ namespace DatabaseController.Data
         /// <returns></returns>
         override public Boolean Delete()
         {
-            return DatabaseManager.DeleteUser(this.Email);
+            return DatabaseController.DeleteUser(this.Email);
 
         }
 
@@ -86,7 +86,7 @@ namespace DatabaseController.Data
                 email = this.Email;
             }
 
-            return DatabaseManager.UpdateUser(this, email);
+            return DatabaseController.UpdateUser(this, email);
 
         }
 

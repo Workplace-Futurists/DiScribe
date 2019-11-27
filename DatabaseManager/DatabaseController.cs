@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using DatabaseController.Data;
+using DatabaseManager.Data;
 
-namespace DatabaseController
+namespace DatabaseManager
 {
     /// <summary>
     /// Provides access to the stored procedures provided by the MS SQL registration database.
     /// This supports the standard CRUD operations on User objects for registration/lookup/update/deregistraiton.
     /// </summary>
-    public static class DatabaseManager
+    public static class DatabaseController
     {
         /*Temporary DB connection string. In production, this will be a different connection string. */
         private static readonly string dbConnectionStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +

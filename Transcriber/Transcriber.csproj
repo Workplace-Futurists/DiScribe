@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
+    <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

@@ -11,7 +11,7 @@ using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave;
-using DatabaseController.Data;
+using DatabaseManager.Data;
 
 namespace Transcriber
 {

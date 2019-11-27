@@ -5,7 +5,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using System.IO;
 using System.Collections.Generic;
-using DatabaseController.Data;
+using DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
@@ -38,8 +38,8 @@ namespace DiscribeDebug
             Console.ReadLine();
 
             // performs transcription and speaker recognition
-            if (controller.Perform())            
-                controller.WriteTranscriptionFile();            
+            if (controller.Perform())
+                controller.WriteTranscriptionFile();
         }
 
         /// <summary>

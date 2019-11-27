@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DatabaseController.Data
+namespace DatabaseManager.Data
 {
     /// <summary>
     /// Abstract class representing a generic data element. Mainly used as a container for database controller

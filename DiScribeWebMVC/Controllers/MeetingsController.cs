@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DiScribeWebMVC.Models;
-using MeetingControllers;
+using MeetingManager;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using Nito.AsyncEx;
 using SendGrid.Helpers.Mail;

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
+      <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
       <ProjectReference Include="..\Main\Main.csproj" />
   </ItemGroup>
 </Project>

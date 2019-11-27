@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
-using DatabaseController.Data;
+using DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave;
@@ -143,7 +143,8 @@ namespace Transcriber
                         curPhrase.Value.Speaker = speaker;                     //Set speaker property in TranscriptionOutput object based on result.
 
                         //End-foreach
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Console.Error.WriteLine(ex);
                     }
