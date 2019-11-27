@@ -69,43 +69,48 @@ namespace Transcriber
             {
                 foreach (var curPhrase in TranscriptionOutputs)
                 {
-                    p++;
-                    /*Write audio data in segment to a buffer containing wav file header */
-                    byte[] wavBuf = AudioFileSplitter.WriteWavToBuf(curPhrase.Value.Segment.AudioData);
-
-                    var format = new WaveFormat(16000, 16, 1);
-                    using (WaveFileWriter testWriter = new WaveFileWriter($"{p}.wav", format))
+                    try
                     {
-                        testWriter.Write(wavBuf);
-                    }
+                        if (curPhrase.Value.EndOffset - curPhrase.Value.StartOffset < 1000)
+                            continue;
 
-                    await Task.Delay(apiDelayInterval);
+                        p++;
+                        /*Write audio data in segment to a buffer containing wav file header */
+                        byte[] wavBuf = AudioFileSplitter.WriteWavToBuf(curPhrase.Value.Segment.AudioData);
 
-                    /*Create the task which submits the request to begin speaker recognition to the Speaker Recognition API.
-                     Request contains the stream of this phrase and the GUIDs of users that may be present.*/
-                    Task<OperationLocation> idTask = idClient.IdentifyAsync(new MemoryStream(wavBuf), userIDs, true);
+                        var format = new WaveFormat(16000, 16, 1);
+                        using (WaveFileWriter testWriter = new WaveFileWriter($"{p}.wav", format))
+                        {
+                            testWriter.Write(wavBuf);
+                        }
 
-                    await idTask;
-
-                    var resultLoc = idTask.Result;                                      //URL wrapper to check recognition status
-
-                    /*Continue to check task status until it is completed */
-                    Task<IdentificationOperation> idOutcomeCheck;
-                    Boolean done = false;
-                        Status outcome;
-                    do
-                    {
                         await Task.Delay(apiDelayInterval);
 
-                        idOutcomeCheck = idClient.CheckIdentificationStatusAsync(resultLoc);
-                        await idOutcomeCheck;
+                        /*Create the task which submits the request to begin speaker recognition to the Speaker Recognition API.
+                         Request contains the stream of this phrase and the GUIDs of users that may be present.*/
+                        Task<OperationLocation> idTask = idClient.IdentifyAsync(new MemoryStream(wavBuf), userIDs, true);
 
-                        outcome = idOutcomeCheck.Result.Status;
-                        /*If recognition is complete or failed, stop checking for status*/
-                        done = (outcome == Status.Succeeded || outcome == Status.Failed);
+                        await idTask;
 
-                    }    
-                   while (!done);
+                        var resultLoc = idTask.Result;                                      //URL wrapper to check recognition status
+
+                        /*Continue to check task status until it is completed */
+                        Task<IdentificationOperation> idOutcomeCheck;
+                        Boolean done = false;
+                        Status outcome;
+                        do
+                        {
+                            await Task.Delay(apiDelayInterval);
+
+                            idOutcomeCheck = idClient.CheckIdentificationStatusAsync(resultLoc);
+                            await idOutcomeCheck;
+
+                            outcome = idOutcomeCheck.Result.Status;
+                            /*If recognition is complete or failed, stop checking for status*/
+                            done = (outcome == Status.Succeeded || outcome == Status.Failed);
+
+                        }
+                        while (!done);
 
                         User speaker = null;
 
@@ -137,7 +142,11 @@ namespace Transcriber
 
                         curPhrase.Value.Speaker = speaker;                     //Set speaker property in TranscriptionOutput object based on result.
 
-                     //End-foreach
+                        //End-foreach
+                    } catch (Exception ex)
+                    {
+                        Console.Error.WriteLine(ex);
+                    }
                 }
             }
             catch (AggregateException ex)

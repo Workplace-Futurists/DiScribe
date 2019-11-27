@@ -38,6 +38,7 @@ namespace Main
             // retrieving all attendees' emails as a List
             List<EmailAddress> invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
 
+            
             // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
             var regController = RegistrationController.BuildController(
                 EmailController.FromEmailAddressListToStringList(invitedUsers));
@@ -58,7 +59,7 @@ namespace Main
                 // sends email to all meeting attendees
                 EmailController.SendMinutes(invitedUsers, file);
             }
-            else
+            //else
                 EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
 
             Console.WriteLine(">\tTask Complete!");

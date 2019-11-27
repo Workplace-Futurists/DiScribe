@@ -12,7 +12,7 @@ namespace DiscribeDebug
         {
           
             /*Do the test with MultipleSpeakers.wav*/
-            TrancriptionTest.TestTranscription(@"../../../../Record/test_meeting.wav");
+            TrancriptionTest.TestTranscription(@"../../../../Record/REb3041d034af93ae9386f76f7bf78a687.wav");
 
 
             Console.WriteLine("Finished writing audio file");

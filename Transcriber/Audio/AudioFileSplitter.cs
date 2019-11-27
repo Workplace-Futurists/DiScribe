@@ -32,9 +32,15 @@ namespace Transcriber.Audio
         }
 
         /*Default WAV file format attributes */
+        public int SampleRate { get; set;} =  16000;
+        public int BitsPerSample { get; set; } = 16; 
+        public int Channels { get; set; } = 1;
+
+
         public const int SAMPLE_RATE = 16000;
         public const int BITS_PER_SAMPLE = 16;
         public const int CHANNELS = 1;
+
 
         /// <summary>
         /// Info for access to audio file which must be in correct format for Azure Cognitive Services Speech API.
@@ -69,12 +75,12 @@ namespace Transcriber.Audio
         /// <returns></returns>
         public byte[] SplitAudioGetBuf(ulong startOffset, ulong endOffset)
         {
-            const long BIT_RATE = SAMPLE_RATE * BITS_PER_SAMPLE;
-            const long BYTES_PER_SECOND = BIT_RATE / 8L;
+            long BitRate = (long)SampleRate * (long)BitsPerSample;
+            long BytesPerSecond = BitRate / 8L;
 
             /*Calc positions in stream in bytes, given start and end offsets in milliseconds */
-            ulong lowerIndex = startOffset * BYTES_PER_SECOND / 1000UL;
-            ulong upperIndex = endOffset * BYTES_PER_SECOND / 1000UL;
+            ulong lowerIndex = startOffset * (ulong)BytesPerSecond / 1000UL;
+            ulong upperIndex = endOffset * (ulong)BytesPerSecond / 1000UL;
 
             ulong segmentLength = upperIndex - lowerIndex;
 
@@ -107,9 +113,11 @@ namespace Transcriber.Audio
             byte[] dataCopy = (byte[])AudioData.Clone();                   //Make copy of audio data
 
             /*Calc audio length in milliseconds */
-            const long BIT_RATE = SAMPLE_RATE * BITS_PER_SAMPLE;
-            const long BYTES_PER_SECOND = BIT_RATE / 8L;
-            long audioLengthMS = AudioData.Length * 1000L / BYTES_PER_SECOND;
+           
+
+            long bitRate = SampleRate * BitsPerSample;
+            long bytesPerSecond = bitRate / 8L;
+            long audioLengthMS = AudioData.Length * 1000L / bytesPerSecond;
 
             return new AudioSegment(dataCopy, 0, audioLengthMS);
         }
@@ -193,6 +201,14 @@ namespace Transcriber.Audio
             /*Convert the file using NAudio library */
             using var inputReader = new WaveFileReader(originalFile.FullName);
             WdlResamplingSampleProvider resampler;
+
+
+            /*Default WAV file format attributes */
+            SampleRate = inputReader.WaveFormat.SampleRate;
+            BitsPerSample = inputReader.WaveFormat.BitsPerSample;
+            Channels = inputReader.WaveFormat.Channels;
+
+
 
             /*Stereo source. Must convert to mono with StereoToMonoSampleProvider */
             if (inputReader.WaveFormat.Channels == 2)
