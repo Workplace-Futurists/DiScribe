@@ -1,13 +1,13 @@
-﻿using DatabaseController.Data;
+﻿using DiScribe.DatabaseManager.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
-using Transcriber.Audio;
-using DatabaseController;
+using DiScribe.Transcriber.Audio;
+using DiScribe.DatabaseManager;
 
-namespace Transcriber
+namespace DiScribe.Transcriber
 {
     public class TranscribeController
     {
@@ -72,13 +72,16 @@ namespace Transcriber
             return true;
         }
 
-        public FileInfo WriteTranscriptionFile(string rid = "", int lineLength = 120)
+        public FileInfo WriteTranscriptionFile(string rid = "", bool release = false, int lineLength = 120)
         {
+            var meetingMinutes = MeetingMinutes;
+            if (release)
+                meetingMinutes = new FileInfo(@"Transcripts/minutes.txt");
             FileInfo transcript;
             if (rid.Equals(""))
-                transcript = MeetingMinutes;
+                transcript = meetingMinutes;
             else
-                transcript = new FileInfo(MeetingMinutes.FullName.Replace("minutes.txt", "minutes_" + rid + ".txt"));
+                transcript = new FileInfo(meetingMinutes.FullName.Replace("minutes.txt", "minutes_" + rid + ".txt"));
 
 
             Console.WriteLine(">\tBegin Writing Transcription " +

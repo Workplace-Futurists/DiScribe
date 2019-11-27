@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ReleaseVersion>1.0</ReleaseVersion>
+    <RootNamespace>DiScribe.Transcriber</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -27,7 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
+    <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />

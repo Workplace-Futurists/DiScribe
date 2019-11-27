@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
+    <ReleaseVersion>1.0</ReleaseVersion>
+    <RootNamespace>DiScribe.Scheduler</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
+      <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
+      <ProjectReference Include="..\Main\Main.csproj" />
   </ItemGroup>
 </Project>

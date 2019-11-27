@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ReleaseVersion>1.0</ReleaseVersion>
+    <RootNamespace>DiScribe.Main</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,10 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
-    <ProjectReference Include="..\dialer\Twilio_caller\twilio_caller.csproj" />
-    <ProjectReference Include="..\dialer\wip_link_dialer\dialer_01\dialer_01.csproj" />
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
-    <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
-    <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
+    <ProjectReference Include="..\Dialer\Dialer.csproj" />
+    <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
+    <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
   </ItemGroup>
 </Project>

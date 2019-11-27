@@ -6,14 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
-using Transcriber.Audio;
+using DiScribe.Transcriber.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using NAudio.Wave;
-using DatabaseController.Data;
+using DiScribe.DatabaseManager.Data;
 
-namespace Transcriber
+namespace DiScribe.Transcriber
 {
     /// <summary>
     /// Provides transcription of a set of an AudioSegment representing meeting audio to create a formatted text file

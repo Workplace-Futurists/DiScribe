@@ -1,0 +1,68 @@
+﻿@model DiScribe.WebMVC.Models.UserClass
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h5>Regist Audio Profile</h5>
+<hr />
+<div class="row">
+    <div class="col-md-9">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" value="@ViewBag.curEmail" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <p>Please click on "Record" button, read the text below, then click "Stop" when you finish reading.</p>
+                <textarea id="TextArea1" rows="5" cols="100">
+                    Amazing Facts About Dogs
+                    1. Dogs have a sense of time. It's been proven that they know the difference between a hour and five. If conditioned to, they can predict future events, such as regular walk times.
+                    2. Your dog is as smart as a two-year old! Ever wonder why children around this age seem to have a special bond with the family dog? It could be because they speak the same language, roughly 250 words and gestures in fact.
+                    3. A study at UCSD claims that your dog can genuinely get jealous when they see you display affection for another creature.
+                    4. The United States has the highest pet dog population in the world. Approximately 75.8 million in fact.
+                    5. Seeing eye dogs are trained to do their “business” on command. This way their owner can clean it up a bit easier. Some of the popular commands are “get busy” and “go time”.
+                    6. Man’s best friend? Petting a dog and gazing into their eyes releases oxytocin (i.e the “love hormone”) not only for you, but for them as well.
+                    7. The Saluki is the world’s oldest dog breed. They appear in ancient Egyptian tombs dating back to 2100 B.C.
+                    8. Dachshunds were originally bred to fight badgers.
+                </textarea>
+                <div id="controls">
+                    <button id="recordButton">Record</button>
+                    <button id="pauseButton" disabled>Pause</button>
+                    <button id="stopButton" disabled>Stop</button>
+                </div>
+                <div id="formats">Format: start recording to see sample rate</div>
+                <div id="curAction">Current Action: None</div>
+                <ol id="recordingsList">
+                </ol>
+                <label>Audio Recording Field, will be filled once you complete recording.</label>
+                <input asp-for="AudioSample_str" class="form-control" id="audio_sample" readonly="@(true)"/>
+                <span asp-validation-for="AudioSample_str" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Register Audio Profile" class="btn btn-primary"/>
+            </div>
+            <div><b>@ViewBag.message</b></div>
+        </form>
+    </div>
+</div>
+
+<!--<div>
+    <a asp-action="Index">Back to List</a>
+</div>-->
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

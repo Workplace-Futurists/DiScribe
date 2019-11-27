@@ -5,7 +5,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace Transcriber.Audio
+namespace DiScribe.Transcriber.Audio
 {
     /// <summary>
     /// Provides meeting audio file splitting. An audio file is split into <see cref="AudioSegment"></see>
