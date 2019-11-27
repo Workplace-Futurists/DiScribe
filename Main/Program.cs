@@ -6,7 +6,6 @@ using DatabaseController.Data;
 using SendGrid.Helpers.Mail;
 using System.IO;
 using twilio_caller;
-using Scheduler;
 using MeetingControllers;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -17,12 +16,8 @@ namespace Main
     {
         static void Main(string[] args)
         {
-            //Deserialize the init data for dialing in to meeting 
-            //InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
-
-            //if (!init.Debug)
-            //    Run(init.MeetingAccessCode);
-            Run("626068924");
+            Console.Write("Enter the meeting access code now: ");
+            Run(Console.ReadLine());
         }        
 
         public static void Run(string accessCode, bool release = false)
@@ -34,11 +29,8 @@ namespace Main
             var rid = new DialerManager(appConfig).CallMeetingAsync(accessCode).Result;
             var recording = new RecordingManager(appConfig).DownloadRecordingAsync(rid, release).Result;
 
-            LineBreak();
-
             // retrieving all attendees' emails as a List
             List<EmailAddress> invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
-
             
             // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
             var regController = RegistrationController.BuildController(
@@ -47,20 +39,10 @@ namespace Main
             // initializing the transcribe controller 
             var transcribeController = new TranscribeController(recording, regController.UserProfiles);
 
-            LineBreak();
-
             // performs transcription and speaker recognition
             if (transcribeController.Perform())
-            {
-                // writes the transcription result if successful
-                var file = transcribeController.WriteTranscriptionFile(rid, release);
-
-                LineBreak();
-
-                // sends email to all meeting attendees
-                EmailController.SendMinutes(invitedUsers, file);
-            }
-            //else
+                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, release));            
+            else
                 EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
 
             Console.WriteLine(">\tTask Complete!");

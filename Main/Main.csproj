@@ -16,6 +16,5 @@
     <ProjectReference Include="..\dialer\wip_link_dialer\dialer_01\dialer_01.csproj" />
     <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
     <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
-    <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
   </ItemGroup>
 </Project>

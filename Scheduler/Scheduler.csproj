@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
@@ -13,5 +13,6 @@
 
   <ItemGroup>
       <ProjectReference Include="..\MeetingControllers\MeetingControllers.csproj" />
+      <ProjectReference Include="..\Main\Main.csproj" />
   </ItemGroup>
 </Project>
