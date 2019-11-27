@@ -10,12 +10,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace Dialer
 {
-    public class DialerManager
+    public class DialerController
     {
         private static string _accountSid;
         private static string _authToken;
 
-        public DialerManager(IConfigurationRoot appConfig)
+        public DialerController(IConfigurationRoot appConfig)
         {
 
             // add twilio authentication values
@@ -24,7 +24,7 @@ namespace Dialer
         }
         // a function to add pauses ('w' characters) between meeting call in numbers and extensions
         // ex. 628079791
-        private string formatDigits(string meetingNum)
+        private string FormatDigits(string meetingNum)
         {
             // TODO: assert length of meeting number 
             // add necessary digits and pauses ('w') for send digits
@@ -65,7 +65,7 @@ namespace Dialer
             // makes the call resource to send
             var call = CallResource.Create(to, from,
                 //method: Twilio.Http.HttpMethod.Get,
-                sendDigits: formatDigits(mNum) + "wwww#",
+                sendDigits: FormatDigits(mNum) + "wwww#",
                 // Records the outgoing call
                 record: true,
                 // I think this is a default message that plays from the url?

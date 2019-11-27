@@ -11,13 +11,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace Dialer
 {
-    public class RecordingManager
+    public class RecordingController
     {
         private static string _accountSid;
         private static string _authToken;
         private static string _recordingBaseURL;
 
-        public RecordingManager(IConfigurationRoot appConfig)
+        public RecordingController(IConfigurationRoot appConfig)
         {
             // add twilio authentication values
             _accountSid = appConfig["TWILIO_ACCOUNT_SID"];

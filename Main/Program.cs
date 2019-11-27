@@ -26,8 +26,8 @@ namespace Main
             var appConfig = Configurations.LoadAppSettings();
 
             // dialing & recording
-            var rid = new DialerManager(appConfig).CallMeetingAsync(accessCode).Result;
-            var recording = new RecordingManager(appConfig).DownloadRecordingAsync(rid, release).Result;
+            var rid = new DialerController(appConfig).CallMeetingAsync(accessCode).Result;
+            var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid, release).Result;
 
             // retrieving all attendees' emails as a List
             List<EmailAddress> invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
