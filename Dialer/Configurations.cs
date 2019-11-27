@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace twilio_caller
+namespace Dialer
 {
     public static class Configurations
     {

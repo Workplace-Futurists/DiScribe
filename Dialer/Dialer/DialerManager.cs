@@ -8,7 +8,7 @@ using Twilio.Types;
 using Twilio.Rest.Api.V2010.Account;
 using Microsoft.Extensions.Configuration;
 
-namespace twilio_caller
+namespace Dialer
 {
     public class DialerManager
     {
