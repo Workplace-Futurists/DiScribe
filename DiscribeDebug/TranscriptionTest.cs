@@ -15,39 +15,32 @@ using Transcriber.Audio;
 
 namespace DiscribeDebug
 {
-    public class TrancriptionTest
+    public static class TrancriptionTest
     {
         const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                    //Min time allowed between requests to speaker recognition API.    
 
         public static void TestTranscription(string audioFileLoc)
         {
-
             /*Subscription key for Azure SpeakerRecognition service. */
             var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
             FileInfo testRecording = new FileInfo(audioFileLoc);
-            FileInfo meetingMinutes = new FileInfo(@"../transcript/Minutes.txt");
+            FileInfo meetingMinutes = new FileInfo(@"../transcript/minutes.txt");
 
             var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
 
             EnrollUsers(speakerIDKey, voiceprints).Wait();
 
-
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(testRecording, voiceprints);
 
-
-            /*Start the transcription of all audio segments to produce the meeting minutes file*/
-            Console.WriteLine("Creating transcript...");
-            controller.Perform();
-
-           
-
-
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();
-        }
 
+            // performs transcription and speaker recognition
+            if (controller.Perform())            
+                controller.WriteTranscriptionFile();            
+        }
 
         /// <summary>
         /// Function which enrolls 2 users for testing purposes. In final system, enrollment will
@@ -70,9 +63,7 @@ namespace DiscribeDebug
                 curUser.ProfileGUID = profileCreateTask.Result;
             }
 
-
             var enrollmentTasks = new List<Task<OperationLocation>>();
-
 
             /*Start enrollment tasks for all user voiceprints */
             for (int i = 0; i < voiceprints.Count; i++)
@@ -82,18 +73,12 @@ namespace DiscribeDebug
                     voiceprints[i].ProfileGUID, true));
             }
 
-
             /*Async wait for all speaker voiceprints to be submitted in request for enrollment */
             await Task.WhenAll(enrollmentTasks.ToArray());
 
-
             /*Async wait for all enrollments to be in an enrolled state */
             await ConfirmEnrollment(enrollmentTasks, enrollmentClient);
-
         }
-
-
-
 
         /// <summary>
         /// Creates a new user profile for a User and returns the GUID for that profile. 
@@ -113,13 +98,7 @@ namespace DiscribeDebug
             taskComplete.SetResult(profileTask.Result.ProfileId);
 
             return profileTask.Result.ProfileId;
-
         }
-
-
-
-
-
 
         /// <summary>
         /// Confirms that enrollment was successful for all the profiles
@@ -143,16 +122,9 @@ namespace DiscribeDebug
                     {
                         done = true;
                     }
-
                 } while (!done);
-
             }
-
         }
-
-
-
-
 
         /// <summary>
         /// Method for test purposes to get voice samples from a WAV file
@@ -161,7 +133,6 @@ namespace DiscribeDebug
         /// <returns></returns>
         private static List<User> MakeTestVoiceprints(FileInfo audioFile)
         {
-
             /*Offsets identifying times */
             ulong user1StartOffset = 1 * 1000;
             ulong user1EndOffset = 49 * 1000;
@@ -175,7 +146,6 @@ namespace DiscribeDebug
             ulong user4StartOffset = 151 * 1000;
             ulong user4EndOffset = 198 * 1000;
 
-
             AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
 
             var user1Audio = splitter.WriteWavToStream(user1StartOffset, user1EndOffset);
@@ -183,9 +153,7 @@ namespace DiscribeDebug
             var user3Audio = splitter.WriteWavToStream(user3StartOffset, user3EndOffset);
             var user4Audio = splitter.WriteWavToStream(user4StartOffset, user4EndOffset);
 
-
             var format = new WaveFormat(16000, 16, 1);
-
 
             List<User> voiceprints = new List<User>()
             {
@@ -194,18 +162,9 @@ namespace DiscribeDebug
                  new User(user3Audio, "Nick",  "Smith", "N.Smith@example.com"),
                  new User(user4Audio, "Patrick", "Shyu", "P.Shyu@example.com")
             };
-
-
-
-
             return voiceprints;
-
         }
-
-
     }
-
-
 }
 
 

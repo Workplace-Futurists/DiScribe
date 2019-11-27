@@ -30,7 +30,7 @@ namespace twilio_caller
         }
 
         // given an rid, download a recording
-        public async Task<FileInfo> DownloadRecordingAsync(string rid)
+        public async Task<FileInfo> DownloadRecordingAsync(string rid, bool release = false)
         {
             Console.WriteLine(">\tDownloading Recording...");
 
@@ -54,28 +54,26 @@ namespace twilio_caller
                     }
 
                     // Save file to disk
-                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    using var stream = await response.Content.ReadAsStreamAsync();
+                    // Define buffer and buffer size
+                    int bufferSize = 1024;
+                    byte[] buffer = new byte[bufferSize];
+                    int bytesRead = 0;
+
+                    string filePath = (@"../../../../Record/" + rid + ".wav");
+                    if (release)
+                        filePath = (@"Record/" + rid + ".wav");
+                    Console.WriteLine(">\tDownloading Recording as\n\t[" +
+                    new FileInfo(filePath).FullName + "]");
+
+                    // Read from response and write to file
+                    using FileStream fileStream = File.Create(filePath);
+                    while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
                     {
-                        // Define buffer and buffer size
-                        int bufferSize = 1024;
-                        byte[] buffer = new byte[bufferSize];
-                        int bytesRead = 0;
-
-                        string filePath = (@"../../../../Record/" + rid + ".wav");
-                        Console.WriteLine(">\tDownloading Recording as\n\t[" +
-                            new FileInfo(@"../../../../Record/" + rid + ".wav").FullName + "]");
-
-                        // Read from response and write to file
-                        using (FileStream fileStream = File.Create(filePath))
-                        {
-                            while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
-                            {
-                                await fileStream.WriteAsync(buffer, 0, bytesRead);
-                            } // end while
-                        }
-                    }
+                        await fileStream.WriteAsync(buffer, 0, bytesRead);
+                    } // end while
+                    return new FileInfo(filePath);
                 }
-                return new FileInfo(@"../../../../Record/" + rid + ".wav");
             }
             catch (Exception err)
             {

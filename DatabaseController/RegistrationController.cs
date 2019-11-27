@@ -73,7 +73,7 @@ namespace DatabaseController
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"\t-\t[{email}]\tLoad Failed.");
+                    Console.Error.WriteLine($"\t-\t[{email}]\t\tLoad Failed.");
                 }
             }
             return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);

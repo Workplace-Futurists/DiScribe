@@ -18,20 +18,21 @@ namespace Main
         static void Main(string[] args)
         {
             //Deserialize the init data for dialing in to meeting 
-            InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
+            //InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
 
-            if (!init.Debug)
-                Run(init.MeetingAccessCode);
+            //if (!init.Debug)
+            //    Run(init.MeetingAccessCode);
+            Run("626068924");
         }        
 
-        public static void Run(string accessCode)
+        public static void Run(string accessCode, bool release = false)
         {
             // Set Authentication configurations
             var appConfig = Configurations.LoadAppSettings();
 
             // dialing & recording
             var rid = new DialerManager(appConfig).CallMeetingAsync(accessCode).Result;
-            var recording = new RecordingManager(appConfig).DownloadRecordingAsync(rid).Result;
+            var recording = new RecordingManager(appConfig).DownloadRecordingAsync(rid, release).Result;
 
             LineBreak();
 
@@ -52,7 +53,7 @@ namespace Main
             if (transcribeController.Perform())
             {
                 // writes the transcription result if successful
-                var file = transcribeController.WriteTranscriptionFile(rid);
+                var file = transcribeController.WriteTranscriptionFile(rid, release);
 
                 LineBreak();
 
