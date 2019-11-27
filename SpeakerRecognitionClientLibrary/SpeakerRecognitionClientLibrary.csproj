@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ReleaseVersion>1.0</ReleaseVersion>
   </PropertyGroup>
   
   <PropertyGroup>
