@@ -111,8 +111,7 @@ namespace DiScribe.Main
                 await GraphHelper.Initialize(appConfig["appId"], appConfig["tenantId"], appConfig["clientSecret"], appConfig["mailUser"]);
                 
                 var message = await GraphHelper.GetEmailAsync();                                     //Get latest email from bot's inbox.
-
-               
+                               
                 string accessCode = await GraphHelper.GetEmailMeetingNumAsync(message);               //Get access code from bot's invite email
 
                 //await GraphHelper.DeleteEmailAsync(message);                                       //Delete the email in bot's inbox.
@@ -128,7 +127,9 @@ namespace DiScribe.Main
                 
                 MeetingController.SendEmailsToAnyUnregisteredUsers(MeetingController.GetAttendeeEmails(accessCode));
                 
-                SchedulerController.Schedule(Run, accessCode, appConfig, meetingTime);            //Schedule dialer-transcriber workflow
+                await SchedulerController.Schedule(Run, accessCode, appConfig, meetingTime);            //Schedule dialer-transcriber workflow
+
+                GraphHelper.DeleteEmailAsync(message).Wait();       // deletes the email that was read
 
                 await Task.Delay(10000);
 
