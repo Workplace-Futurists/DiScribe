@@ -79,7 +79,7 @@ namespace twilio_caller
             return "";
         }
 
-        static void Main(string[] args)
+        static void Main_Twillio(string[] args)
         {
             Console.WriteLine("DiScribe Dialer\n");
 
