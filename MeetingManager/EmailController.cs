@@ -15,16 +15,15 @@ namespace DiScribe.MeetingManager
     public static class EmailController
     {
         // TODO we need one maybe?
-        private static readonly EmailAddress OFFICIAL_EMAIL = new EmailAddress("workplace-futurists@hotmail.com", "BOT Workplace Futurists");
+        private static EmailAddress OfficialEmail;
+        private static string RegUrl;
 
         private static readonly SendGridClient sendGridClient = Initialize();
 
         static IConfigurationRoot LoadAppSettings()
         {
-            // TODO a more rigid solution
-            DirectoryInfo dir = new DirectoryInfo(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""));
             var appConfig = new ConfigurationBuilder()
-                .SetBasePath(dir.Parent.FullName)
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
@@ -39,28 +38,28 @@ namespace DiScribe.MeetingManager
         private static SendGridClient Initialize()
         {
             var appConfig = LoadAppSettings();
-
-            // Throws warning if no appsettings.json exists
-            /*if (appConfig == null)
+            
+            if (appConfig == null)
             {
                 Console.WriteLine(">\tMissing or invalid appsettings.json!");
                 return null;
-            }*/
+            }
 
-            //string sendGridAPI = appConfig["SENDGRID_API_KEY"];
-            string sendGridAPI = "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";
+            string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+            OfficialEmail = new EmailAddress(appConfig["BOT_MAIL_ACCOUNT"], "DiScribe Bot");
+            RegUrl = appConfig["DEFAULT_REG_URL"];
 
             return new SendGridClient(sendGridAPI);
         }
 
         public static void SendEmail(EmailAddress recipient, string subject, string htmlContent, FileInfo file = null)
         {
-            SendEmailHelper(OFFICIAL_EMAIL, new List<EmailAddress> { recipient }, subject, htmlContent, file).Wait();
+            SendEmailHelper(OfficialEmail, new List<EmailAddress> { recipient }, subject, htmlContent, file).Wait();
         }
 
         public static void SendEmail(List<EmailAddress> recipients, string subject, string htmlContent, FileInfo file = null)
         {
-            SendEmailHelper(OFFICIAL_EMAIL, recipients, subject, htmlContent, file).Wait();
+            SendEmailHelper(OfficialEmail, recipients, subject, htmlContent, file).Wait();
         }
 
         public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string meeting_info = "your recent meeting")
@@ -78,7 +77,7 @@ namespace DiScribe.MeetingManager
             Console.WriteLine(">\tSending Emails to Unregistered Users...");
             foreach (EmailAddress email in emails)
             {
-                var defaultURL = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
+                var defaultURL = RegUrl;
                 var registrationURL = defaultURL + email.Email;
 
                 var htmlContent = "<h2>Please register your voice to Voice Registration Website(Recommend using Chrome)</h2><h4>Link: ";
@@ -110,7 +109,7 @@ namespace DiScribe.MeetingManager
                 }
                 var bytes = File.ReadAllBytes(file.FullName);
                 var content = Convert.ToBase64String(bytes);
-                msg.AddAttachment("attachment", content);
+                msg.AddAttachment("attachment.txt", content);
             }
 
             await sendGridClient.SendEmailAsync(msg);

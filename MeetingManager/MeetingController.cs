@@ -12,6 +12,7 @@ using Microsoft.Graph;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using File = System.IO.File;
 using DiScribe.DatabaseManager;
+using System.Text.RegularExpressions;
 
 namespace DiScribe.MeetingManager
 {
@@ -56,8 +57,7 @@ namespace DiScribe.MeetingManager
             // Display the content.
             string accessCode = XMLHelper.RetrieveAccessCode(responseFromServer);
 
-            Console.WriteLine(responseFromServer);
-
+            
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
@@ -75,6 +75,8 @@ namespace DiScribe.MeetingManager
             var unregistered = DatabaseManager.DatabaseController.GetUnregisteredUsersFrom(EmailController.FromEmailAddressListToStringList(attendees));
             EmailController.SendEmailForVoiceRegistration(EmailController.FromStringListToEmailAddressList(unregistered));
         }
+
+
 
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
         {
@@ -111,7 +113,7 @@ namespace DiScribe.MeetingManager
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
             // Display the content.
-            //Console.WriteLine(responseFromServer);
+            
             List<EmailAddress> emailAddresses = GetEmails(responseFromServer);
 
             // Clean up the streams.
@@ -122,7 +124,9 @@ namespace DiScribe.MeetingManager
             return emailAddresses;
         }
 
-        public static string[] GetMeetingInfo(string accessCode)
+
+
+        public static DateTime GetMeetingTime(string accessCode)
         {
             Console.WriteLine(">\tRetrieving Meeting Info...");
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -157,22 +161,26 @@ namespace DiScribe.MeetingManager
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
 
-            Console.WriteLine(responseFromServer);
             // Display the content.
             string startDate = XMLHelper.RetrieveStartDate(responseFromServer);
-            string timeZone = XMLHelper.RetrieveTimeZone(responseFromServer);
+
+            //Time zone format is like ABC-H:MM, Common (Specific). Just take zone code.
+            string timeZone = XMLHelper.RetrieveTimeZone(responseFromServer).Split(" ")[0];
+            timeZone = Regex.Split(timeZone, @"-?\d+")[0];
 
             Console.WriteLine("startTime: " + startDate);
             Console.WriteLine("timeZone: " + timeZone);
 
-            string[] meetingInfo = { startDate, timeZone };
+            DateTime meetingTime;
+            DateTime.TryParse($"{startDate}", out meetingTime);
+            
 
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
             response.Close();
 
-            return meetingInfo;
+            return meetingTime;
         }
 
         private static List<EmailAddress> GetEmails(string myXML)

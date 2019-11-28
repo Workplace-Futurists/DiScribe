@@ -140,9 +140,7 @@ namespace DiScribe.MeetingManager
             strXML += "</body>\r\n";
             strXML += "</serv:message>\r\n";
 
-            Console.WriteLine("request XML");
-            Console.WriteLine(strXML);
-
+                      
             return strXML;
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,9 +23,9 @@ namespace DiScribe.Scheduler
         /// <param name="meetingFunction"></param>
         /// <param name="meetingAccessCode"></param>
         /// <param name="dateTime"></param>
-        public static async void Schedule(Func<string, bool, int> meetingFunction, string meetingAccessCode, bool release, DateTime dateTime)
+        public static async void Schedule(Func<string, IConfigurationRoot, int> meetingFunction, string meetingAccessCode, IConfigurationRoot appConfig, DateTime dateTime)
         {
-            Task meetingTask = ScheduleHelperAsync(meetingFunction, meetingAccessCode, release, dateTime);
+            Task meetingTask = ScheduleHelperAsync(meetingFunction, meetingAccessCode, appConfig, dateTime);
             await meetingTask;
         }
 
@@ -36,7 +37,7 @@ namespace DiScribe.Scheduler
         /// <param name="meetingAccessCode"></param>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        private static async Task ScheduleHelperAsync(Func<string, bool, int> meetingFunction, string meetingAccessCode, bool release, DateTime dateTime)
+        private static async Task ScheduleHelperAsync(Func<string, IConfigurationRoot, int> meetingFunction, string meetingAccessCode, IConfigurationRoot appConfig, DateTime dateTime)
         {
             var difference = (int)(dateTime - DateTime.Now).TotalMilliseconds;
             if (difference > 0)
@@ -45,7 +46,7 @@ namespace DiScribe.Scheduler
 
             Task meetingTask = Task.Run(() =>
             {
-                meetingFunction(meetingAccessCode, release);
+                meetingFunction(meetingAccessCode, appConfig);
             });
 
             await meetingTask;

@@ -5,6 +5,9 @@
     <ReleaseVersion>1.0</ReleaseVersion>
     <RootNamespace>DiScribe.Dialer</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
     <PackageReference Include="Microsoft.Graph" Version="1.20.0" />
+    <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.2" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.7.1" />
     <PackageReference Include="Twilio" Version="5.35.1" />
     <PackageReference Include="Sendgrid" Version="9.12.0" />

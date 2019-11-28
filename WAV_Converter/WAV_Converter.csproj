@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
   </ItemGroup>

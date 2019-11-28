@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using DiScribe.Scheduler;
 using Microsoft.EntityFrameworkCore;
 using DiScribe.WebMVC.Models;
 using DiScribe.MeetingManager;
@@ -11,6 +12,7 @@ using Nito.AsyncEx;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
 using DiScribe.Scheduler;
+using Scheduler;
 
 namespace DiScribe.WebMVC.Controllers
 {
