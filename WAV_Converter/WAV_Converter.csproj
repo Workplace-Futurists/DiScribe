@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DatabaseController\DatabaseController.csproj" />
+    <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
   </ItemGroup>
 

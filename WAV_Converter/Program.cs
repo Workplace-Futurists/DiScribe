@@ -1,5 +1,6 @@
 ﻿using System;
-using DatabaseController;
+using DiScribe.DatabaseManager;
+using DiScribe.DatabaseManager.Data;
 using System.Collections.Generic;
 
 namespace WAV_Converter
@@ -10,7 +11,7 @@ namespace WAV_Converter
         {
             Console.WriteLine("Start To Convert");
             byte[] bytes = System.IO.File.ReadAllBytes(@"C:\Users\Kay\Desktop\CS319\Recordings\Kevin.wav");
-            DatabaseController.Data.UserParams user = new DatabaseController.Data.UserParams(bytes, "Kevin","a", "seungwook.l95@gmail.com");
+            UserParams user = new UserParams(bytes, "Kevin","a", "seungwook.l95@gmail.com");
             var controller = RegistrationController.BuildController(new List<string>());
             controller.CreateUserProfile(user).Wait();
             //Console.Write(bytes);
