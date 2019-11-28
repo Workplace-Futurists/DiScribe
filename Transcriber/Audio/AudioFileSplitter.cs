@@ -199,8 +199,6 @@ namespace DiScribe.Transcriber.Audio
             using (MemoryStream stream = new MemoryStream(temp))
             {
 
-                int actualSampleRate;
-                int bitsPerSample;
                 int channels;
 
                 /*Read from the wav file's contents using stream */

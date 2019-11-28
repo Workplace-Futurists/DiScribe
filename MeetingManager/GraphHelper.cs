@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace DiScribe.MeetingManager
 {
-    class GraphHelper
+    public class GraphHelper
     {
         private static GraphServiceClient _graphClient;
 
@@ -107,10 +107,9 @@ namespace DiScribe.MeetingManager
                 .DeleteAsync();
         }
 
-        public static async Task<string> GetEmailMeetingNumAsync()
+        public static async Task<string> GetEmailMeetingNumAsync(Message message)
         {
-            Message message = await GetEmailAsync();
-
+            
             if (message.Body.Content.Contains("Meeting number (access code):"))
             {
                 string accessCode;

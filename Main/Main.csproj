@@ -17,5 +17,6 @@
     <ProjectReference Include="..\Dialer\Dialer.csproj" />
     <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
     <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
+    <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
   </ItemGroup>
 </Project>

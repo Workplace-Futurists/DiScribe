@@ -10,26 +10,45 @@ namespace DiScribe.Scheduler
         public static void CreateMeeting()
         {
             // TODOs
-            // create the webex meeting
-            // send meeting invitations
-            // check if any of them are unregistered
+            // check if any invited users in the webex meeting are unregistered
             // send emails to them
             // schedule the task
         }
 
-        public static void Schedule(string meetingAccessCode, DateTime dateTime)
+        /// <summary>
+        /// Runs the meeting function at the specified time using the access code as param to the function. Waits
+        /// asynchronously for meeting time.
+        /// </summary>
+        /// <param name="meetingFunction"></param>
+        /// <param name="meetingAccessCode"></param>
+        /// <param name="dateTime"></param>
+        public static async void Schedule(Func<string, bool, int> meetingFunction, string meetingAccessCode, bool release, DateTime dateTime)
         {
-            Thread thread = new Thread(() => ScheduleHelperAsync(meetingAccessCode, dateTime));
-            thread.Start();
+            Task meetingTask = ScheduleHelperAsync(meetingFunction, meetingAccessCode, release, dateTime);
+            await meetingTask;
         }
 
-        private static void ScheduleHelperAsync(string meetingAccessCode, DateTime dateTime)
+
+        /// <summary>
+        /// Runs the meeting function at the scheduled time. Waits asynchronously until the meeting time occurs.
+        /// </summary>
+        /// <param name="meetingFunction"></param>
+        /// <param name="meetingAccessCode"></param>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        private static async Task ScheduleHelperAsync(Func<string, bool, int> meetingFunction, string meetingAccessCode, bool release, DateTime dateTime)
         {
             var difference = (int)(dateTime - DateTime.Now).TotalMilliseconds;
             if (difference > 0)
-                Task.Delay(difference).Wait();
+                await Task.Delay(difference);                                  //Wait async until the meeting time.
 
-            //Main.Program.Run(meetingAccessCode);
+
+            Task meetingTask = Task.Run(() =>
+            {
+                meetingFunction(meetingAccessCode, release);
+            });
+
+            await meetingTask;
         }
     }
 }
