@@ -14,7 +14,6 @@ namespace DiScribe.MeetingManager
 {
     public static class EmailController
     {
-        // TODO we need one maybe?
         private static EmailAddress OfficialEmail;
         private static string RegUrl;
 
@@ -22,8 +21,14 @@ namespace DiScribe.MeetingManager
 
         static IConfigurationRoot LoadAppSettings()
         {
+            DirectoryInfo dir = new DirectoryInfo(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""));
+            string basepath;
+            if (dir.Parent.Name == "cs319-2019w1-hsbc")
+                basepath = dir.Parent.FullName;
+            else
+                basepath = Directory.GetCurrentDirectory();
             var appConfig = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .SetBasePath(basepath)
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
