@@ -29,7 +29,7 @@ namespace DiScribe.Main
 
 
 
-        public static async void Run(string accessCode, bool release = false)
+        public static int Run(string accessCode, bool release = false)
         {
             // Set Authentication configurations
             var appConfig = Configurations.LoadAppSettings();
@@ -50,11 +50,21 @@ namespace DiScribe.Main
 
             // performs transcription and speaker recognition
             if (transcribeController.Perform())
-                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, release));            
-            else
-                EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
+            {
+                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, release));
+                Console.WriteLine(">\tTask Complete!");
 
-            Console.WriteLine(">\tTask Complete!");
+                return 0;
+            }
+
+            else
+            {
+                EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
+                Console.WriteLine(">\tFailed to generat!");
+                return -1;
+            }
+
+            
         }
 
 
@@ -76,13 +86,19 @@ namespace DiScribe.Main
 
             while (true)
             {
-                Task.Delay(10000);
+                await Task.Delay(10000);
 
-                var message = await GraphHelper.GetEmailAsync();
+                DateTime meetingTime;
+                var message = await GraphHelper.GetEmailAsync();   //Get latest email from bot's inbox.
+                
                 string accessCode = await GraphHelper.GetEmailMeetingNumAsync(message);
                 //DateTime meetingTime = await MeetingController.GetMeetingTime(accessCode);
 
+                GraphHelper.DeleteEmailAsync(message);           //Delete the email in bot's inbox.
+
                 
+                meetingTime = DateTime.Now.AddSeconds(10.0);     //Dummy meeting time in 10 seconds from now.
+
                 MeetingController.SendEmailsToAnyUnregisteredUsers(MeetingController.GetAttendeeEmails(accessCode));
 
 
