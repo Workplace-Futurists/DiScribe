@@ -23,7 +23,7 @@ namespace DiScribe.Scheduler
         /// <param name="meetingFunction"></param>
         /// <param name="meetingAccessCode"></param>
         /// <param name="dateTime"></param>
-        public static async void Schedule(Func<string, IConfigurationRoot, int> meetingFunction, string meetingAccessCode, IConfigurationRoot appConfig, DateTime dateTime)
+        public static async Task Schedule(Func<string, IConfigurationRoot, int> meetingFunction, string meetingAccessCode, IConfigurationRoot appConfig, DateTime dateTime)
         {
             Task meetingTask = ScheduleHelperAsync(meetingFunction, meetingAccessCode, appConfig, dateTime);
             await meetingTask;

@@ -11,8 +11,6 @@ using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using Nito.AsyncEx;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
-using DiScribe.Scheduler;
-using Scheduler;
 
 namespace DiScribe.WebMVC.Controllers
 {
@@ -57,6 +55,7 @@ namespace DiScribe.WebMVC.Controllers
 
             try
             {
+                // TODO warning this part is hardcoded
                 TranscribeScheduler.ScheduleTask(access_code, mc.MeetingStartDate, "Main.exe", @"C:\cs319_main");
             }
             catch (Exception ex)
