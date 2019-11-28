@@ -10,7 +10,7 @@ using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using Nito.AsyncEx;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
-//using DiScribe.Scheduler;
+using DiScribe.Scheduler;
 
 namespace DiScribe.WebMVC.Controllers
 {
@@ -42,7 +42,7 @@ namespace DiScribe.WebMVC.Controllers
             string endDateTimeStr = mc.MeetingEndDate.ToString("MM/dd/yyyy HH:mm:ss");
             Int64 duration = (Int64)(mc.MeetingEndDate - mc.MeetingStartDate).TotalMinutes;
             var access_code = MeetingController.CreateWebExMeeting(mc.MeetingSubject, names, emails, startDateTimeStr, duration.ToString());
-            /*try
+            try
             {
                 var attendees = MeetingController.GetAttendeeEmails(access_code);
                 MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
@@ -60,7 +60,7 @@ namespace DiScribe.WebMVC.Controllers
             catch (Exception ex)
             {
                 
-            }*/
+            }
 
             //MeetingControllers.EmailController.Initialize();
             //EmailController.SendEmailForVoiceRegistration(emailAddresses);

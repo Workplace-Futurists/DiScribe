@@ -26,6 +26,7 @@
     <ProjectReference Include="..\MeetingManager\MeetingManager.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
   </ItemGroup>
 
 </Project>
