@@ -8,21 +8,27 @@ namespace DiScribe.MeetingManager
     {
         static void Main(string[] args)
         {
-            List<string> names = new List<string>();
-            names.Add("Kevin");
-            names.Add("Workplace-futurists");
+            //List<string> names = new List<string>();
+            //names.Add("Kevin");
+            //names.Add("Workplace-futurists");
 
-            List<string> emails = new List<string>();
-            names.Add("seungwook.l95@gmail.com");
-            names.Add("workplace-futurists@hotmail.com");
+            //List<string> emails = new List<string>();
+            //names.Add("seungwook.l95@gmail.com");
+            //names.Add("workplace-futurists@hotmail.com");
 
-            string startDate = "11/26/2019 18:00:00";
-            string duration = "30";
+            //string startDate = "11/26/2019 18:00:00";
+            //string duration = "30";
 
-            string meetingSubject = "Test Meeting From Console";
+            //string meetingSubject = "Test Meeting From Console";
 
-            string accessCode = MeetingController.CreateWebExMeeting(meetingSubject, names, emails, startDate, duration);
-            Console.WriteLine("AccessCode: " + accessCode);
+            //string accessCode = MeetingController.CreateWebExMeeting(meetingSubject, names, emails, startDate, duration);
+            //Console.WriteLine("AccessCode: " + accessCode);
+
+            string[] meetingInfo = MeetingController.GetMeetingInfo("624553444");
+            foreach (string info in meetingInfo)
+            {
+                Console.WriteLine(info);
+            }
         }
     }
 }

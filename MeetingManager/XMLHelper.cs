@@ -119,6 +119,55 @@ namespace DiScribe.MeetingManager
             return strXML;
         }
 
+        public static string GenerateInfoXML(string accessCode)
+        {
+            string strXML = "<?xml version=\"1.0\" encoding=\"ISO - 8859 - 1\"?>\r\n";
+            strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:serv=\"http://www.webex.com/schemas/2002/06/service\">\r\n";
+            strXML += "<header>\r\n";
+            strXML += "<securityContext>\r\n";
+            strXML += "<webExID>kengqiangmk</webExID>\r\n";
+            strXML += "<password>Cs319_APP</password>\r\n";
+            strXML += "<siteName>companykm.my</siteName>\r\n";
+            strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
+            strXML += "</securityContext>\r\n";
+            strXML += "</header>\r\n";
+            strXML += "<body>\r\n";
+            strXML += "<bodyContent xsi:type=\"java:com.webex.service.binding.meeting.GetMeeting\">\r\n";
+            strXML += "<meetingKey>";
+            strXML += accessCode;
+            strXML += "</meetingKey>\r\n";
+            strXML += "</bodyContent>\r\n";
+            strXML += "</body>\r\n";
+            strXML += "</serv:message>\r\n";
+
+            Console.WriteLine("request XML");
+            Console.WriteLine(strXML);
+
+            return strXML;
+        }
+
+        public static string RetrieveStartDate(string myXML)
+        {
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(myXML);
+
+            XmlNodeList stratDateNode = xml.GetElementsByTagName("meet:startDate");
+            string startDate = stratDateNode[0].InnerText;
+
+            return startDate;
+        }
+
+        public static string RetrieveTimeZone(string myXML)
+        {
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(myXML);
+
+            XmlNodeList timeZoneNode = xml.GetElementsByTagName("meet:timeZone");
+            string timeZone = timeZoneNode[0].InnerText;
+
+            return timeZone;
+        }
+
         public static string RetrieveAccessCode(string myXML)
         {
             XmlDocument xml = new XmlDocument();

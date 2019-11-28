@@ -122,6 +122,59 @@ namespace DiScribe.MeetingManager
             return emailAddresses;
         }
 
+        public static string[] GetMeetingInfo(string accessCode)
+        {
+            Console.WriteLine(">\tRetrieving Meeting Info...");
+            string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
+
+            WebRequest request = WebRequest.Create(strXMLServer);
+            // Set the Method property of the request to POST.
+            request.Method = "POST";
+            // Set the ContentType property of the WebRequest.
+            request.ContentType = "application/x-www-form-urlencoded";
+
+            // Create POST data and convert it to a byte array.
+            string strXML = XMLHelper.GenerateInfoXML(accessCode);
+
+            byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
+
+            // Set the ContentLength property of the WebRequest.
+            request.ContentLength = byteArray.Length;
+
+            // Get the request stream.
+            Stream dataStream = request.GetRequestStream();
+            // Write the data to the request stream.
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            // Close the Stream object.
+            dataStream.Close();
+            // Get the response.
+            WebResponse response = request.GetResponse();
+
+            // Get the stream containing content returned by the server.
+            dataStream = response.GetResponseStream();
+            // Open the stream using a StreamReader for easy access.
+            StreamReader reader = new StreamReader(dataStream);
+            // Read the content.
+            string responseFromServer = reader.ReadToEnd();
+
+            Console.WriteLine(responseFromServer);
+            // Display the content.
+            string startDate = XMLHelper.RetrieveStartDate(responseFromServer);
+            string timeZone = XMLHelper.RetrieveTimeZone(responseFromServer);
+
+            Console.WriteLine("startTime: " + startDate);
+            Console.WriteLine("timeZone: " + timeZone);
+
+            string[] meetingInfo = { startDate, timeZone };
+
+            // Clean up the streams.
+            reader.Close();
+            dataStream.Close();
+            response.Close();
+
+            return meetingInfo;
+        }
+
         private static List<EmailAddress> GetEmails(string myXML)
         {
             var emails = RetrieveEmails(myXML);
