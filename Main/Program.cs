@@ -50,6 +50,7 @@ namespace Main
 
             // transcribe the meeting
             Console.WriteLine(">\tBeginning Transcribing...");
+            Console.ReadLine();
 
             var emails = EmailController.FromEmailAddressListToStringList(invitedUsers);
             /*Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint*/

@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiScribeWebMVC", "DiScribeW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiScribeWeb", "DiScribeWeb\DiScribeWeb.csproj", "{98071EA5-B164-4289-85B0-EF6086F32C80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAV_Converter", "WAV_Converter\WAV_Converter.csproj", "{2305429B-8E3C-495C-BA76-4C2CC45A35D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|anycpu = Debug|anycpu
@@ -113,6 +115,14 @@ Global
 		{98071EA5-B164-4289-85B0-EF6086F32C80}.Release|anycpu.Build.0 = Release|Any CPU
 		{98071EA5-B164-4289-85B0-EF6086F32C80}.Release|x64.ActiveCfg = Release|Any CPU
 		{98071EA5-B164-4289-85B0-EF6086F32C80}.Release|x64.Build.0 = Release|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Release|anycpu.Build.0 = Release|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
