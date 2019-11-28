@@ -1,5 +1,4 @@
 ﻿using System;
-using Transcriber;
 using DatabaseController;
 using System.Collections.Generic;
 
