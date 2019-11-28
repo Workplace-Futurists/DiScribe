@@ -44,7 +44,8 @@ namespace DiScribe.DatabaseManager
 
         /// <summary>
         /// Builder to create a Registration controller. Creates a connection to the database
-        /// and loads profiles using the collection of associated user emails.
+        /// and loads profiles using the collection of associated user emails. Takes required
+        /// arguments for the list of emails of already registered users.
         /// 
         /// By default, has "en-us" enrollment locale
         /// and a delay between concurrent requests specified by SPEAKER_RECOGNITION_API_INTERVAL
@@ -52,7 +53,7 @@ namespace DiScribe.DatabaseManager
         /// <param name="dbConnectionString"></param>
         /// <param name="userEmails"></param>
         /// <param name="speakerIDKeySub"></param>
-        public static RegistrationController BuildController(List<string> userEmails,
+        public static RegistrationController BuildController(List<string> registeredEmails,
             string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
@@ -60,7 +61,7 @@ namespace DiScribe.DatabaseManager
 
             Console.WriteLine(">\tLoading All Attendees' Voice Profiles From Database...");
             string email = "";
-            foreach (var curEmail in userEmails)
+            foreach (var curEmail in registeredEmails)
             {
                 try
                 {
@@ -102,6 +103,13 @@ namespace DiScribe.DatabaseManager
         /// <returns>Created profile GUID or GUID {00000000-0000-0000-0000-000000000000} on fail</returns>
         public async Task<Guid> CreateUserProfile(UserParams userParams)
         {
+            foreach(var profile in UserProfiles)
+            {
+                /*Profile has already been enrolled */
+                if (profile.Email == userParams.Email)
+                    return profile.ProfileGUID;
+            }
+
             var taskComplete = new TaskCompletionSource<Guid>();
             Task<CreateProfileResponse> profileTask = null;
             Guid failGuid = new Guid();
@@ -135,6 +143,8 @@ namespace DiScribe.DatabaseManager
             return profileTask.Result.ProfileId;
         }
 
+
+
         /// <summary>
         /// Async check if a profile is regsitered for the email address.
         /// Returns true if so, false otherwise.
@@ -160,10 +170,7 @@ namespace DiScribe.DatabaseManager
             return registeredUser;
         }
 
-        public Boolean IfProfileExists(string email)
-        {
-            return CheckProfileExists(email).Result != null;
-        }
+        
 
         /// <summary>
         /// Delete a profile from the Azure Speaker Recognition endpoint and delete
@@ -306,6 +313,8 @@ namespace DiScribe.DatabaseManager
                 Console.Error.WriteLine(">\tFetching profiles failed. Executing fallback to recreate profiles: " + ex.ToString());
             }
 
+            
+
             if (existingProfiles != null)
             {
                 for (int i = 0; i < UserProfiles.Count; i++)
@@ -316,7 +325,8 @@ namespace DiScribe.DatabaseManager
                     {
                         /*Check that the profile is in a usable state and that
                          * it matches with the GUID of this voiceprint */
-                        if (existingProfiles[j].EnrollmentStatus != EnrollmentStatus.Unknown &&
+                        if (UserProfiles[i].AudioStream != null &&
+                            existingProfiles[j].EnrollmentStatus != EnrollmentStatus.Unknown &&
                             UserProfiles[i].ProfileGUID == existingProfiles[j].ProfileId)
                         {
                             profileExists = true;
@@ -324,6 +334,7 @@ namespace DiScribe.DatabaseManager
                         else
                             j++;
                     }
+
                     /*Create an Azure profile if the profile doesn't actually exist. Also change the
                      * profile ID in the voiceprint object to the new ID*/
                     if (!profileExists)
@@ -349,6 +360,7 @@ namespace DiScribe.DatabaseManager
 
             } //End else
         }
+
 
         private async Task EnrollVoiceSamples()
         {

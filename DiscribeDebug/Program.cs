@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using DiScribe.DatabaseManager.Data;
 using DiScribe.DiScribeDebug;
 
 
@@ -9,8 +10,35 @@ namespace DiScribe.DiScribeDebug
     {
         static void Main(string[] args)
         {
-            /*Do the test with MultipleSpeakers.wav*/
-            TrancriptionTest.TestTranscription(@"../../../../Record/test_meeting.wav");
+            //var userParams = RegAudioTest.MakeTestVoiceprints(new FileInfo(@"../../../../Record/RE1653360c6857790dd9ebe854b79e1b86.wav"));
+
+
+            //userParams[0].Email = "somethingelse@example.com";
+
+
+
+            TrancriptionTest.TestTranscription(@"../../../../Record/RE1653360c6857790dd9ebe854b79e1b86.wav");
+
+
+
+            //Guid enrolled = RegAudioTest.TestEnroll(userParams[0]);
+
+            //Console.WriteLine("Enrolled " + enrolled);
+
+
+            //User existing = RegAudioTest.TestLoadUser(userParams[0].Email);
+            //Console.WriteLine("Did load " + existing.Email);
+
+
+
+            //User test = RegAudioTest.TestLoadUser("whatever@hotmail.com");
+
+            //if (test == null)
+            //    Console.WriteLine("Fake User not exist");
+
+            //else
+            //    Console.WriteLine(test.ToString());
+
         }
     }
 }

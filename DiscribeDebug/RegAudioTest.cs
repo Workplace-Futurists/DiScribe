@@ -4,28 +4,97 @@ using System.Text;
 using NAudio.Wave;
 using DiScribe.DatabaseManager;
 using DiScribe.DatabaseManager.Data;
+using DiScribe.Transcriber.Audio;
+using System.IO;
 
 namespace DiScribe.DiScribeDebug
 {
     public class RegAudioTest
     {
-        public static Boolean TestRegAudio(string userEmail)
+        public static User TestLoadUser(string userEmail)
         {
+            User user = null;
             WaveFormat format = new WaveFormat(16000, 16, 1);
             using (WaveFileWriter writer = new WaveFileWriter("test.wav", format))
             {
 
-                User user = DatabaseManager.DatabaseController.LoadUser(userEmail);
+                user = DatabaseManager.DatabaseController.LoadUser(userEmail);
+
+                if (user == null)
+                    return null;
+
                 byte[] audioData = user.AudioStream.ToArray(); ;
 
                 writer.Write(audioData, 0, audioData.Length);               //Write audio data to test.wav;.
 
+                
             }
+            return user;
 
-            return true;
+
         }
 
+
+
+        public static Guid TestEnroll(UserParams userParams)
+        {
+            RegistrationController regCon = RegistrationController.BuildController(new List<string>());
+
+            var task = regCon.CreateUserProfile(userParams);
+
+            task.Wait();
+
+            return task.Result;
+
+        }
+
+
+
+
+        /// <summary>
+        /// Method for test purposes to get voice samples from a WAV file
+        /// </summary>
+        /// <param name="audioFile"></param>
+        /// <returns></returns>
+        public  static List<UserParams> MakeTestVoiceprints(FileInfo audioFile)
+        {
+            /*Offsets identifying times */
+            ulong user1StartOffset = 1 * 1000;
+            ulong user1EndOffset = 49 * 1000;
+
+            ulong user2StartOffset = 51 * 1000;
+            ulong user2EndOffset = 100 * 1000;
+
+            ulong user3StartOffset = 101 * 1000;
+            ulong user3EndOffset = 148 * 1000;
+
+            ulong user4StartOffset = 151 * 1000;
+            ulong user4EndOffset = 198 * 1000;
+
+            AudioFileSplitter splitter = new AudioFileSplitter(audioFile);
+
+            var user1Audio = splitter.WriteWavToStream(user1StartOffset, user1EndOffset).ToArray();
+            var user2Audio = splitter.WriteWavToStream(user2StartOffset, user2EndOffset).ToArray();
+            var user3Audio = splitter.WriteWavToStream(user3StartOffset, user3EndOffset).ToArray();
+            var user4Audio = splitter.WriteWavToStream(user4StartOffset, user4EndOffset).ToArray();
+
+            var format = new WaveFormat(16000, 16, 1);
+
+            List<UserParams> voiceprints = new List<UserParams>()
+            {
+                 new UserParams(user1Audio, "Brian", "Kernighan", "B.Kernighan@example.com"),
+                 new UserParams(user2Audio, "Janelle", "Shane", "J.Shane@example.com"),
+                 new UserParams(user3Audio, "Nick",  "Smith", "N.Smith@example.com"),
+                 new UserParams(user4Audio, "Patrick", "Shyu", "P.Shyu@example.com")
+            };
+            return voiceprints;
+        }
+
+
+
     }
+
+
 
 }
 

@@ -31,15 +31,10 @@ namespace DiScribe.Transcriber.Audio
             MainStream = new MemoryStream(AudioData);                           //Set up the main stream with AudioData as backing buffer.
         }
 
-        /*Default WAV file format attributes */
-        public int SampleRate { get; set;} =  16000;
-        public int BitsPerSample { get; set; } = 16; 
-        public int Channels { get; set; } = 1;
-
-
-        public const int SAMPLE_RATE = 16000;
-        public const int BITS_PER_SAMPLE = 16;
-        public const int CHANNELS = 1;
+        /*Required WAV file format attributes */
+        public const int REQ_SAMPLE_RATE = 16000;
+        public const int REQ_BITS_PER_SAMPLE = 16;
+        public const int REQ_CHANNELS = 1;
 
 
         /// <summary>
@@ -75,7 +70,7 @@ namespace DiScribe.Transcriber.Audio
         /// <returns></returns>
         public byte[] SplitAudioGetBuf(ulong startOffset, ulong endOffset)
         {
-            long BitRate = (long)SampleRate * (long)BitsPerSample;
+            long BitRate = (long)REQ_SAMPLE_RATE * (long)REQ_BITS_PER_SAMPLE;
             long BytesPerSecond = BitRate / 8L;
 
             /*Calc positions in stream in bytes, given start and end offsets in milliseconds */
@@ -115,10 +110,11 @@ namespace DiScribe.Transcriber.Audio
             /*Calc audio length in milliseconds */
            
 
-            long bitRate = SampleRate * BitsPerSample;
+            long bitRate = REQ_SAMPLE_RATE * REQ_BITS_PER_SAMPLE;
             long bytesPerSecond = bitRate / 8L;
             long audioLengthMS = AudioData.Length * 1000L / bytesPerSecond;
 
+            Console.WriteLine("hi");
             return new AudioSegment(dataCopy, 0, audioLengthMS);
         }
 
@@ -176,7 +172,7 @@ namespace DiScribe.Transcriber.Audio
         /// Writes WAV data INCLUDING a RIFF header to a stream
         /// </summary>
         /// <returns></returns>
-        public static byte[] WriteWavToBuf(byte[] dataBuf, int sampleRate = SAMPLE_RATE, int channels = CHANNELS, int bitPerSample = BITS_PER_SAMPLE)
+        public static byte[] WriteWavToBuf(byte[] dataBuf, int sampleRate = REQ_SAMPLE_RATE, int channels = REQ_CHANNELS, int bitPerSample = REQ_BITS_PER_SAMPLE)
         {
             byte[] output = null;
             WaveFormat format = new WaveFormat(sampleRate, bitPerSample, channels);
@@ -196,34 +192,49 @@ namespace DiScribe.Transcriber.Audio
         /// </summary>
         /// <param name="originalFile" ></param>
         /// <param name="sampleRate"></param>
-        private void ProcessWavFile(FileInfo originalFile, int sampleRate = SAMPLE_RATE)
+        private void ProcessWavFile(FileInfo originalFile)
         {
-            /*Convert the file using NAudio library */
-            using var inputReader = new WaveFileReader(originalFile.FullName);
-            WdlResamplingSampleProvider resampler;
+            byte[] temp = File.ReadAllBytes(AudioFile.FullName);
 
-
-            /*Default WAV file format attributes */
-            SampleRate = inputReader.WaveFormat.SampleRate;
-            BitsPerSample = inputReader.WaveFormat.BitsPerSample;
-            Channels = inputReader.WaveFormat.Channels;
-
-
-
-            /*Stereo source. Must convert to mono with StereoToMonoSampleProvider */
-            if (inputReader.WaveFormat.Channels == 2)
+            using (MemoryStream stream = new MemoryStream(temp))
             {
-                var monoSampleProvider = new StereoToMonoSampleProvider(inputReader.ToSampleProvider());
-                resampler = new WdlResamplingSampleProvider(monoSampleProvider, sampleRate);
-            }
-            else
-            {
-                resampler = new WdlResamplingSampleProvider(inputReader.ToSampleProvider(), sampleRate);
-            }
 
-            var wav16provider = resampler.ToWaveProvider16();
-            AudioData = new byte[inputReader.Length];
-            wav16provider.Read(AudioData, 0, (int)(inputReader.Length));        //Read transformed WAV data into buffer WavData (header is removed).
+                int actualSampleRate;
+                int bitsPerSample;
+                int channels;
+
+                /*Read from the wav file's contents using stream */
+                using (var inputReader = new WaveFileReader(stream))
+                {
+                    channels = inputReader.WaveFormat.Channels;
+
+                    WdlResamplingSampleProvider resampler;
+
+                    /*Stereo source. Must convert to mono with StereoToMonoSampleProvider */
+                    if (channels == 2)
+                    {
+                        var monoSampleProvider = new StereoToMonoSampleProvider(inputReader.ToSampleProvider());
+                        resampler = new WdlResamplingSampleProvider(monoSampleProvider, REQ_SAMPLE_RATE);
+                    }
+                    else
+                    {
+                        resampler = new WdlResamplingSampleProvider(inputReader.ToSampleProvider(), REQ_SAMPLE_RATE);
+                    }
+
+
+                    /*Write converted audio to overwrite the original wav file */
+                    WaveFileWriter.CreateWaveFile16(AudioFile.FullName, resampler);
+                  
+                }
+
+                using (WaveFileReader reader = new WaveFileReader(AudioFile.FullName))
+                {
+                    AudioData = new byte[reader.Length];
+                    reader.Read(AudioData, 0, (int)reader.Length);
+                }
+
+                
+            }    
         }
     }
 }
