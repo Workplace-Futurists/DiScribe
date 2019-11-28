@@ -78,11 +78,6 @@ namespace DiScribe.Transcriber
                         /*Write audio data in segment to a buffer containing wav file header */
                         byte[] wavBuf = AudioFileSplitter.WriteWavToBuf(curPhrase.Value.Segment.AudioData);
 
-                        var format = new WaveFormat(16000, 16, 1);
-                        using (WaveFileWriter testWriter = new WaveFileWriter($"{p}.wav", format))
-                        {
-                            testWriter.Write(wavBuf);
-                        }
 
                         await Task.Delay(apiDelayInterval);
 
