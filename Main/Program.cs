@@ -1,72 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using Transcriber;
-using DatabaseController;
-using DatabaseController.Data;
+using DiScribe.Transcriber;
+using DiScribe.DatabaseManager;
+using DiScribe.DatabaseManager.Data;
 using SendGrid.Helpers.Mail;
 using System.IO;
-using twilio_caller;
-using Scheduler;
-using MeetingControllers;
+using DiScribe.Dialer;
+using DiScribe.MeetingManager;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace Main
+namespace DiScribe.Main
 {
     public static class Program
     {
         static void Main(string[] args)
-        {
-            //Deserialize the init data for dialing in to meeting 
-            InitData init = JsonConvert.DeserializeObject<InitData>(args[0]);
+        {            
+            Console.Write("Enter the meeting access code now: ");
+            Run(Console.ReadLine());
+        }        
 
-            if (!init.Debug)
-                Run(init.MeetingAccessCode);
-           
-        }
-        
-
-        public static void Run(string accessCode)
+        public static void Run(string accessCode, bool release = false)
         {
             // Set Authentication configurations
             var appConfig = Configurations.LoadAppSettings();
 
-            // new dialer manager
-            var dialManager = new twilio_caller.dialer.dialerManager(appConfig);
-            // new recording download manager
-            var recManager = new twilio_caller.dialer.RecordingManager(appConfig);
+            // dialing & recording
+            var rid = new DialerController(appConfig).CallMeetingAsync(accessCode).Result;
+            var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid, release).Result;
 
-            Console.WriteLine("Dialing into webex meeting with access code " + accessCode);
-
-
-            // dial into and record the meeting
-            var rid = dialManager.CallMeetingAsync(accessCode).Result;
-            // download the recording to the file
-            var recording = recManager.DownloadRecordingAsync(rid).Result;
-            
-
-            // Get email addresses for all users who are attending the meeting
+            // retrieving all attendees' emails as a List
             List<EmailAddress> invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
+            
+            // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
+            var regController = RegistrationController.BuildController(
+                EmailController.FromEmailAddressListToStringList(invitedUsers));
 
-            // transcribe the meeting
-            Console.WriteLine(">\tBeginning Transcribing...");
-            Console.ReadLine();
+            // initializing the transcribe controller 
+            var transcribeController = new TranscribeController(recording, regController.UserProfiles);
 
-            var emails = EmailController.FromEmailAddressListToStringList(invitedUsers);
-            /*Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint*/
-            RegistrationController regController = RegistrationController.BuildController(emails);
-            /*Get registered profiles */
-            List<User> voiceprints = regController.UserProfiles;
-
-            TranscribeController transcribeController = new TranscribeController(recording, voiceprints);
-
-            /*Do the transcription with speaker recognition*/
+            // performs transcription and speaker recognition
             if (transcribeController.Perform())
-                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));
+                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, release));            
             else
-                EmailController.SendEMail(invitedUsers, "Failed To Generate Meeting Transcription", "");
+                EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
 
-            Console.WriteLine(">\tTasks Complete!");
+            Console.WriteLine(">\tTask Complete!");
+        }
+
+        private static void LineBreak()
+        {
+            Console.Write("Press <return> to continue");
+            Console.ReadLine();
         }
     }
 }

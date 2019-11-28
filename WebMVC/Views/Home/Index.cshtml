@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Welcome to Discribe Web";
+}
+
+    <div class="text-left">
+        <h1>@ViewData["Title"]</h1>
+
+        <p>You can record  your user profile, check for past meeting minutes, schedule meeting here.</p>
+        <p>
+            <ul>
+                <li><a asp-controller="Meetings" asp-action="Create" target="_blank">Schedule a Meeting</a></li>
+                <li><a asp-controller="Users" asp-action="Create" target="_blank">Register Audio Profile</a></li>
+                <li><a href="" target="_blank">Search for Past Minutes</a></li>
+            </ul>
+        </p>
+    </div>

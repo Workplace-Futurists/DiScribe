@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<serv:message xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <header>
+        <securityContext>
+            <webExID>kengqiangmk</webExID>
+            <password>Cs319_APP</password>
+            <siteName>companykm.my</siteName>
+            <email>kengqiangmk@gmail.com</email>
+        </securityContext>
+    </header>
+    <body>
+        <bodyContent
+            xsi:type="java:com.webex.service.binding.meeting.CreateMeeting">
+            <accessControl>
+                <meetingPassword>pZGiw4JU</meetingPassword>
+            </accessControl>
+            <metaData>
+                <confName>Sample Meeting</confName>
+                <agenda>Test</agenda>
+            </metaData>
+            <participants>
+                <maxUserNumber>10</maxUserNumber>
+                <attendees>
+                    <attendee>
+                        <person>
+                            <name>Kevin Lee</name>
+                            <email>seungwook.l95@gmail.com</email>
+                        </person>
+                    </attendee>
+                    <attendee>
+                        <person>
+                            <name>Workplace</name>
+                            <email>workplace-futurists@hotmail.com</email>
+                        </person>
+                    </attendee>
+                </attendees>
+            </participants>
+            <enableOptions>
+                <chat>true</chat>
+                <poll>true</poll>
+                <audioVideo>true</audioVideo>
+                <supportE2E>TRUE</supportE2E>
+                <autoRecord>TRUE</autoRecord>
+            </enableOptions>
+            <schedule>
+                <startDate>11/26/2019 12:00:00</startDate>
+                <openTime>900</openTime>
+                <joinTeleconfBeforeHost>true</joinTeleconfBeforeHost>
+                <duration>20</duration>
+                <timeZoneID>4</timeZoneID>
+            </schedule>
+            <telephony>
+                <telephonySupport>CALLIN</telephonySupport>
+                <extTelephonyDescription>
+                    Call 1-800-555-1234, Passcode 98765
+                </extTelephonyDescription>
+            </telephony>
+            <attendeeOptions>
+                <emailInvitations>TRUE</emailInvitations>
+            </attendeeOptions>
+        </bodyContent>
+    </body>
+</serv:message>

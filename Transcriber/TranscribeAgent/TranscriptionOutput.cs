@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DatabaseController.Data;
-using Transcriber.Audio;
+using DiScribe.DatabaseManager.Data;
+using DiScribe.Transcriber.Audio;
 
-namespace Transcriber
+namespace DiScribe.Transcriber
 {
     class TranscriptionOutput : IComparable
     {

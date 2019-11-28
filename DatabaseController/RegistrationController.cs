@@ -58,6 +58,7 @@ namespace DatabaseController
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
             List<User> userProfiles = new List<User>();
 
+            Console.WriteLine(">\tLoading All Attendees' Voice Profiles From Database...");
             string email = "";
             foreach (var curEmail in userEmails)
             {
@@ -68,10 +69,11 @@ namespace DatabaseController
                     if (curUser is null)
                         continue;
                     userProfiles.Add(curUser);
+                    Console.WriteLine($"\t-\t{email}\tLoad Succeeded.");
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Loading profile from database failed for {email}");
+                    Console.Error.WriteLine($"\t-\t[{email}]\tLoad Failed.");
                 }
             }
             return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);

@@ -10,9 +10,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Transcriber
+namespace DiScribe.Transcriber
 {
-    static class Helper
+    internal static class Helper
     {
         public static string WrapText(string text, int lineLength)
         {
@@ -126,7 +126,7 @@ namespace Transcriber
     /// <summary>
     /// Adapter class to the native stream api.
     /// </summary>
-    public sealed class BinaryAudioStreamReader : PullAudioInputStreamCallback
+    internal sealed class BinaryAudioStreamReader : PullAudioInputStreamCallback
     {
         private System.IO.BinaryReader _reader;
 

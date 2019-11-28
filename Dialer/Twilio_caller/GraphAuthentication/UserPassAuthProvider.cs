@@ -6,9 +6,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Linq;
+
 namespace twilio_caller.GraphAuthentication
 {
-    public class UserPassAuthProvider : IAuthenticationProvider
+    internal class UserPassAuthProvider : IAuthenticationProvider
     {
         private IPublicClientApplication _msalClient;
         private string[] _scopes;
