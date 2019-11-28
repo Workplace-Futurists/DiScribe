@@ -30,7 +30,7 @@ namespace DiScribe.Dialer
         }
 
         // given an rid, download a recording
-        public async Task<FileInfo> DownloadRecordingAsync(string rid, Boolean release = true)
+        public async Task<FileInfo> DownloadRecordingAsync(string rid, Boolean release = false)
         {
             Console.WriteLine(">\tDownloading Recording...");
 
