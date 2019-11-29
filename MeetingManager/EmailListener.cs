@@ -107,9 +107,9 @@ namespace DiScribe.Email
         {
             /*Get all messages for this user in inbox */
             var users = await _graphClient
-            .Users
-            .Request()
-            .GetAsync();
+                .Users
+                .Request()
+                .GetAsync();
 
             /*Get all messages for this user in inbox */
             var inbox = await _graphClient
@@ -129,17 +129,19 @@ namespace DiScribe.Email
                 .Top(1)
                 .GetAsync();
 
-
-            string messageId;
-            if (messages[0] != null)
+            string messageId = "";
+            foreach (var _message in messages)
             {
-                messageId = messages[0].Id;
+                if (_message.Id == message.Id)
+                    messageId = _message.Id;
             }
 
-            else
+            if (messageId == "")
                 return false;
 
-            await _graphClient.Users[_userId].Messages[messageId]
+            await _graphClient
+                .Users[_userId]
+                .Messages[messageId]
                 .Request()
                 .DeleteAsync();
 
@@ -148,10 +150,16 @@ namespace DiScribe.Email
 
         public static Meeting.MeetingInfo GetMeetingInfo(Message message)
         {
+            if (message is null)
+                throw new Exception("Email Message Received was <NULL>");
+
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(message.Body.Content);
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
+
+            if (htmlNodes is null)
+                throw new Exception("Email is not in proper format");            
 
             for (int i = 0; i < htmlNodes.Count; i++)
             {

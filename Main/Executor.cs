@@ -27,6 +27,9 @@ namespace DiScribe.Main
                 return;
             }
 
+            EmailListener.Initialize(appConfig["appId"],
+                appConfig["tenantId"], appConfig["clientSecret"], appConfig["mailUser"]).Wait();
+
             /*Main application loop */
             while (true)
             {
@@ -56,23 +59,27 @@ namespace DiScribe.Main
         {
             Console.WriteLine("Bot is Listening for meeting invites...");
 
-            await EmailListener.Initialize(appConfig["appId"],
-                appConfig["tenantId"], appConfig["clientSecret"], appConfig["mailUser"]);
+            try
+            {
+                var message = EmailListener.GetEmailAsync().Result; //Get latest email from bot's inbox.
 
-            var message = EmailListener.GetEmailAsync().Result; //Get latest email from bot's inbox.
+                var meeting_info = EmailListener.GetMeetingInfo(message); //Get access code from bot's invite email
 
-            var meeting_info = EmailListener.GetMeetingInfo(message); //Get access code from bot's invite email
+                Console.WriteLine("New Meeting Found at: " +
+                    meeting_info.StartTime.ToLocalTime());
 
-            Console.WriteLine("New Meeting Found at: " +
-                meeting_info.StartTime.ToLocalTime());
+                MeetingController.SendEmailsToAnyUnregisteredUsers(
+                    MeetingController.GetAttendeeEmails(meeting_info.AccessCode));
 
-            MeetingController.SendEmailsToAnyUnregisteredUsers(
-                MeetingController.GetAttendeeEmails(meeting_info.AccessCode));
+                await SchedulerController.Schedule(Run,
+                    meeting_info.AccessCode, appConfig, meeting_info.StartTime);    //Schedule dialer-transcriber workflow
 
-            await SchedulerController.Schedule(Run,
-                meeting_info.AccessCode, appConfig, meeting_info.StartTime);            //Schedule dialer-transcriber workflow
-
-            EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
+                EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+            }
 
             await Task.Delay(seconds * 1000);
         }
