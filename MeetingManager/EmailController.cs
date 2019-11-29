@@ -121,7 +121,13 @@ namespace DiScribe.MeetingManager
 
             await sendGridClient.SendEmailAsync(msg);
         }
+    }
+}
 
+namespace DiScribe
+{
+    public static class EmailHelper
+    {
         public static List<string> FromEmailAddressListToStringList(List<EmailAddress> emails)
         {
             List<string> emailsAsString = new List<String>();

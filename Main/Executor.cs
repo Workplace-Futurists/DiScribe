@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using DiScribe;
 using DiScribe.Transcriber;
 using DiScribe.DatabaseManager;
-using DiScribe.DatabaseManager.Data;
-using SendGrid.Helpers.Mail;
-using System.IO;
 using DiScribe.Dialer;
 using DiScribe.MeetingManager;
-using Microsoft.Extensions.Configuration;
 using DiScribe.Scheduler;
-using System.Threading.Tasks;
-using Microsoft.Graph;
 
 
 namespace DiScribe.Main
@@ -99,7 +95,7 @@ namespace DiScribe.Main
 
             // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
             var regController = RegistrationController.BuildController(
-                EmailController.FromEmailAddressListToStringList(invitedUsers));
+                EmailHelper.FromEmailAddressListToStringList(invitedUsers));
 
             // initializing the transcribe controller 
             var transcribeController = new TranscribeController(recording, regController.UserProfiles);

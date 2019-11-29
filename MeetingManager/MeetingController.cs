@@ -4,13 +4,8 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using System.Xml.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Graph;
+using DiScribe;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
-using File = System.IO.File;
 using DiScribe.DatabaseManager;
 using System.Text.RegularExpressions;
 
@@ -71,8 +66,8 @@ namespace DiScribe.MeetingManager
          */
         public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees)
         {
-            var unregistered = DatabaseController.GetUnregisteredUsersFrom(EmailController.FromEmailAddressListToStringList(attendees));
-            EmailController.SendEmailForVoiceRegistration(EmailController.FromStringListToEmailAddressList(unregistered));
+            var unregistered = DatabaseController.GetUnregisteredUsersFrom(EmailHelper.FromEmailAddressListToStringList(attendees));
+            EmailController.SendEmailForVoiceRegistration(EmailHelper.FromStringListToEmailAddressList(unregistered));
         }
 
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
