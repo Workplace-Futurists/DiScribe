@@ -67,7 +67,7 @@ namespace DiScribe.Meeting
         public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees)
         {
             var unregistered = DatabaseController.GetUnregisteredUsersFrom(EmailHelper.FromEmailAddressListToStringList(attendees));
-            EmailController.SendEmailForVoiceRegistration(EmailHelper.FromStringListToEmailAddressList(unregistered));
+            EmailSender.SendEmailForVoiceRegistration(EmailHelper.FromStringListToEmailAddressList(unregistered));
         }
 
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)

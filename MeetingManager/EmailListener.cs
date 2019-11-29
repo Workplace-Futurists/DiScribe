@@ -8,13 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Microsoft.Graph.Auth;
 using System.Globalization;
-using DiScribe.Meeting;
 
 
 namespace DiScribe.Email
-
 {
-    public static class GraphHelper
+    public static class EmailListener
     {
         private static GraphServiceClient _graphClient;
 

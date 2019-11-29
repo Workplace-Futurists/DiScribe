@@ -56,12 +56,12 @@ namespace DiScribe.Main
         {
             Console.WriteLine("Bot is Listening for meeting invites...");
 
-            await GraphHelper.Initialize(appConfig["appId"],
+            await EmailListener.Initialize(appConfig["appId"],
                 appConfig["tenantId"], appConfig["clientSecret"], appConfig["mailUser"]);
 
-            var message = GraphHelper.GetEmailAsync().Result; //Get latest email from bot's inbox.
+            var message = EmailListener.GetEmailAsync().Result; //Get latest email from bot's inbox.
 
-            var meeting_info = GraphHelper.GetMeetingInfo(message); //Get access code from bot's invite email
+            var meeting_info = EmailListener.GetMeetingInfo(message); //Get access code from bot's invite email
 
             Console.WriteLine("New Meeting Found at: " +
                 meeting_info.StartTime.ToLocalTime());
@@ -72,7 +72,7 @@ namespace DiScribe.Main
             await SchedulerController.Schedule(Run,
                 meeting_info.AccessCode, appConfig, meeting_info.StartTime);            //Schedule dialer-transcriber workflow
 
-            GraphHelper.DeleteEmailAsync(message).Wait(); // deletes the email that was read
+            EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
 
             await Task.Delay(seconds * 1000);
         }
@@ -103,13 +103,13 @@ namespace DiScribe.Main
             // performs transcription and speaker recognition
             if (transcribeController.Perform())
             {
-                EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, RELEASE));
+                EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, RELEASE));
                 Console.WriteLine(">\tTask Complete!");
                 return 0;
             }
             else
             {
-                EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
+                EmailSender.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
                 Console.WriteLine(">\tFailed to generat!");
                 return -1;
             }
