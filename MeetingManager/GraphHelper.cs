@@ -9,17 +9,18 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using Microsoft.Identity.Client;
 using Microsoft.Graph.Auth;
+using System.Globalization;
 
 namespace DiScribe.MeetingManager
 {
-    public class GraphHelper
+    public static class GraphHelper
     {
         private static GraphServiceClient _graphClient;
 
         // Subscription variables
         private const int MAX_SUB_EXPIRATION_MINS = 4230;
         private static Dictionary<string, Subscription> _Subscriptions = new Dictionary<string, Subscription>();
-        private static System.Timers.Timer _subscriptionTimer = null;
+        private static System.Timers.Timer _subscriptionTimer;
         private static string _userId;
 
         public static async Task Initialize(string appId, string tenantID, string clientSecret, string principal)
@@ -32,16 +33,12 @@ namespace DiScribe.MeetingManager
 
             ClientCredentialProvider authenticationProvider = new ClientCredentialProvider(confidentialClientApplication);
 
-            
             _graphClient = new GraphServiceClient(authenticationProvider);
 
             var user = await GetMeAsync(principal);
-            
+
             _userId = user.Id;
-
-
         }
-
 
         /// <summary>
         /// Get the User object representing this Graph user by principal. The principal
@@ -53,60 +50,48 @@ namespace DiScribe.MeetingManager
         {
             IGraphServiceUsersCollectionPage users;
 
-                var graphUsers = await _graphClient
+            var graphUsers = await _graphClient
                 .Users
                 .Request()
                 .Filter($"startswith(Mail,'{principal}')")
                 .GetAsync();
 
-                return graphUsers[0];
-                   
-
+            return graphUsers[0];
         }
-
-        
 
         public static async Task<IEnumerable<Event>> GetEventsAsync()
         {
-            
-                // GET /me/events
-                var resultPage = await _graphClient.Me.Events.Request()
-                    // Only return the fields used by the application
-                    .Select("subject,organizer,start,end")
-                    // Sort results by when they were created, newest first
-                    .OrderBy("createdDateTime DESC")
-                    .GetAsync();
+            // GET /me/events
+            var resultPage = await _graphClient.Me.Events.Request()
+                // Only return the fields used by the application
+                .Select("subject,organizer,start,end")
+                // Sort results by when they were created, newest first
+                .OrderBy("createdDateTime DESC")
+                .GetAsync();
 
-                return resultPage.CurrentPage;
-            
-           
+            return resultPage.CurrentPage;
         }
-
-        
 
         public static async Task<Message> GetEmailAsync()
         {
-
             /*Get all messages for this user in inbox */
             var users = await _graphClient
-            .Users
-            .Request()
-            .GetAsync();
+                .Users
+                .Request()
+                .GetAsync();
 
             /*Get all messages for this user in inbox */
             var inbox = await _graphClient
-            .Users[_userId]
-            .MailFolders
-            .Inbox
-            .Request()
-            .GetAsync();
-
-            
+                .Users[_userId]
+                .MailFolders
+                .Inbox
+                .Request()
+                .GetAsync();
 
             // Get messages from the inbox mail folder
             var messages = await _graphClient
-                .Users[_userId] 
-                .MailFolders[inbox.Id] 
+                .Users[_userId]
+                .MailFolders[inbox.Id]
                 .Messages
                 .Request()
                 .OrderBy("ReceivedDateTime DESC")
@@ -116,13 +101,10 @@ namespace DiScribe.MeetingManager
             if (messages.Count > 0)
                 return messages[0];
 
-            return null;
-
+            throw new Exception("Email Inbox Empty...");
         }
 
-      
-
-        public static async Task<Boolean> DeleteEmailAsync(Message message)
+        public static async Task<bool> DeleteEmailAsync(Message message)
         {
             /*Get all messages for this user in inbox */
             var users = await _graphClient
@@ -132,12 +114,11 @@ namespace DiScribe.MeetingManager
 
             /*Get all messages for this user in inbox */
             var inbox = await _graphClient
-            .Users[_userId]
-            .MailFolders
-            .Inbox
-            .Request()
-            .GetAsync();
-
+                .Users[_userId]
+                .MailFolders
+                .Inbox
+                .Request()
+                .GetAsync();
 
             // Get the latest message from the inbox mail folder
             var messages = await _graphClient
@@ -148,9 +129,9 @@ namespace DiScribe.MeetingManager
                 .OrderBy("ReceivedDateTime DESC")
                 .Top(1)
                 .GetAsync();
-            
 
-            string messageId;                      
+
+            string messageId;
             if (messages[0] != null)
             {
                 messageId = messages[0].Id;
@@ -159,50 +140,71 @@ namespace DiScribe.MeetingManager
             else
                 return false;
 
-
             await _graphClient.Users[_userId].Messages[messageId]
-            .Request()
-            .DeleteAsync();
+                .Request()
+                .DeleteAsync();
 
             return true;
-
         }
 
-
-        public static async Task<string> GetEmailMeetingNumAsync(Message message)
+        public static MeetingInfo GetMeetingInfo(Message message)
         {
-            
-            if (message.Body.Content.Contains("Meeting number (access code):"))
+            var meetingInfo = new MeetingInfo();
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(message.Body.Content);
+            var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
+
+            for (int i = 0; i < htmlNodes.Count; i++)
             {
-                string accessCode;
-                string startDate;
-                
+                var node = htmlNodes[i];
+                string text = node.InnerText.Trim();
 
-                string parsedEmail = message.Body.Content;
-                parsedEmail = WebUtility.HtmlDecode(parsedEmail);
-                HtmlDocument htmldoc = new HtmlDocument();
-                htmldoc.LoadHtml(parsedEmail);
-                //htmldoc.DocumentNode.SelectNodes("//comment()")?.Foreach(c => c.Remove());
-                parsedEmail = htmldoc.DocumentNode.InnerText;
-                accessCode = parsedEmail.Substring(parsedEmail.IndexOf("Meeting number (access code):"), 41);
-                accessCode = accessCode.Substring(accessCode.IndexOf(':') + 2, 11);
-                accessCode = accessCode.Replace(" ", "");
-                startDate = parsedEmail.Substring(parsedEmail.IndexOf("Meeting password: ") + 28);
-                parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ", parsedEmail.IndexOf("  |  ") + 1));
-                parsedEmail = parsedEmail.Substring(parsedEmail.IndexOf("  |  ") + 4);
-                parsedEmail = parsedEmail.Substring(0, 8);
-                parsedEmail = parsedEmail.Replace(" ", "");
+                if (text.Contains("Meeting number (access code): ")
+                    && text.Length < 50)
+                    meetingInfo.AccessCode = text.Replace(
+                        "Meeting number (access code): ", "")
+                        .Trim().Replace(" ", "");
 
-               
+                else if (text.Contains("Meeting password: ")
+                    && text.Length < 50)
+                    meetingInfo.Password = text.Replace(
+                        "Meeting password: ", "")
+                        .Trim().Replace(" ", "");
 
-                return accessCode;
-               
+                else if (text.Contains(",")
+                    && text.Length < 50)
+                {
+                    string date;
+                    if (DateTime.TryParse(text, out DateTime _date))
+                        date = _date.ToString().Substring(0, 10);
+                    else
+                        continue;
+
+                    text = htmlNodes[i + 1].InnerText.Trim();
+
+                    var time = text.Replace("&nbsp;", "");
+                    time = time.Substring(0,
+                        time.IndexOf("|",
+                        StringComparison.Ordinal))
+                        .ToUpper();
+
+                    if (DateTime.TryParse(date + " " + time,
+                        new CultureInfo("en-US"),
+                        DateTimeStyles.AssumeLocal,
+                        out DateTime date_time))
+                        meetingInfo.StartTime = date_time;
+                    else
+                        continue;
+                    break;
+
+                    // TODO timezone differentiation
+                }
             }
-            return "";
+            return meetingInfo;
         }
 
         [HttpGet]
-        public static async Task<Subscription> AddMailSubscription()
+        private static async Task<Subscription> AddMailSubscription()
         {
             try
             {
@@ -236,7 +238,6 @@ namespace DiScribe.MeetingManager
                     _subscriptionTimer.AutoReset = true;
                     _subscriptionTimer.Enabled = true;
                 }
-
 
                 return response;
             }

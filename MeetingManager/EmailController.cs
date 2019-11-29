@@ -21,7 +21,9 @@ namespace DiScribe.MeetingManager
 
         static IConfigurationRoot LoadAppSettings()
         {
-            DirectoryInfo dir = new DirectoryInfo(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""));
+            DirectoryInfo dir = new DirectoryInfo(
+                System.IO.Directory.GetCurrentDirectory()
+                .Replace("bin/Debug/netcoreapp3.0", ""));
             string basepath;
             if (dir.Parent.Name == "cs319-2019w1-hsbc")
                 basepath = dir.Parent.FullName;

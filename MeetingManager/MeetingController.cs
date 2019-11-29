@@ -76,8 +76,6 @@ namespace DiScribe.MeetingManager
             EmailController.SendEmailForVoiceRegistration(EmailController.FromStringListToEmailAddressList(unregistered));
         }
 
-
-
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
         {
             Console.WriteLine(">\tRetrieving All Attendees' Emails...");
@@ -124,9 +122,12 @@ namespace DiScribe.MeetingManager
             return emailAddresses;
         }
 
-
-
-        public static DateTime GetMeetingTime(string accessCode)
+        //TODO: Lookup meeting start time in database instead
+        //      OR from custom scheduling email from DiScribe web.
+        //     Otherwise, only the webex host (person who scheduled the meeting)
+        //     can use the bot due to authentication issues.
+        [ObsoleteAttribute("This method is depricated and does not work in all cases.")]
+        public static DateTime GetMeetingTimeByXML(string accessCode)
         {
             Console.WriteLine(">\tRetrieving Meeting Info...");
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -232,7 +233,5 @@ namespace DiScribe.MeetingManager
 
             return names;
         }
-
-
     }
 }

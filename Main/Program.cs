@@ -16,9 +16,7 @@ namespace DiScribe.Main
 {
     public static class Program
     {
-
-        const bool RELEASE = true;
-
+        private static bool RELEASE;
 
         public static void Main(string[] args)
         {
@@ -30,23 +28,21 @@ namespace DiScribe.Main
                 Console.Error.WriteLine("Could not load appsetings");
                 return;
             }
+            RELEASE = appConfig["RELEASE"] == "true";
 
             /*Main application loop */
             while (true)
             {
                 try
                 {
-                    ListenForInvitations(RELEASE, appConfig).Wait();
+                    ListenForInvitations(appConfig).Wait();
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine("Error in transcription task. Continuing listening for invitations...");
+                    Console.Error.WriteLine(ex);
                 }
             }
-
-        }     
-        
-
+        }
 
         /// <summary>
         /// Runs when DiScribe bot dials in to Webex meeting. Performs transcription and speaker
@@ -63,7 +59,7 @@ namespace DiScribe.Main
 
             // retrieving all attendees' emails as a List
             var invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
-            
+
             // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
             var regController = RegistrationController.BuildController(
                 EmailController.FromEmailAddressListToStringList(invitedUsers));
@@ -76,20 +72,15 @@ namespace DiScribe.Main
             {
                 EmailController.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, RELEASE));
                 Console.WriteLine(">\tTask Complete!");
-
                 return 0;
             }
-
             else
             {
                 EmailController.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
                 Console.WriteLine(">\tFailed to generat!");
                 return -1;
             }
-           
         }
-
-
 
         /// <summary>
         /// Listens for a new WebEx invitation to the DiScribe bot email account.
@@ -100,48 +91,31 @@ namespace DiScribe.Main
         ///     -> Schedule the rest of the dial to transcribe workflow
         ///         
         /// </summary>
-        /// <param name="release"></param>
+        /// <param name="seconds"></param>
         /// <returns></returns>
-        private static async Task ListenForInvitations(Boolean release, IConfigurationRoot appConfig)
+        private static async Task ListenForInvitations(IConfigurationRoot appConfig, int seconds = 10)
         {
-            while (true)
-            {
-                Console.WriteLine("Bot is Listening for meeting invites...");
+            Console.WriteLine("Bot is Listening for meeting invites...");
 
-                await GraphHelper.Initialize(appConfig["appId"], appConfig["tenantId"], appConfig["clientSecret"], appConfig["mailUser"]);
-                
-                var message = await GraphHelper.GetEmailAsync();                                     //Get latest email from bot's inbox.
-                               
-                string accessCode = await GraphHelper.GetEmailMeetingNumAsync(message);               //Get access code from bot's invite email
+            await GraphHelper.Initialize(appConfig["appId"],
+                appConfig["tenantId"], appConfig["clientSecret"], appConfig["mailUser"]);
 
-                //await GraphHelper.DeleteEmailAsync(message);                                       //Delete the email in bot's inbox.
+            var message = GraphHelper.GetEmailAsync().Result; //Get latest email from bot's inbox.
 
-                //TODO: Lookup meeting start time in database instead
-                //      OR from custom scheduling email from DiScribe web.
-                //     Otherwise, only the webex host (person who scheduled the meeting)
-                //     can use the bot due to authentication issues.
-                
-                DateTime meetingTime = MeetingController.GetMeetingTime(accessCode);                 //Meeting start time from meeting info.
+            var meeting_info = GraphHelper.GetMeetingInfo(message); //Get access code from bot's invite email
 
-                Console.WriteLine(meetingTime.ToLocalTime());
-                
-                MeetingController.SendEmailsToAnyUnregisteredUsers(MeetingController.GetAttendeeEmails(accessCode));
-                
-                await SchedulerController.Schedule(Run, accessCode, appConfig, meetingTime);            //Schedule dialer-transcriber workflow
+            Console.WriteLine("New Meeting Found at: " +
+                meeting_info.StartTime.ToLocalTime());
 
-                GraphHelper.DeleteEmailAsync(message).Wait();       // deletes the email that was read
+            MeetingController.SendEmailsToAnyUnregisteredUsers(
+                MeetingController.GetAttendeeEmails(meeting_info.AccessCode));
 
-                await Task.Delay(10000);
+            await SchedulerController.Schedule(Run,
+                meeting_info.AccessCode, appConfig, meeting_info.StartTime);            //Schedule dialer-transcriber workflow
 
-            }
+            GraphHelper.DeleteEmailAsync(message).Wait(); // deletes the email that was read
+
+            await Task.Delay(seconds * 1000);
         }
-
-       
-
-
-
-
-
-
     }
 }
