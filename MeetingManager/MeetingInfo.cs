@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DiScribe.MeetingManager
+namespace DiScribe.Meeting
 {
     public class MeetingInfo
     {

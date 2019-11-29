@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 
-namespace DiScribe.MeetingManager
+namespace DiScribe.Meeting
 {
     static class XMLHelper
     {
@@ -140,7 +140,7 @@ namespace DiScribe.MeetingManager
             strXML += "</body>\r\n";
             strXML += "</serv:message>\r\n";
 
-                      
+
             return strXML;
         }
 

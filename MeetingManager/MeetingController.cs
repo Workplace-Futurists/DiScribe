@@ -4,12 +4,12 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
-using DiScribe;
+using DiScribe.Email;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using DiScribe.DatabaseManager;
 using System.Text.RegularExpressions;
 
-namespace DiScribe.MeetingManager
+namespace DiScribe.Meeting
 {
     public static class MeetingController
     {

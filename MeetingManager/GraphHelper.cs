@@ -2,16 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Net;
 using System.Timers;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections;
 using Microsoft.Identity.Client;
 using Microsoft.Graph.Auth;
 using System.Globalization;
+using DiScribe.Meeting;
 
-namespace DiScribe.MeetingManager
+
+namespace DiScribe.Email
+
 {
     public static class GraphHelper
     {
@@ -147,9 +148,9 @@ namespace DiScribe.MeetingManager
             return true;
         }
 
-        public static MeetingInfo GetMeetingInfo(Message message)
+        public static Meeting.MeetingInfo GetMeetingInfo(Message message)
         {
-            var meetingInfo = new MeetingInfo();
+            var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(message.Body.Content);
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using DiScribe;
+using DiScribe.Email;
 using DiScribe.Transcriber;
 using DiScribe.DatabaseManager;
 using DiScribe.Dialer;
-using DiScribe.MeetingManager;
+using DiScribe.Meeting;
 using DiScribe.Scheduler;
 
 
