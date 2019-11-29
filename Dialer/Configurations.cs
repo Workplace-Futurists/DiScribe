@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -11,8 +12,14 @@ namespace DiScribe.Dialer
         // TODO make this a proper class with get functions if we have time
         public static IConfigurationRoot LoadAppSettings()
         {
+            DirectoryInfo dir = new DirectoryInfo(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""));
+            string basepath;
+            if (dir.Parent.Name == "cs319-2019w1-hsbc")
+                basepath = dir.Parent.FullName;
+            else
+                basepath = Directory.GetCurrentDirectory();
             var appConfig = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .SetBasePath(basepath)
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
