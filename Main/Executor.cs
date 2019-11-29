@@ -63,6 +63,12 @@ namespace DiScribe.Main
             {
                 var message = EmailListener.GetEmailAsync().Result; //Get latest email from bot's inbox.
 
+                if (!EmailListener.IsValidWebexInvitation(message))
+                {
+                    EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
+                    throw new Exception("Not a valid WebEx Invitation");
+                }
+
                 var meeting_info = EmailListener.GetMeetingInfo(message); //Get access code from bot's invite email
 
                 Console.WriteLine("New Meeting Found at: " +
@@ -78,7 +84,7 @@ namespace DiScribe.Main
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex);
+                Console.Error.WriteLine(ex.Message);
             }
 
             await Task.Delay(seconds * 1000);

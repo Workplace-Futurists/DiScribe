@@ -97,6 +97,9 @@ namespace DiScribe.Email
                 .Top(1)
                 .GetAsync();
 
+            if (messages is null)
+                throw new Exception("Messages Retrieved were <NULL>");
+
             if (messages.Count > 0)
                 return messages[0];
 
@@ -146,6 +149,14 @@ namespace DiScribe.Email
                 .DeleteAsync();
 
             return true;
+        }
+
+        public static bool IsValidWebexInvitation(Message message)
+        {
+            if (message is null)
+                throw new Exception("Email Message Received was <NULL>");
+
+            return message.Body.Content.Contains("Webex");
         }
 
         public static Meeting.MeetingInfo GetMeetingInfo(Message message)
