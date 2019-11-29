@@ -57,7 +57,6 @@ namespace DiScribe.MeetingManager
             // Display the content.
             string accessCode = XMLHelper.RetrieveAccessCode(responseFromServer);
 
-            
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
@@ -72,7 +71,7 @@ namespace DiScribe.MeetingManager
          */
         public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees)
         {
-            var unregistered = DatabaseManager.DatabaseController.GetUnregisteredUsersFrom(EmailController.FromEmailAddressListToStringList(attendees));
+            var unregistered = DatabaseController.GetUnregisteredUsersFrom(EmailController.FromEmailAddressListToStringList(attendees));
             EmailController.SendEmailForVoiceRegistration(EmailController.FromStringListToEmailAddressList(unregistered));
         }
 
@@ -111,7 +110,7 @@ namespace DiScribe.MeetingManager
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
             // Display the content.
-            
+
             List<EmailAddress> emailAddresses = GetEmails(responseFromServer);
 
             // Clean up the streams.
@@ -174,7 +173,7 @@ namespace DiScribe.MeetingManager
 
             DateTime meetingTime;
             DateTime.TryParse($"{startDate}", out meetingTime);
-            
+
 
             // Clean up the streams.
             reader.Close();

@@ -56,7 +56,7 @@ namespace DiScribe.WebMVC.Controllers
             try
             {
                 // TODO warning this part is hardcoded
-                TranscribeScheduler.ScheduleTask(access_code, mc.MeetingStartDate, "Main.exe", @"C:\cs319_main");
+                SchedulerController.ScheduleTask(access_code, mc.MeetingStartDate, "Main.exe", @"C:\cs319_main");
             }
             catch (Exception ex)
             {

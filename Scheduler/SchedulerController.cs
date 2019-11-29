@@ -8,14 +8,6 @@ namespace DiScribe.Scheduler
 {
     public static class SchedulerController
     {
-        public static void CreateMeeting()
-        {
-            // TODOs
-            // check if any invited users in the webex meeting are unregistered
-            // send emails to them
-            // schedule the task
-        }
-
         /// <summary>
         /// Runs the meeting function at the specified time using the access code as param to the function. Waits
         /// asynchronously for meeting time.
@@ -28,7 +20,6 @@ namespace DiScribe.Scheduler
             Task meetingTask = ScheduleHelperAsync(meetingFunction, meetingAccessCode, appConfig, dateTime);
             await meetingTask;
         }
-
 
         /// <summary>
         /// Runs the meeting function at the scheduled time. Waits asynchronously until the meeting time occurs.
@@ -50,6 +41,36 @@ namespace DiScribe.Scheduler
             });
 
             await meetingTask;
+        }
+    }
+}
+
+namespace DiScribe.Scheduler.Windows
+{
+    using Microsoft.Win32.TaskScheduler;
+
+    public static class SchedulerController
+    {
+        /// <summary>
+        /// Schedule a Task through Windows Task Scheduler
+        /// </summary>
+        /// <param name="meetingID"></param>
+        /// <param name="startTime"></param>
+        /// <returns></returns>
+        public static Boolean ScheduleTask(string meetingID, DateTime startTime, string appName, string rootDir = "")
+        {
+            // Create a new task
+            string taskName = "Dial into webex meeting at " + startTime.ToLongDateString();
+
+            Task t = TaskService.Instance.AddTask(taskName,
+              new TimeTrigger()
+              {
+                  StartBoundary = startTime,
+                  Enabled = true
+              },
+              new ExecAction(appName, meetingID, rootDir));
+
+            return true;
         }
     }
 }
