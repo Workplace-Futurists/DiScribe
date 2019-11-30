@@ -4,6 +4,11 @@
     ViewData["Title"] = "Create";
 }
 
+@section Scripts
+{
+    <script type="module" src="~/dist/validation.entry.js" defer></script>
+}
+
 <h5>Schedule Meeting</h5>
 <hr />
 <div class="row">
@@ -44,6 +49,6 @@
 </div>
 
 
-@section Scripts {
+@*@section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+}*@
