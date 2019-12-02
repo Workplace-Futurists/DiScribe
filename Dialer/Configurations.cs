@@ -25,6 +25,8 @@ namespace DiScribe.Dialer
 
             // Check for required settings
             if (string.IsNullOrEmpty(appConfig["appId"]) ||
+            string.IsNullOrEmpty(appConfig["tenantId"]) ||
+            string.IsNullOrEmpty(appConfig["clientSecret"]) ||
             string.IsNullOrEmpty(appConfig["mailUser"]) ||
             string.IsNullOrEmpty(appConfig["mailPass"]) ||
             // Make sure there's at least one value in the scopes array
@@ -33,6 +35,7 @@ namespace DiScribe.Dialer
             string.IsNullOrEmpty(appConfig["TWILIO_AUTH_TOKEN"]) ||
             string.IsNullOrEmpty(appConfig["SENDGRID_API_KEY"]))
             {
+                Console.WriteLine("Warning: one or more the required app settings are missing from appsettings.json");
                 return null;
             }
             return appConfig;

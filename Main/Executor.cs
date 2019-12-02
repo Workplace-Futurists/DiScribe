@@ -23,7 +23,7 @@ namespace DiScribe.Main
 
             if (appConfig == null)
             {
-                Console.Error.WriteLine("Could not load appsetings");
+                Console.Error.WriteLine("Could not load appsettings");
                 return;
             }
 
