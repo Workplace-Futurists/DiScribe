@@ -34,7 +34,6 @@ namespace DiScribe.Scheduler
             if (difference > 0)
                 await Task.Delay(difference);                                  //Wait async until the meeting time.
 
-
             Task meetingTask = Task.Run(() =>
             {
                 meetingFunction(meetingAccessCode, appConfig);
