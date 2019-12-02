@@ -81,8 +81,8 @@ namespace DiScribe.Transcriber
             if (rid.Equals(""))
                 transcript = meetingMinutes;
             else
-                transcript = new FileInfo(meetingMinutes.FullName.Replace("minutes.txt", "minutes_" + rid + ".txt"));
-
+                transcript = new FileInfo(meetingMinutes.
+                    FullName.Replace("minutes.txt", "minutes_" + rid + ".txt"));
 
             Console.WriteLine(">\tBegin Writing Transcription " +
                 "& Speaker Recognition Result into File \n\t[" + transcript.Name + "]");

@@ -19,16 +19,14 @@ namespace DiScribe.Main
         {
             RELEASE = release;
             // Set Authentication configurations
-            var appConfig = Configurations.LoadAppSettings();
+            var appConfig = Configurations.LoadAppSettings(RELEASE);
 
-            if (appConfig == null)
-            {
-                Console.Error.WriteLine("Could not load appsettings");
-                return;
-            }
-
-            EmailListener.Initialize(appConfig["appId"],
-                appConfig["tenantId"], appConfig["clientSecret"], appConfig["BOT_MAIL_ACCOUNT"]).Wait();
+            EmailListener.Initialize(
+                appConfig["appId"], // 
+                appConfig["tenantId"],
+                appConfig["clientSecret"],
+                appConfig["BOT_MAIL_ACCOUNT"] // bots email account
+                ).Wait();
 
             /*Main application loop */
             while (true)

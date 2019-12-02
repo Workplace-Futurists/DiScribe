@@ -55,7 +55,10 @@ namespace DiScribe.Email
                 .Filter($"startswith(Mail,'{principal}')")
                 .GetAsync();
 
-            return graphUsers[0];
+            if (graphUsers.Count > 0)
+                return graphUsers[0];
+
+            throw new Exception("Graph Users seem to be Empty");
         }
 
         public static async Task<IEnumerable<Event>> GetEventsAsync()

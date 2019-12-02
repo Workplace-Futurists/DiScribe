@@ -10,33 +10,34 @@ namespace DiScribe.Dialer
     public static class Configurations
     {
         // TODO make this a proper class with get functions if we have time
-        public static IConfigurationRoot LoadAppSettings()
+        public static IConfigurationRoot LoadAppSettings(bool release = false)
         {
-            DirectoryInfo dir = new DirectoryInfo(System.IO.Directory.GetCurrentDirectory().Replace("bin/Debug/netcoreapp3.0", ""));
             string basepath;
-            if (dir.Parent.Name == "cs319-2019w1-hsbc")
-                basepath = dir.Parent.FullName;
-            else
+            if (release)
                 basepath = Directory.GetCurrentDirectory();
+            else
+                basepath = new DirectoryInfo(Directory
+                    .GetCurrentDirectory()
+                    .Replace("bin/Debug/netcoreapp3.0", "")).Parent.FullName;
+
             var appConfig = new ConfigurationBuilder()
                 .SetBasePath(basepath)
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
             // Check for required settings
-            if (string.IsNullOrEmpty(appConfig["appId"]) ||
-            string.IsNullOrEmpty(appConfig["tenantId"]) ||
-            string.IsNullOrEmpty(appConfig["clientSecret"]) ||
-            string.IsNullOrEmpty(appConfig["mailUser"]) ||
-            string.IsNullOrEmpty(appConfig["mailPass"]) ||
-            // Make sure there's at least one value in the scopes array
-            string.IsNullOrEmpty(appConfig["scopes:0"]) ||
-            string.IsNullOrEmpty(appConfig["TWILIO_ACCOUNT_SID"]) ||
-            string.IsNullOrEmpty(appConfig["TWILIO_AUTH_TOKEN"]) ||
-            string.IsNullOrEmpty(appConfig["SENDGRID_API_KEY"]))
+            if (string.IsNullOrEmpty(appConfig["appId"])
+                || string.IsNullOrEmpty(appConfig["tenantId"])
+                || string.IsNullOrEmpty(appConfig["clientSecret"])
+                || string.IsNullOrEmpty(appConfig["mailUser"])
+                || string.IsNullOrEmpty(appConfig["mailPass"])
+                || string.IsNullOrEmpty(appConfig["scopes:0"]) // Make sure there's at least one value in the scopes array
+                || string.IsNullOrEmpty(appConfig["TWILIO_ACCOUNT_SID"])
+                || string.IsNullOrEmpty(appConfig["TWILIO_AUTH_TOKEN"])
+                || string.IsNullOrEmpty(appConfig["SENDGRID_API_KEY"])
+                || string.IsNullOrEmpty(appConfig["BOT_MAIL_ACCOUNT"]))
             {
-                Console.WriteLine("Warning: one or more the required app settings are missing from appsettings.json");
-                return null;
+                throw new Exception("Warning: one or more the required app settings are missing from appsettings.json");
             }
             return appConfig;
         }

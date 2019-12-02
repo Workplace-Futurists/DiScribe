@@ -64,7 +64,7 @@ namespace DiScribe.Dialer
                     if (release)
                         filePath = (@"Record/" + rid + ".wav");
                     Console.WriteLine(">\tDownloading Recording as\n\t[" +
-                    new FileInfo(filePath).FullName + "]");
+                        new FileInfo(filePath).FullName + "]");
 
                     // Read from response and write to file
                     using FileStream fileStream = File.Create(filePath);
