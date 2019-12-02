@@ -82,7 +82,7 @@ namespace DiScribe.Email
         {
             Console.WriteLine(">\tSending Emails to Unregistered Users...");
             if (emails.Count == 0)
-                throw new Exception("No recipients were found");
+                throw new Exception(">\tNo recipients were found");
 
             foreach (EmailAddress email in emails)
             {

@@ -26,7 +26,7 @@ namespace DiScribe.DatabaseManager
         /// <param name="speakerIDKeySub"></param>
         /// <param name="enrollmentLocale"></param>
         /// <param name="apiInterval"></param>
-        public RegistrationController(List<User> userProfiles, SpeakerIdentificationServiceClient enrollmentClient,
+        private RegistrationController(List<User> userProfiles, SpeakerIdentificationServiceClient enrollmentClient,
             string enrollmentLocale, int apiInterval)
         {
             /*Create REST client for enrolling users */
@@ -80,13 +80,13 @@ namespace DiScribe.DatabaseManager
             return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);
         }
 
-        public const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                               //Min time between consecutive requests.
+        private const int SPEAKER_RECOGNITION_API_INTERVAL = 3000;                               //Min time between consecutive requests.
 
-        public SpeakerIdentificationServiceClient EnrollmentClient { get; private set; }
+        private SpeakerIdentificationServiceClient EnrollmentClient { get; set; }
 
         public List<User> UserProfiles { get; private set; }
 
-        public string EnrollmentLocale { get; private set; }
+        private string EnrollmentLocale { get; set; }
 
         private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
 
@@ -143,8 +143,6 @@ namespace DiScribe.DatabaseManager
             return profileTask.Result.ProfileId;
         }
 
-
-
         /// <summary>
         /// Async check if a profile is regsitered for the email address.
         /// Returns true if so, false otherwise.
@@ -153,9 +151,8 @@ namespace DiScribe.DatabaseManager
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<User> CheckProfileExists(string email)
+        private async Task<User> CheckProfileExists(string email)
         {
-
             var taskComplete = new TaskCompletionSource<User>();
 
             /*Try to load a user with this email */
@@ -168,9 +165,7 @@ namespace DiScribe.DatabaseManager
 
             taskComplete.SetResult(registeredUser);
             return registeredUser;
-        }
-
-        
+        }        
 
         /// <summary>
         /// Delete a profile from the Azure Speaker Recognition endpoint and delete
@@ -178,7 +173,7 @@ namespace DiScribe.DatabaseManager
         /// </summary>
         /// <param name="email"></param>
         /// <returns>True on success, false on fail</Boolean></returns>
-        public async Task<Boolean> DeleteProfile(string email)
+        private async Task<Boolean> DeleteProfile(string email)
         {
             List<int> removeIndexes = new List<int>();
 
@@ -311,9 +306,7 @@ namespace DiScribe.DatabaseManager
             {
                 existingProfiles = null;
                 Console.Error.WriteLine(">\tFetching profiles failed. Executing fallback to recreate profiles: " + ex.ToString());
-            }
-
-            
+            }            
 
             if (existingProfiles != null)
             {
@@ -360,7 +353,6 @@ namespace DiScribe.DatabaseManager
 
             } //End else
         }
-
 
         private async Task EnrollVoiceSamples()
         {

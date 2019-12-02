@@ -12,7 +12,8 @@ The bot could not only correctly transcribes the content of speech but also coul
 * [x]    Allows unregistered users to **register in the voice print** database with their email
 * [ ]	 <span style="color:red">*(stretch goal)*</span> Able to save meeting informations into the Database
 * [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to **manage** meeting recordings and their corresponding transcription results
-* [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to update voice print samples, their email addresses or add alternative ones
+* [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to update voice print samples, their email addresses (or add alternative ones)
+* [ ]	 <span style="color:red">*(stretch goal)*</span> Warns users when audio input for voice registration isn't length sufficient
 
 ### Scheduling Component
 * [x]    Able to retrieve meeting **attendees** email Lists
@@ -29,12 +30,12 @@ The bot could not only correctly transcribes the content of speech but also coul
 * [x]   Downloads in correct Format
 
 ### Transcribing Component
-* [x]    Starts the Transcribing process upon the recording **finishes downloading**
+* [x]   Starts the Transcribing process upon the recording **finishes downloading**
 * [x]   **Transcribes** the meeting recording into text
 * [x]   **Recognizes** the speakers and labelling them
 * [x]   Outputs the formatted **text file**
 
 ### Emailing Component
-* [x]    **Sends the Email** to meeting hosts upon transcription result is received
+* [x]    **Sends the Email** to meeting attendees upon transcription result is received
 
 ****Note that unchecked parts are incomplete***
