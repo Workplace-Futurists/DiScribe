@@ -28,7 +28,7 @@ namespace DiScribe.Main
             }
 
             EmailListener.Initialize(appConfig["appId"],
-                appConfig["tenantId"], appConfig["clientSecret"], appConfig["mailUser"]).Wait();
+                appConfig["tenantId"], appConfig["clientSecret"], appConfig["BOT_MAIL_ACCOUNT"]).Wait();
 
             /*Main application loop */
             while (true)
