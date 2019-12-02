@@ -92,6 +92,9 @@ namespace DiScribe.Email
                 .Request()
                 .GetAsync();
 
+            if (inbox.TotalItemCount == 0)
+                throw new Exception(">\tEmail Inbox Empty...");
+
             // Get messages from the inbox mail folder
             var messages = await _graphClient
                 .Users[_userId]
@@ -105,10 +108,7 @@ namespace DiScribe.Email
             if (messages is null)
                 throw new Exception("Messages Retrieved were <NULL>");
 
-            if (messages.Count > 0)
-                return messages[0];
-
-            throw new Exception("Email Inbox Empty...");
+            return messages[0];
         }
 
         public static async Task<bool> DeleteEmailAsync(Message message)
@@ -159,7 +159,7 @@ namespace DiScribe.Email
         public static bool IsValidWebexInvitation(Message message)
         {
             if (message is null)
-                throw new Exception("Email Message Received was <NULL>");
+                throw new Exception("ValidWebExInvitation: Email Message Received was <NULL>");
 
             var content = message.Body.Content;
             return !content.Contains("Webex")
@@ -179,7 +179,7 @@ namespace DiScribe.Email
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
 
             if (htmlNodes is null)
-                throw new Exception("Email is not in proper format");            
+                throw new Exception("Email is not in proper format");
 
             for (int i = 0; i < htmlNodes.Count; i++)
             {

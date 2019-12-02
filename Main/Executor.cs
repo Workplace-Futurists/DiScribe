@@ -50,7 +50,7 @@ namespace DiScribe.Main
         /// <returns></returns>
         private static async Task ListenForInvitations(IConfigurationRoot appConfig, int seconds = 10)
         {
-            Console.WriteLine("Bot is Listening for meeting invites...");
+            Console.WriteLine(">\tBot is Listening for meeting invites...");
 
             try
             {
@@ -59,7 +59,7 @@ namespace DiScribe.Main
                 if (!EmailListener.IsValidWebexInvitation(message))
                 {
                     EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
-                    throw new Exception("Not a valid WebEx Invitation. Deleting Email...");
+                    throw new Exception(">\tNot a valid WebEx Invitation. Deleting Email...");
                 }
 
                 var meeting_info = EmailListener.GetMeetingInfo(message); //Get access code from bot's invite email
@@ -75,9 +75,12 @@ namespace DiScribe.Main
 
                 EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
             }
-            catch (Exception ex)
+            catch (AggregateException exs)
             {
-                Console.Error.WriteLine(ex.Message);
+                foreach (var ex in exs.InnerExceptions)
+                {
+                    Console.Error.WriteLine(ex.Message);
+                }
             }
 
             await Task.Delay(seconds * 1000);            
@@ -122,9 +125,12 @@ namespace DiScribe.Main
                     return -1;
                 }
             }
-            catch(Exception ex)
+            catch (AggregateException exs)
             {
-                Console.Error.WriteLine(ex.Message);
+                foreach (var ex in exs.InnerExceptions)
+                {
+                    Console.Error.WriteLine(ex.Message);
+                }
                 return -1;
             }
         }
