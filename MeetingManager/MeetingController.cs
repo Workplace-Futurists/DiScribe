@@ -13,6 +13,8 @@ namespace DiScribe.Meeting
 {
     public static class MeetingController
     {
+        public static string BOT_EMAIL;
+
         public static string CreateWebExMeeting(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration)
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -66,8 +68,18 @@ namespace DiScribe.Meeting
          */
         public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees)
         {
-            var unregistered = DatabaseController.GetUnregisteredUsersFrom(EmailHelper.FromEmailAddressListToStringList(attendees));
-            EmailSender.SendEmailForVoiceRegistration(EmailHelper.FromStringListToEmailAddressList(unregistered));
+            try
+            {
+                var unregistered = DatabaseController.GetUnregisteredUsersFrom(
+                    EmailHelper.FromEmailAddressListToStringList(attendees));
+
+                EmailSender.SendEmailForVoiceRegistration(
+                    EmailHelper.FromStringListToEmailAddressList(unregistered));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
         }
 
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
@@ -185,9 +197,9 @@ namespace DiScribe.Meeting
 
             for (int i = 0; i < emails.Count; i++)
             {
-                // TODO currently all workplace-futurists emails are hardcoded
-                if (emails[i].Equals("workplace-futurists@hotmail.com"))
+                if (emails[i].Equals(BOT_EMAIL, StringComparison.CurrentCultureIgnoreCase))
                     continue;
+                Console.WriteLine("\t-\t" + emails[i]);
                 emailAddresses.Add(new EmailAddress(emails[i], names[i]));
             }
 
@@ -205,7 +217,6 @@ namespace DiScribe.Meeting
 
             foreach (XmlNode emailNode in emailNodes)
             {
-                Console.WriteLine("\t-\t" + emailNode.InnerText);
                 emails.Add(emailNode.InnerText);
             }
 
@@ -223,7 +234,6 @@ namespace DiScribe.Meeting
 
             foreach (XmlNode nameNode in nameNodes)
             {
-                //Console.WriteLine(nameNode.InnerText);
                 names.Add(nameNode.InnerText);
             }
 

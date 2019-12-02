@@ -26,7 +26,7 @@ namespace DiScribe.Dialer
         // ex. 628079791
         private string FormatDigits(string meetingNum)
         {
-            // TODO: assert length of meeting number 
+            // TODO: assert length of meeting number
             // add necessary digits and pauses ('w') for send digits
             var result = "wwwwwwwwww1ww#wwww" +
                 meetingNum[0] + "w" +
@@ -45,7 +45,7 @@ namespace DiScribe.Dialer
 
         public async Task<string> CallMeetingAsync(string mNum)
         {
-            Console.WriteLine("Dialing into webex meeting with access code " + mNum);
+            Console.WriteLine(">\tDialing into webex meeting with access code " + mNum);
             TwilioClient.Init(_accountSid, _authToken);
 
             // call in number and call from number
@@ -92,7 +92,7 @@ namespace DiScribe.Dialer
                 finishedCall = calls.First(record => record.Sid == callSid);
                 var pendingStatus = finishedCall.Status;
 
-                // check if the record is 
+                // check if the record is
                 if (pendingStatus == CallResource.StatusEnum.Completed)
                 {
                     Console.WriteLine(">\tCall Completed");

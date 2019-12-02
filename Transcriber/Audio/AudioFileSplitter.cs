@@ -108,13 +108,11 @@ namespace DiScribe.Transcriber.Audio
             byte[] dataCopy = (byte[])AudioData.Clone();                   //Make copy of audio data
 
             /*Calc audio length in milliseconds */
-           
 
             long bitRate = REQ_SAMPLE_RATE * REQ_BITS_PER_SAMPLE;
             long bytesPerSecond = bitRate / 8L;
             long audioLengthMS = AudioData.Length * 1000L / bytesPerSecond;
 
-            Console.WriteLine("hi");
             return new AudioSegment(dataCopy, 0, audioLengthMS);
         }
 
@@ -222,7 +220,7 @@ namespace DiScribe.Transcriber.Audio
 
                     /*Write converted audio to overwrite the original wav file */
                     WaveFileWriter.CreateWaveFile16(AudioFile.FullName, resampler);
-                  
+
                 }
 
                 using (WaveFileReader reader = new WaveFileReader(AudioFile.FullName))
@@ -231,8 +229,8 @@ namespace DiScribe.Transcriber.Audio
                     reader.Read(AudioData, 0, (int)reader.Length);
                 }
 
-                
-            }    
+
+            }
         }
     }
 }

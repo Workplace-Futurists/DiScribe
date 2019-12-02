@@ -42,7 +42,7 @@ namespace DiScribe.Email
         private static SendGridClient Initialize()
         {
             var appConfig = LoadAppSettings();
-            
+
             if (appConfig == null)
             {
                 Console.WriteLine(">\tMissing or invalid appsettings.json!");
@@ -63,7 +63,9 @@ namespace DiScribe.Email
 
         public static void SendEmail(List<EmailAddress> recipients, string subject, string htmlContent, FileInfo file = null)
         {
-            SendEmailHelper(OfficialEmail, recipients, subject, htmlContent, file).Wait();
+            if (recipients.Count > 0)
+                SendEmailHelper(OfficialEmail, recipients, subject, htmlContent, file).Wait();
+            throw new Exception(">\tNo recipients were found");
         }
 
         public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string meeting_info = "your recent meeting")
@@ -79,6 +81,9 @@ namespace DiScribe.Email
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
         {
             Console.WriteLine(">\tSending Emails to Unregistered Users...");
+            if (emails.Count == 0)
+                throw new Exception("No recipients were found");
+
             foreach (EmailAddress email in emails)
             {
                 var defaultURL = RegUrl;

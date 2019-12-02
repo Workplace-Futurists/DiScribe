@@ -22,23 +22,18 @@ namespace DiScribe.Main
             var appConfig = Configurations.LoadAppSettings(RELEASE);
 
             EmailListener.Initialize(
-                appConfig["appId"], // 
+                appConfig["appId"], //
                 appConfig["tenantId"],
                 appConfig["clientSecret"],
-                appConfig["BOT_MAIL_ACCOUNT"] // bots email account
+                appConfig["mailUser"] // bots email account
                 ).Wait();
+
+            MeetingController.BOT_EMAIL = appConfig["mailUser"];
 
             /*Main application loop */
             while (true)
             {
-                try
-                {
-                    ListenForInvitations(appConfig).Wait();
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine(ex);
-                }
+                ListenForInvitations(appConfig).Wait();
             }
         }
 
@@ -49,7 +44,7 @@ namespace DiScribe.Main
         ///     -> If there is a message, get access code from it
         ///     -> Call webex API to get meeting time from access code
         ///     -> Schedule the rest of the dial to transcribe workflow
-        ///         
+        ///
         /// </summary>
         /// <param name="seconds"></param>
         /// <returns></returns>
@@ -64,12 +59,12 @@ namespace DiScribe.Main
                 if (!EmailListener.IsValidWebexInvitation(message))
                 {
                     EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
-                    throw new Exception("Not a valid WebEx Invitation");
+                    throw new Exception("Not a valid WebEx Invitation. Deleting Email...");
                 }
 
                 var meeting_info = EmailListener.GetMeetingInfo(message); //Get access code from bot's invite email
 
-                Console.WriteLine("New Meeting Found at: " +
+                Console.WriteLine(">\tNew Meeting Found at: " +
                     meeting_info.StartTime.ToLocalTime());
 
                 MeetingController.SendEmailsToAnyUnregisteredUsers(
@@ -85,7 +80,7 @@ namespace DiScribe.Main
                 Console.Error.WriteLine(ex.Message);
             }
 
-            await Task.Delay(seconds * 1000);
+            await Task.Delay(seconds * 1000);            
         }
 
         /// <summary>
@@ -97,31 +92,39 @@ namespace DiScribe.Main
         /// <returns></returns>
         static int Run(string accessCode, IConfigurationRoot appConfig)
         {
-            // dialing & recording
-            var rid = new DialerController(appConfig).CallMeetingAsync(accessCode).Result;
-            var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid, RELEASE).Result;
-
-            // retrieving all attendees' emails as a List
-            var invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
-
-            // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
-            var regController = RegistrationController.BuildController(
-                EmailHelper.FromEmailAddressListToStringList(invitedUsers));
-
-            // initializing the transcribe controller 
-            var transcribeController = new TranscribeController(recording, regController.UserProfiles);
-
-            // performs transcription and speaker recognition
-            if (transcribeController.Perform())
+            try
             {
-                EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, RELEASE));
-                Console.WriteLine(">\tTask Complete!");
-                return 0;
+                // dialing & recording
+                var rid = new DialerController(appConfig).CallMeetingAsync(accessCode).Result;
+                var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid, RELEASE).Result;
+
+                // retrieving all attendees' emails as a List
+                var invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
+
+                // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
+                var regController = RegistrationController.BuildController(
+                    EmailHelper.FromEmailAddressListToStringList(invitedUsers));
+
+                // initializing the transcribe controller
+                var transcribeController = new TranscribeController(recording, regController.UserProfiles);
+
+                // performs transcription and speaker recognition
+                if (transcribeController.Perform())
+                {
+                    EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, RELEASE));
+                    Console.WriteLine(">\tTask Complete!");
+                    return 0;
+                }
+                else
+                {
+                    EmailSender.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
+                    Console.WriteLine(">\tFailed to generat!");
+                    return -1;
+                }
             }
-            else
+            catch(Exception ex)
             {
-                EmailSender.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
-                Console.WriteLine(">\tFailed to generat!");
+                Console.Error.WriteLine(ex.Message);
                 return -1;
             }
         }

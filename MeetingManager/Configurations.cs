@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace DiScribe.Dialer
+namespace DiScribe.Meeting
 {
     public static class Configurations
     {

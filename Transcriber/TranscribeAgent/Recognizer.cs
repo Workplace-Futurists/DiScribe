@@ -141,7 +141,7 @@ namespace DiScribe.Transcriber
                     }
                     catch (Exception ex)
                     {
-                        Console.Error.WriteLine(ex);
+                        Console.Error.WriteLine(ex.Message);
                     }
                 }
             }

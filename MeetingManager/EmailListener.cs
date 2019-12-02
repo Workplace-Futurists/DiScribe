@@ -19,7 +19,7 @@ namespace DiScribe.Email
         // Subscription variables
         private const int MAX_SUB_EXPIRATION_MINS = 4230;
         private static Dictionary<string, Subscription> _Subscriptions = new Dictionary<string, Subscription>();
-        private static System.Timers.Timer _subscriptionTimer;
+        private static Timer _subscriptionTimer;
         private static string _userId;
 
         public static async Task Initialize(string appId, string tenantID, string clientSecret, string principal)
@@ -37,6 +37,8 @@ namespace DiScribe.Email
             var user = await GetMeAsync(principal);
 
             _userId = user.Id;
+
+            Console.WriteLine(">\tInitialzed Email Listener on Email : <" + principal + ">");
         }
 
         /// <summary>
