@@ -4,12 +4,6 @@
     ViewData["Title"] = "Create";
 }
 
-
-@section Scripts
-{
-    <script type="module" src="~/dist/validation.entry.js" defer></script>
-}
-
 <h5>Regist Audio Profile</h5>
 <hr />
 <div class="row">
@@ -54,11 +48,11 @@
                 <ol id="recordingsList">
                 </ol>
                 <label>Audio Recording Field, will be filled once you complete recording.</label>
-                <input asp-for="AudioSample_str" class="form-control" id="audio_sample" readonly="@(true)" />
+                <input asp-for="AudioSample_str" class="form-control" id="audio_sample" readonly="@(true)"/>
                 <span asp-validation-for="AudioSample_str" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Register Audio Profile" class="btn btn-primary" />
+                <input type="submit" value="Register Audio Profile" class="btn btn-primary"/>
             </div>
             <div><b>@ViewBag.message</b></div>
         </form>
@@ -69,6 +63,6 @@
     <a asp-action="Index">Back to List</a>
 </div>-->
 
-@*@section Scripts {
+@section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}*@
+}
