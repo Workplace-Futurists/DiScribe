@@ -156,7 +156,11 @@ namespace DiScribe.Email
             if (message is null)
                 throw new Exception("Email Message Received was <NULL>");
 
-            return message.Body.Content.Contains("Webex");
+            var content = message.Body.Content;
+            return !content.Contains("Webex")
+                || !content.Contains("invites")
+                || !content.Contains("Meeting number(access code): ")
+                || !content.Contains("Meeting password: ");
         }
 
         public static Meeting.MeetingInfo GetMeetingInfo(Message message)
