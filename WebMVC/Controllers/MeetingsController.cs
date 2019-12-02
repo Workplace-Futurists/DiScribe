@@ -11,7 +11,7 @@ using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
 
-namespace DiScribeWebMVC.Controllers
+namespace DiScribe.WebMVC.Controllers
 {
     public class MeetingsController : Controller
     {
