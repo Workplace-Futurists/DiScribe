@@ -97,7 +97,6 @@ namespace DiScribe.Main
             {
                 // dialing & recording
                 var rid = new DialerController(appConfig).CallMeetingAsync(accessCode).Result;
-                // TODO: RELEASE
                 var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
 
                 // retrieving all attendees' emails as a List
@@ -113,7 +112,6 @@ namespace DiScribe.Main
                 // performs transcription and speaker recognition
                 if (transcribeController.Perform())
                 {
-                    // TODO: RELEASE
                     EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));
                     Console.WriteLine(">\tTask Complete!");
                     return 0;
@@ -121,7 +119,7 @@ namespace DiScribe.Main
                 else
                 {
                     EmailSender.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
-                    Console.WriteLine(">\tFailed to generat!");
+                    Console.WriteLine(">\tFailed to generate!");
                     return -1;
                 }
             }
