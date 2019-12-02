@@ -17,7 +17,7 @@ namespace DiScribe.DiScribeDebug
 
 
 
-            TrancriptionTest.TestTranscription(@"../../../../Record/RE1653360c6857790dd9ebe854b79e1b86.wav");
+            //TrancriptionTest.TestTranscription(@"../../../../Record/RE1653360c6857790dd9ebe854b79e1b86.wav");
 
 
 
@@ -31,13 +31,13 @@ namespace DiScribe.DiScribeDebug
 
 
 
-            //User test = RegAudioTest.TestLoadUser("whatever@hotmail.com");
+            User test = RegAudioTest.TestLoadUser("kengqiangmk@gmail.com");
 
-            //if (test == null)
-            //    Console.WriteLine("Fake User not exist");
+            if (test == null)
+                Console.WriteLine("Fake User not exist");
 
-            //else
-            //    Console.WriteLine(test.ToString());
+            else
+                Console.WriteLine(test.ToString());
 
         }
     }

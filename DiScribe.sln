@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29424.173
+VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "Main\Main.csproj", "{4E2A65CB-D580-4716-B304-0840A7C1EA44}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseManager", "Database
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Scheduler.csproj", "{2204E868-0412-4A9D-949E-BF1B81E07C14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMVC", "WebMVC\WebMVC.csproj", "{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiScribeDebug", "DiScribeDebug\DiScribeDebug.csproj", "{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{799D6680-F613-4E6C-B46B-6A806732A454} = {799D6680-F613-4E6C-B46B-6A806732A454}
@@ -28,6 +26,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiScribeDebug", "DiScribeDe
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV_Converter", "WAV_Converter\WAV_Converter.csproj", "{2305429B-8E3C-495C-BA76-4C2CC45A35D3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMVC", "WebMVC\WebMVC.csproj", "{87CABFF8-F0FD-4E19-B779-192AEACADD3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,14 +93,6 @@ Global
 		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|anycpu.Build.0 = Release|Any CPU
 		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|x64.ActiveCfg = Release|Any CPU
 		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|x64.Build.0 = Release|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Debug|anycpu.ActiveCfg = Debug|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Debug|anycpu.Build.0 = Debug|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Debug|x64.Build.0 = Debug|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Release|anycpu.ActiveCfg = Release|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Release|anycpu.Build.0 = Release|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Release|x64.ActiveCfg = Release|Any CPU
-		{A2C2AA8B-4EAA-4742-846E-12AB378EEA33}.Release|x64.Build.0 = Release|Any CPU
 		{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}.Debug|anycpu.ActiveCfg = Debug|Any CPU
 		{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}.Debug|anycpu.Build.0 = Debug|Any CPU
 		{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -117,6 +109,14 @@ Global
 		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Release|anycpu.Build.0 = Release|Any CPU
 		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Release|x64.ActiveCfg = Release|Any CPU
 		{2305429B-8E3C-495C-BA76-4C2CC45A35D3}.Release|x64.Build.0 = Release|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Debug|x64.Build.0 = Debug|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Release|anycpu.Build.0 = Release|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Release|x64.ActiveCfg = Release|Any CPU
+		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

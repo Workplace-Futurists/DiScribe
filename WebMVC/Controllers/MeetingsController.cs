@@ -8,11 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using DiScribe.WebMVC.Models;
 using DiScribe.Meeting;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
-using Nito.AsyncEx;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
 
-namespace DiScribe.WebMVC.Controllers
+namespace DiScribeWebMVC.Controllers
 {
     public class MeetingsController : Controller
     {
@@ -60,7 +59,7 @@ namespace DiScribe.WebMVC.Controllers
             }
             catch (Exception ex)
             {
-                
+
             }
 
             //MeetingControllers.EmailController.Initialize();
