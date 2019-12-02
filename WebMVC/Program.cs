@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DiScribe.WebMVC
+namespace DiScribeWebMVC
 {
     public class Program
     {

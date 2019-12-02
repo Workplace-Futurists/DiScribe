@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace DiScribe.WebMVC.Models
 {
     public class MeetingClass
@@ -40,7 +41,7 @@ namespace DiScribe.WebMVC.Models
 
         [Display(Name = "WebExID")]
         public string WebExID { get; set; }
-        
+
         [NotMapped]
         [Required(ErrorMessage = "Please enter participants emails separated by comma")]
         public string Participants { get; set; }

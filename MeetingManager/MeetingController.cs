@@ -169,7 +169,6 @@ namespace DiScribe.Meeting
             DateTime meetingTime;
             DateTime.TryParse($"{startDate}", out meetingTime);
 
-
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
@@ -186,6 +185,9 @@ namespace DiScribe.Meeting
 
             for (int i = 0; i < emails.Count; i++)
             {
+                // TODO currently all workplace-futurists emails are hardcoded
+                if (emails[i].Equals("workplace-futurists@hotmail.com"))
+                    continue;
                 emailAddresses.Add(new EmailAddress(emails[i], names[i]));
             }
 

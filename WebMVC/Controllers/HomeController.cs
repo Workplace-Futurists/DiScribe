@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using DiScribe.WebMVC.Models;
 
 
-namespace DiScribe.WebMVC.Controllers
+namespace DiScribeWebMVC.Controllers
 {
     public class HomeController : Controller
     {

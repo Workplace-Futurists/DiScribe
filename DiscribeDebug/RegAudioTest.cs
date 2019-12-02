@@ -14,7 +14,7 @@ namespace DiScribe.DiScribeDebug
         public static User TestLoadUser(string userEmail)
         {
             User user = null;
-            WaveFormat format = new WaveFormat(16000, 16, 1);
+            WaveFormat format = new WaveFormat(48000, 16, 1);
             using (WaveFileWriter writer = new WaveFileWriter("test.wav", format))
             {
 
@@ -23,7 +23,7 @@ namespace DiScribe.DiScribeDebug
                 if (user == null)
                     return null;
 
-                byte[] audioData = user.AudioStream.ToArray(); ;
+                byte[] audioData = user.AudioStream.ToArray();
 
                 writer.Write(audioData, 0, audioData.Length);               //Write audio data to test.wav;.
 

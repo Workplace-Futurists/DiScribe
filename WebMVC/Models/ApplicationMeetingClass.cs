@@ -8,7 +8,7 @@ namespace DiScribe.WebMVC.Models
 {
     public class ApplicationMeetingClass : DbContext
     {
-        public ApplicationMeetingClass(DbContextOptions<ApplicationMeetingClass>options):base(options)
+        public ApplicationMeetingClass(DbContextOptions<ApplicationMeetingClass> options) : base(options)
         {
 
         }

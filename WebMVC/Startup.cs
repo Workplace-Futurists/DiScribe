@@ -13,7 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using DiScribe.WebMVC.Models;
 
-namespace DiScribe.WebMVC
+namespace DiScribeWebMVC
 {
     public class Startup
     {

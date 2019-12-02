@@ -48,7 +48,7 @@ namespace DiScribe.WebMVC.Controllers
         public IActionResult Create(UserClass uc, string AudioSample_str)
         {
             //byte[] converted = ObjectToByteArray(AudioSample);
-            byte[] converted = Encoding.UTF8.GetBytes(AudioSample_str);
+            byte[] converted = Convert.FromBase64String(AudioSample_str);
             //byte[] converted = (byte[])AudioSample;
             uc.AudioSample = converted;
             _auc.Add(uc);
