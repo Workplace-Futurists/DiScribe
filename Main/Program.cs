@@ -10,7 +10,7 @@
              * being run with release
              * as release mode has different file pathing
              */
-            Executor.Execute(false);
+            Executor.Execute();
         }
     }
 }

@@ -6,19 +6,24 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace DiScribe.Meeting
-{
+{   
+    // this class is dependent on appsettings.json. if you wish to move this class, please remember to also move the dependent file appsettings.json
     public static class Configurations
     {
-        // TODO make this a proper class with get functions if we have time
-        public static IConfigurationRoot LoadAppSettings(bool release = false)
+        // Reads the AppSettings.json file and adds its configurations to the returned IConfigurationRoot object
+        public static IConfigurationRoot LoadAppSettings()
         {
             string basepath;
-            if (release)
+            #if (DEBUG)
                 basepath = Directory.GetCurrentDirectory();
-            else
+            #else
                 basepath = new DirectoryInfo(Directory
                     .GetCurrentDirectory()
                     .Replace("bin/Debug/netcoreapp3.0", "")).Parent.FullName;
+            #endif
+
+
+            Console.WriteLine(basepath);
 
             var appConfig = new ConfigurationBuilder()
                 .SetBasePath(basepath)

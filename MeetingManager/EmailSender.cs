@@ -65,7 +65,7 @@ namespace DiScribe.Email
         {
             if (recipients.Count > 0)
                 SendEmailHelper(OfficialEmail, recipients, subject, htmlContent, file).Wait();
-            throw new Exception(">\tNo recipients were found");
+            Console.WriteLine(">\tWarning: No recipients were found");
         }
 
         public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string meeting_info = "your recent meeting")

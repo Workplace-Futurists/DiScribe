@@ -13,13 +13,11 @@ namespace DiScribe.Main
 {
     static class Executor
     {
-        private static bool RELEASE;
 
-        public static void Execute(bool release = false)
+        public static void Execute()
         {
-            RELEASE = release;
             // Set Authentication configurations
-            var appConfig = Configurations.LoadAppSettings(RELEASE);
+            var appConfig = Configurations.LoadAppSettings();
 
             EmailListener.Initialize(
                 appConfig["appId"], //
@@ -99,7 +97,8 @@ namespace DiScribe.Main
             {
                 // dialing & recording
                 var rid = new DialerController(appConfig).CallMeetingAsync(accessCode).Result;
-                var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid, RELEASE).Result;
+                // TODO: RELEASE
+                var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
 
                 // retrieving all attendees' emails as a List
                 var invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
@@ -114,7 +113,8 @@ namespace DiScribe.Main
                 // performs transcription and speaker recognition
                 if (transcribeController.Perform())
                 {
-                    EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid, RELEASE));
+                    // TODO: RELEASE
+                    EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));
                     Console.WriteLine(">\tTask Complete!");
                     return 0;
                 }

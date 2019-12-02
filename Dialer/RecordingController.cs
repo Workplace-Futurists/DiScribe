@@ -30,7 +30,7 @@ namespace DiScribe.Dialer
         }
 
         // given an rid, download a recording
-        public async Task<FileInfo> DownloadRecordingAsync(string rid, Boolean release = false)
+        public async Task<FileInfo> DownloadRecordingAsync(string rid)
         {
             Console.WriteLine(">\tDownloading Recording...");
 
@@ -60,9 +60,12 @@ namespace DiScribe.Dialer
                     byte[] buffer = new byte[bufferSize];
                     int bytesRead = 0;
 
+                    #if (DEBUG)
                     string filePath = (@"../../../../Record/" + rid + ".wav");
-                    if (release)
+                    #else
                         filePath = (@"Record/" + rid + ".wav");
+                    #endif
+
                     Console.WriteLine(">\tDownloading Recording as\n\t[" +
                         new FileInfo(filePath).FullName + "]");
 

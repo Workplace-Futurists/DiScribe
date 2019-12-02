@@ -38,7 +38,7 @@ namespace DiScribe.Email
 
             _userId = user.Id;
 
-            Console.WriteLine(">\tInitialzed Email Listener on Email : <" + principal + ">");
+            Console.WriteLine(">\tInitialized Email Listener on Email : <" + principal + ">");
         }
 
         /// <summary>

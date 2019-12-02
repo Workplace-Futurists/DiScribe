@@ -11,8 +11,6 @@ namespace DiScribe.Transcriber
 {
     public class TranscribeController
     {
-        private static readonly FileInfo MeetingMinutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
-
         /// <summary>
         /// Presents an interface to the speaker-recognition based transcription functionality.
         /// Allows the use of a set of Voiceprints to perform transcription of a meeting audio file.
@@ -72,11 +70,17 @@ namespace DiScribe.Transcriber
             return true;
         }
 
-        public FileInfo WriteTranscriptionFile(string rid = "", bool release = false, int lineLength = 120)
+        public FileInfo WriteTranscriptionFile(string rid = "", int lineLength = 120)
         {
-            var meetingMinutes = MeetingMinutes;
-            if (release)
+            FileInfo meetingMinutes;
+
+            // Changes location of stored meeting minutes in release mode
+            #if (DEBUG)
+                meetingMinutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
+            #else
                 meetingMinutes = new FileInfo(@"Transcripts/minutes.txt");
+            #endif
+
             FileInfo transcript;
             if (rid.Equals(""))
                 transcript = meetingMinutes;
