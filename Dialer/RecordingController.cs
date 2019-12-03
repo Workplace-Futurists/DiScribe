@@ -60,8 +60,9 @@ namespace DiScribe.Dialer
                     byte[] buffer = new byte[bufferSize];
                     int bytesRead = 0;
 
+                    string filePath;
                     #if (DEBUG)
-                    string filePath = (@"../../../../Record/" + rid + ".wav");
+                        filePath = (@"../../../../Record/" + rid + ".wav");
                     #else
                         filePath = (@"Record/" + rid + ".wav");
                     #endif
