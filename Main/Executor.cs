@@ -13,7 +13,6 @@ namespace DiScribe.Main
 {
     static class Executor
     {
-
         public static void Execute()
         {
             // Set Authentication configurations

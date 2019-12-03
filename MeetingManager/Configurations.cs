@@ -14,14 +14,15 @@ namespace DiScribe.Meeting
         public static IConfigurationRoot LoadAppSettings()
         {
             string basepath;
-            #if (DEBUG)
-                basepath = Directory.GetCurrentDirectory();
-            #else
+            #if DEBUG
                 basepath = new DirectoryInfo(Directory
-                    .GetCurrentDirectory()
-                    .Replace("bin/Debug/netcoreapp3.0", "")).Parent.FullName;
+                        .GetCurrentDirectory()
+                        .Replace("bin/Debug/netcoreapp3.0", "")
+                        .Replace("bin/Release/netcoreapp3.0", ""))
+                        .Parent.FullName;
+            #else                
+                basepath = Directory.GetCurrentDirectory();
             #endif
-
 
             Console.WriteLine(basepath);
 
