@@ -65,12 +65,17 @@ namespace DiScribe.Email
         {
             if (recipients.Count > 0)
                 SendEmailHelper(OfficialEmail, recipients, subject, htmlContent, file).Wait();
-            Console.WriteLine(">\tWarning: No recipients were found");
+            else
+                Console.Error.WriteLine(">\tWarning: No recipients were found");
         }
 
         public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string meeting_info = "your recent meeting")
         {
             Console.WriteLine(">\tSending the Transcription Results to users...");
+            foreach (var email in recipients)
+            {
+                Console.WriteLine(">\t-\t" + email.Email);
+            }
             string subject = "Meeting minutes of " + meeting_info;
 
             // TODO need the infos

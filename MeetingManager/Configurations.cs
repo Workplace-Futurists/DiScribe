@@ -24,8 +24,6 @@ namespace DiScribe.Meeting
                 basepath = Directory.GetCurrentDirectory();
             #endif
 
-            Console.WriteLine(basepath);
-
             var appConfig = new ConfigurationBuilder()
                 .SetBasePath(basepath)
                 .AddJsonFile("appsettings.json", false, true)
