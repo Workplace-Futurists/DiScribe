@@ -5,7 +5,11 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace DiScribe.Transcriber.Audio
+
+
+
+
+namespace DiScribe.AudioHandling
 {
     /// <summary>
     /// Provides meeting audio file splitting. An audio file is split into <see cref="AudioSegment"></see>
@@ -184,6 +188,52 @@ namespace DiScribe.Transcriber.Audio
             }
             return output;
         }
+
+
+        /// <summary>
+        /// Resample source into 16 bit WAV mono output with the target sampling rate.
+        /// Output stream includes modified RIFF header.
+        /// </summary>
+        /// <param name="sourceStream"></param>
+        /// <param name="targetSampleRate"></param>
+        /// <param name="targetChannels"></param>
+        /// <returns></returns>
+        public static MemoryStream Resample(MemoryStream sourceStream, int targetSampleRate)
+        {
+                /*Read from the wav file's contents using stream */
+                using (var inputReader = new WaveFileReader(sourceStream))
+                {
+                    int sourceChannels = inputReader.WaveFormat.Channels;
+
+                    WdlResamplingSampleProvider resampler;
+
+                    /*Stereo source. Must convert to mono with StereoToMonoSampleProvider */
+                    if (sourceChannels == 2)
+                    {
+                        var monoSampleProvider = new StereoToMonoSampleProvider(inputReader.ToSampleProvider());
+                        resampler = new WdlResamplingSampleProvider(monoSampleProvider, targetSampleRate);
+                    }
+                    else
+                    {
+                        resampler = new WdlResamplingSampleProvider(inputReader.ToSampleProvider(), targetSampleRate);
+                    }
+
+                    MemoryStream outStream = new MemoryStream();
+
+                    /*Write origin data to stream as 16 bit PCM */
+                    WaveFileWriter.WriteWavFileToStream(outStream, resampler.ToWaveProvider16());
+
+
+                return outStream;
+
+                }
+
+        }
+
+
+
+        
+
 
         /// <summary>
         /// Converts data in Wav file into the specified format and reads data section of file (removes header) into AudioData buffer.

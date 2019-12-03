@@ -10,8 +10,7 @@ using Microsoft.CognitiveServices.Speech.Intent;
 using DiScribe.DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
-using NAudio.Wave;
-using DiScribe.Transcriber.Audio;
+using DiScribe.AudioHandling;
 
 namespace DiScribe.Transcriber
 {

@@ -4,30 +4,40 @@ VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main", "Main\Main.csproj", "{4E2A65CB-D580-4716-B304-0840A7C1EA44}"
 	ProjectSection(ProjectDependencies) = postProject
-		{2204E868-0412-4A9D-949E-BF1B81E07C14} = {2204E868-0412-4A9D-949E-BF1B81E07C14}
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232} = {C5B473A4-7BDB-40F3-8422-5E35A8C68232}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dialer", "Dialer\Dialer.csproj", "{331C0A0F-DE99-493B-A532-4857DB2082F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transcriber", "Transcriber\Transcriber.csproj", "{799D6680-F613-4E6C-B46B-6A806732A454}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9} = {F79018FD-0BF1-4936-A0D9-59036FC764B9}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeakerRecognitionClientLibrary", "SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj", "{C39CE9CA-9B29-4754-89E7-1A0A1E9812A4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeetingManager", "MeetingManager\MeetingManager.csproj", "{5C4778A4-E3FE-49E6-BC1C-E453D3AAB455}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseManager", "DatabaseManager\DatabaseManager.csproj", "{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Scheduler.csproj", "{2204E868-0412-4A9D-949E-BF1B81E07C14}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9} = {F79018FD-0BF1-4936-A0D9-59036FC764B9}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiScribeDebug", "DiScribeDebug\DiScribeDebug.csproj", "{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{799D6680-F613-4E6C-B46B-6A806732A454} = {799D6680-F613-4E6C-B46B-6A806732A454}
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9} = {B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}
+		{C39CE9CA-9B29-4754-89E7-1A0A1E9812A4} = {C39CE9CA-9B29-4754-89E7-1A0A1E9812A4}
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9} = {F79018FD-0BF1-4936-A0D9-59036FC764B9}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV_Converter", "WAV_Converter\WAV_Converter.csproj", "{2305429B-8E3C-495C-BA76-4C2CC45A35D3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMVC", "WebMVC\WebMVC.csproj", "{87CABFF8-F0FD-4E19-B779-192AEACADD3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioHandling", "AudioHandling\AudioHandling.csproj", "{F79018FD-0BF1-4936-A0D9-59036FC764B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Scheduler.csproj", "{C5B473A4-7BDB-40F3-8422-5E35A8C68232}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,14 +95,6 @@ Global
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Release|anycpu.Build.0 = Release|Any CPU
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Release|x64.ActiveCfg = Release|Any CPU
 		{B6D7AB98-0CC7-42FD-B553-BC59A7C02EA9}.Release|x64.Build.0 = Release|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|anycpu.ActiveCfg = Debug|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|anycpu.Build.0 = Debug|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Debug|x64.Build.0 = Debug|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|anycpu.ActiveCfg = Release|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|anycpu.Build.0 = Release|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|x64.ActiveCfg = Release|Any CPU
-		{2204E868-0412-4A9D-949E-BF1B81E07C14}.Release|x64.Build.0 = Release|Any CPU
 		{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}.Debug|anycpu.ActiveCfg = Debug|Any CPU
 		{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}.Debug|anycpu.Build.0 = Debug|Any CPU
 		{5C8C110D-0596-4D2F-BA4E-1C7041C3A8B8}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -117,6 +119,22 @@ Global
 		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Release|anycpu.Build.0 = Release|Any CPU
 		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Release|x64.ActiveCfg = Release|Any CPU
 		{87CABFF8-F0FD-4E19-B779-192AEACADD3D}.Release|x64.Build.0 = Release|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Debug|x64.Build.0 = Debug|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Release|anycpu.Build.0 = Release|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Release|x64.ActiveCfg = Release|Any CPU
+		{F79018FD-0BF1-4936-A0D9-59036FC764B9}.Release|x64.Build.0 = Release|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Debug|x64.Build.0 = Debug|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Release|anycpu.Build.0 = Release|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Release|x64.ActiveCfg = Release|Any CPU
+		{C5B473A4-7BDB-40F3-8422-5E35A8C68232}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

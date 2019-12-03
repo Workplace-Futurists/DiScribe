@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.CognitiveServices.Speech;
-using DiScribe.Transcriber.Audio;
 using DiScribe.DatabaseManager;
+using DiScribe.AudioHandling;
 
 namespace DiScribe.Transcriber
 {

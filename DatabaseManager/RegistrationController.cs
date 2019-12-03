@@ -6,6 +6,7 @@ using DiScribe.DatabaseManager.Data;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
+using DiScribe.AudioHandling;
 
 namespace DiScribe.DatabaseManager
 {
@@ -69,6 +70,9 @@ namespace DiScribe.DatabaseManager
                     User curUser = DatabaseController.LoadUser(curEmail);
                     if (curUser is null)
                         continue;
+
+                    AudioFileSplitter.Resample(curUser.AudioStream, 16000);
+
                     userProfiles.Add(curUser);
                     Console.WriteLine($"\t-\t{email}\tLoad Succeeded.");
                 }

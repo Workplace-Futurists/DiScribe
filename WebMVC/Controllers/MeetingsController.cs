@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using DiScribe.Scheduler.Windows;
 using Microsoft.EntityFrameworkCore;
 using DiScribe.WebMVC.Models;
 using DiScribe.Meeting;
@@ -55,7 +54,7 @@ namespace DiScribe.WebMVC.Controllers
             try
             {
                 // TODO warning this part is hardcoded
-                SchedulerController.ScheduleTask(access_code, mc.MeetingStartDate, "Main.exe", @"C:\cs319_main");
+                //SchedulerController.ScheduleTask(access_code, mc.MeetingStartDate, "Main.exe", @"C:\cs319_main");
             }
             catch (Exception ex)
             {

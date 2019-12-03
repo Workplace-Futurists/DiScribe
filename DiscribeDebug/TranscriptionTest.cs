@@ -11,7 +11,7 @@ using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 using NAudio.Wave;
 using DiScribe.Transcriber;
-using DiScribe.Transcriber.Audio;
+using DiScribe.AudioHandling;
 
 namespace DiScribe.DiScribeDebug
 {
@@ -22,14 +22,14 @@ namespace DiScribe.DiScribeDebug
         public static void TestTranscription(string audioFileLoc)
         {
             /*Subscription key for Azure SpeakerRecognition service. */
-            //var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
+            var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
 
             FileInfo testRecording = new FileInfo(audioFileLoc);
             FileInfo meetingMinutes = new FileInfo(@"../transcript/minutes.txt");
 
             var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
 
-            //EnrollUsers(speakerIDKey, voiceprints).Wait();
+            EnrollUsers(speakerIDKey, voiceprints).Wait();
 
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(testRecording, voiceprints);

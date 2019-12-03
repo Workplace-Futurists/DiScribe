@@ -6,12 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
-using DiScribe.Transcriber.Audio;
 using Microsoft.CognitiveServices.Speech.Intent;
 using Microsoft.ProjectOxford.SpeakerRecognition;
 using Microsoft.ProjectOxford.SpeakerRecognition.Contract.Identification;
-using NAudio.Wave;
 using DiScribe.DatabaseManager.Data;
+using DiScribe.AudioHandling;
 
 namespace DiScribe.Transcriber
 {

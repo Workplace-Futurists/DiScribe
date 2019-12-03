@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DiScribe.DatabaseManager.Data;
-using DiScribe.Transcriber.Audio;
+using DiScribe.AudioHandling;
 
 namespace DiScribe.Transcriber
 {
