@@ -177,15 +177,15 @@ namespace DiScribe.DatabaseManager
                             Boolean canRead = false;
                             if (canRead = reader.Read())
                             {
-                                string firstName = Convert.ToString(reader["FirstName"]);
-                                string lastName = Convert.ToString(reader["LastName"]);
-                                string password = Convert.ToString(reader["Password"]);
+                                string firstName = (reader["FirstName"] is DBNull ? "" : Convert.ToString(reader["FirstName"]));
+                                string lastName = (reader["LastName"] is DBNull ? "" : Convert.ToString(reader["LastName"]));
+                                string password = (reader["Password"] is DBNull ? "" : Convert.ToString(reader["Password"]));
 
-                                Guid profileGuid = new Guid(Convert.ToString(reader["ProfileGUID"]));
-                                int userID = Convert.ToInt32(reader["UserID"]);
+                                Guid profileGuid = (reader["ProfileGUID"] is DBNull ? new Guid() :  new Guid(Convert.ToString(reader["ProfileGUID"])));
+                                int userID = ((reader["UserID"]) is DBNull ? -1 : Convert.ToInt32(reader["UserID"]));
 
-                                byte[] audioSample = (byte[])(reader["AudioSample"]);
-                                DateTime timestamp = Convert.ToDateTime(reader["TimeStamp"]);
+                                byte[] audioSample = (reader["AudioSample"] is DBNull ? null : (byte[])(reader["AudioSample"]));
+                                DateTime timestamp = (reader["TimeStamp"]) is DBNull ? new DateTime() : Convert.ToDateTime(reader["TimeStamp"]);
 
                                 result = new User(new UserParams(audioSample, firstName, lastName, email, profileGuid, userID, timestamp, password));
                             }

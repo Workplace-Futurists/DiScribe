@@ -37,7 +37,7 @@ namespace DiScribe.DiScribeDebug
                 Console.WriteLine("Fake User not exist");
 
             else
-                Console.WriteLine(test.ToString());
+                Console.WriteLine($"\t Loaded test user { test.FirstName} \t {test.LastName}");
 
         }
     }
