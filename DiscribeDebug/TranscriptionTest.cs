@@ -27,7 +27,14 @@ namespace DiScribe.DiScribeDebug
             FileInfo testRecording = new FileInfo(audioFileLoc);
             FileInfo meetingMinutes = new FileInfo(@"../transcript/minutes.txt");
 
-            var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
+            //var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
+
+            string userEmail = "kengqiangmk@gmail.com";
+
+            var voiceprints = new List<User> { DatabaseManager.DatabaseController.LoadUser(userEmail) };
+
+            voiceprints[0].AudioStream = AudioFileSplitter.Resample(voiceprints[0].AudioStream, 16000);
+            
 
             EnrollUsers(speakerIDKey, voiceprints).Wait();
 
@@ -118,7 +125,8 @@ namespace DiScribe.DiScribeDebug
                     await enrollmentCheck;
 
                     /*Check that this profile is enrolled */
-                    if (enrollmentCheck.Result.ProcessingResult.EnrollmentStatus == EnrollmentStatus.Enrolled)
+                    if (enrollmentCheck.Result.ProcessingResult != null &&  
+                        enrollmentCheck.Result.ProcessingResult.EnrollmentStatus == EnrollmentStatus.Enrolled)
                     {
                         done = true;
                     }

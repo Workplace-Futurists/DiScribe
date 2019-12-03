@@ -22,7 +22,7 @@ namespace DiScribe.Main
                 appConfig["appId"], //
                 appConfig["tenantId"],
                 appConfig["clientSecret"],
-                appConfig["mailUser"] // bots email account
+                appConfig["mailUser"] // bot's email account
                 ).Wait();
 
             MeetingController.BOT_EMAIL = appConfig["mailUser"];
@@ -51,26 +51,28 @@ namespace DiScribe.Main
 
             try
             {
-                var message = EmailListener.GetEmailAsync().Result; //Get latest email from bot's inbox.
+                /*Attempt latest email from bot's inbox every 3 seconds. 
+                 * If inbox is empty, no meeting will be scheduled. */
+                var message = EmailListener.GetEmailAsync().Result;                      
 
                 if (!EmailListener.IsValidWebexInvitation(message))
                 {
-                    EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
+                    EmailListener.DeleteEmailAsync(message).Wait();                     //Deletes the email that was read if it is invalid
                     throw new Exception(">\tNot a valid WebEx Invitation. Deleting Email...");
                 }
 
-                var meeting_info = EmailListener.GetMeetingInfo(message); //Get access code from bot's invite email
+                var meeting_info = EmailListener.GetMeetingInfo(message);               //Get access code from bot's invite email
 
                 Console.WriteLine(">\tNew Meeting Found at: " +
                     meeting_info.StartTime.ToLocalTime());
 
                 MeetingController.SendEmailsToAnyUnregisteredUsers(
-                    MeetingController.GetAttendeeEmails(meeting_info.AccessCode));
+                    MeetingController.GetAttendeeEmails(meeting_info.AccessCode));      
 
                 await SchedulerController.Schedule(Run,
-                    meeting_info.AccessCode, appConfig, meeting_info.StartTime);    //Schedule dialer-transcriber workflow
+                    meeting_info.AccessCode, appConfig, meeting_info.StartTime);       //Schedule dialer-transcriber workflow as separate task
 
-                EmailListener.DeleteEmailAsync(message).Wait(); // deletes the email that was read
+                EmailListener.DeleteEmailAsync(message).Wait();                        //Deletes the email that was read
             }
             catch (AggregateException exs)
             {
@@ -80,7 +82,7 @@ namespace DiScribe.Main
                 }
             }
 
-            await Task.Delay(seconds * 1000);            
+            await Task.Delay(seconds * 3000);            
         }
 
         /// <summary>
@@ -108,7 +110,7 @@ namespace DiScribe.Main
                 // initializing the transcribe controller
                 var transcribeController = new TranscribeController(recording, regController.UserProfiles);
 
-                // performs transcription and speaker recognition
+                // Performs transcription and speaker recognition. If success, then send email minutes to all participants
                 if (transcribeController.Perform())
                 {
                     EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));

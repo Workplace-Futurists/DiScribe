@@ -48,8 +48,17 @@ namespace DiScribe.Transcriber
 
             foreach (var voiceprint in Controller.Voiceprints)
             {
-                Console.WriteLine("Adding profile to voice print dictionary");
-                voiceprintDictionary.Add(voiceprint.ProfileGUID, voiceprint);
+                Console.WriteLine($">\tAdding profile to voice print dictionary for {voiceprint.Email}");
+
+                try
+                {
+                    voiceprintDictionary.Add(voiceprint.ProfileGUID, voiceprint);
+                }catch (Exception ex)
+                {
+                    Console.Error.WriteLine("Error adding profile to voiceprint dictionary. Continuing to any" +
+                        "remaining voiceprints. Reason: " + ex.Message);
+                }
+
             }
 
             if (voiceprintDictionary.Count == 0)
@@ -59,7 +68,7 @@ namespace DiScribe.Transcriber
             }
             voiceprintDictionary.Keys.CopyTo(userIDs, 0);                  //Hold GUIDs in userIDs array
 
-            int p = 0;
+           
             /*Iterate over each phrase and attempt to identify the user.
              Passes the audio data as a stream and the user GUID associated with the
              Azure SpeakerRecogniztion API profile to the API via the IdentifyAsync() method.
@@ -70,10 +79,11 @@ namespace DiScribe.Transcriber
                 {
                     try
                     {
+                        /*Handle case where phrase is too short to perform speaker recognition */
                         if (curPhrase.Value.EndOffset - curPhrase.Value.StartOffset < 1000)
                             continue;
 
-                        p++;
+                        
                         /*Write audio data in segment to a buffer containing wav file header */
                         byte[] wavBuf = AudioFileSplitter.WriteWavToBuf(curPhrase.Value.Segment.AudioData);
 
@@ -125,11 +135,12 @@ namespace DiScribe.Transcriber
                                 speaker = null;
                             }
 
-                            /*If task suceeded and the profile ID does match an ID in
+                            /*If task suceeded and the profile ID matches an ID in
                              * the set of known user profiles then set associated user */
                             else if (idOutcomeCheck.Result.Status == Status.Succeeded
                                 && voiceprintDictionary.ContainsKey(profileID))
                             {
+                                Console.WriteLine($">\tRecognized {voiceprintDictionary[profileID].Email}");
                                 speaker = voiceprintDictionary[profileID];
                             }
                         }

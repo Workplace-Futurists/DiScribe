@@ -12,7 +12,7 @@ namespace DiScribe.DiScribeDebug
         {
             
 
-            TrancriptionTest.TestTranscription(@"test_meeting.wav");
+            TrancriptionTest.TestTranscription(@"REc5fdd0946766f2d4049b79da49c1d037.wav");
 
 
         }

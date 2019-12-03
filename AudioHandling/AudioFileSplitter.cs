@@ -223,6 +223,7 @@ namespace DiScribe.AudioHandling
                     /*Write origin data to stream as 16 bit PCM */
                     WaveFileWriter.WriteWavFileToStream(outStream, resampler.ToWaveProvider16());
 
+                outStream.Position = 0;
 
                 return outStream;
 
