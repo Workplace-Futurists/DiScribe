@@ -12,21 +12,18 @@ namespace DiScribe.DatabaseManager
     public static class DatabaseController
     {
         /*Temporary DB connection string. In production, this will be a different connection string. */
-        private static readonly string dbConnectionStr = "Server=tcp:dbcs319discribe.database.windows.net,1433;" +
-            "Initial Catalog=db_cs319_discribe;" +
-            "Persist Security Info=False;User ID=obiermann;" +
-            "Password=JKm3rQ~t9sBiemann;" +
-            "MultipleActiveResultSets=True;" +
-            "Encrypt=True;TrustServerCertificate=False;" +
-            "Connection Timeout=30";
+        private static readonly string dbConnectionStr;
 
-        private static SqlConnection DBConnection = Initialize(dbConnectionStr);
+        private static SqlConnection DBConnection = null;
 
-        private static SqlConnection Initialize(string connectionStr)
+        public static void Initialize(string connectionStr)
         {
-            var connection = new SqlConnection(connectionStr);
-            connection.Open();
-            return connection;
+            if (DBConnection is null)
+            {
+                var connection = new SqlConnection(connectionStr);
+                connection.Open();
+                DBConnection = connection;
+            }
         }
 
         /// <summary>

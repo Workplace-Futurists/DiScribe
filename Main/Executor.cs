@@ -7,7 +7,7 @@ using DiScribe.DatabaseManager;
 using DiScribe.Dialer;
 using DiScribe.Meeting;
 using DiScribe.Scheduler;
-
+using Microsoft.CognitiveServices.Speech;
 
 namespace DiScribe.Main
 {
@@ -16,7 +16,7 @@ namespace DiScribe.Main
         public static void Execute()
         {
             // Set Authentication configurations
-            var appConfig = Configurations.LoadAppSettings();
+            var appConfig = Configurations.LoadAppSettings(); 
 
             EmailListener.Initialize(
                 appConfig["appId"], //
@@ -30,7 +30,15 @@ namespace DiScribe.Main
             /*Main application loop */
             while (true)
             {
-                ListenForInvitations(appConfig).Wait();
+                Console.WriteLine(">\tBot is Listening for meeting invites...");
+
+                try
+                {
+                    ListenForInvitations(appConfig).Wait();
+                } catch (AggregateException errors)
+                {
+                    Console.Error.WriteLine($">\tError in listener. Reason: {errors.InnerException.Message} \tRestarting listener...");
+                }
             }
         }
 
@@ -47,9 +55,7 @@ namespace DiScribe.Main
         /// <returns></returns>
         private static async Task ListenForInvitations(IConfigurationRoot appConfig, int seconds = 10)
         {
-            Console.WriteLine(">\tBot is Listening for meeting invites...");
-
-            try
+           try
             {
                 /*Attempt latest email from bot's inbox every 3 seconds. 
                  * If inbox is empty, no meeting will be scheduled. */
@@ -61,27 +67,45 @@ namespace DiScribe.Main
                     throw new Exception(">\tNot a valid WebEx Invitation. Deleting Email...");
                 }
 
-                var meeting_info = EmailListener.GetMeetingInfo(message);               //Get access code from bot's invite email
-
-                Console.WriteLine(">\tNew Meeting Found at: " +
-                    meeting_info.StartTime.ToLocalTime());
-
+                MeetingInfo meeting_info = null;
+                Boolean messageRead = false;
                 try
                 {
-                    var emails = MeetingController.GetAttendeeEmails(meeting_info.AccessCode);
-                    
-                    //MeetingController.SendEmailsToAnyUnregisteredUsers(
-                     //   );
+                    meeting_info = EmailListener.GetMeetingInfo(message);               //Get access code from bot's invite email
+                    messageRead = true;
+                } catch (Exception readMessageEx)
+                {
+                    EmailListener.DeleteEmailAsync(message).Wait();
+                    Console.Error.WriteLine(">\tCould not read invite email. Reason: " + readMessageEx.Message);
+                    throw new Exception("Unable to continue, as invite email acoult not be read...");
+                }
+
+                if (messageRead)
+                {
+                    Console.WriteLine(">\tNew Meeting Found at: " +
+                        meeting_info.StartTime.ToLocalTime());
+                }
+
+                              
+                try
+                {
+                    var emails = MeetingController.GetAttendeeEmails(meeting_info.AccessCode,
+                        new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));
+
+                     MeetingController.SendEmailsToAnyUnregisteredUsers(emails, appConfig["DB_CONN_STR"]);
                 } catch (Exception ex)
                 {
                     Console.WriteLine($">\tNo emails sent to unregistered users. Reason: {ex.Message}");
                 }
 
-
                 Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meeting_info.StartTime}");
+
+
 
                 await SchedulerController.Schedule(Run,
                     meeting_info.AccessCode, appConfig, meeting_info.StartTime);       //Schedule dialer-transcriber workflow as separate task
+
+
 
                 EmailListener.DeleteEmailAsync(message).Wait();                        //Deletes the email that was read
             }
@@ -112,14 +136,17 @@ namespace DiScribe.Main
                 var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
 
                 // retrieving all attendees' emails as a List
-                var invitedUsers = MeetingController.GetAttendeeEmails(accessCode);
+                var invitedUsers = MeetingController.GetAttendeeEmails(accessCode, 
+                    new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));
 
                 // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
-                var regController = RegistrationController.BuildController(
-                    EmailHelper.FromEmailAddressListToStringList(invitedUsers));
+                var regController = RegistrationController.BuildController(appConfig["dbConnectionString"],
+                    EmailHelper.FromEmailAddressListToStringList(invitedUsers), appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
 
                 // initializing the transcribe controller
-                var transcribeController = new TranscribeController(recording, regController.UserProfiles);
+                SpeechConfig speechConfig = SpeechConfig.FromSubscription(appConfig["SPEECH_RECOGNITION_KEY"], appConfig["SPEECH_RECOGNITION_LOCALE"]);
+                var transcribeController = new TranscribeController(recording, regController.UserProfiles, speechConfig, appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
+                
 
                 // Performs transcription and speaker recognition. If success, then send email minutes to all participants
                 if (transcribeController.Perform())

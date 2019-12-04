@@ -15,7 +15,7 @@ namespace DiScribe.Meeting
     {
         public static string BOT_EMAIL;
 
-        public static string CreateWebExMeeting(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration)
+        public static string CreateWebExMeeting(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration, WebexHostInfo hostInfo)
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
@@ -29,7 +29,7 @@ namespace DiScribe.Meeting
             // string strXML = GenerateXMLCreateMeeting();
 
             // string strXML = File.ReadAllText(@"createMeeting.xml");
-            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, startDate, duration);
+            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, startDate, duration, hostInfo);
 
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
@@ -66,10 +66,12 @@ namespace DiScribe.Meeting
         /* This function sends email to all unregistered users
          * given all the meeting attendees
          */
-        public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees)
+        public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees, string dbConnectionString)
         {
             try
             {
+                DatabaseController.Initialize(dbConnectionString);
+
                 var unregistered = DatabaseController.GetUnregisteredUsersFrom(
                     EmailHelper.FromEmailAddressListToStringList(attendees));
 
@@ -82,7 +84,7 @@ namespace DiScribe.Meeting
             }
         }
 
-        public static List<EmailAddress> GetAttendeeEmails(string accessCode)
+        public static List<EmailAddress> GetAttendeeEmails(string accessCode, WebexHostInfo meetingInfo)
         {
             Console.WriteLine(">\tRetrieving All Attendees' Emails...");
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -94,13 +96,14 @@ namespace DiScribe.Meeting
             request.ContentType = "application/x-www-form-urlencoded";
 
             // Create POST data and convert it to a byte array.
-            string strXML = XMLHelper.GenerateXML(accessCode);
-
-                        
+            string strXML = XMLHelper.GenerateXML(accessCode, meetingInfo);
+                                    
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
             // Set the ContentLength property of the WebRequest.
             request.ContentLength = byteArray.Length;
+
+
 
             // Get the request stream.
             Stream dataStream = request.GetRequestStream();
@@ -114,17 +117,16 @@ namespace DiScribe.Meeting
 
             WebResponse response = request.GetResponse();
 
-
-
             // Get the stream containing content returned by the server.
             dataStream = response.GetResponseStream();
             // Open the stream using a StreamReader for easy access.
             StreamReader reader = new StreamReader(dataStream);
             // Read the content.
-            string responseFromServer = reader.ReadToEnd();
+            string responseStr = reader.ReadToEnd();
             // Display the content.
 
-            List<EmailAddress> emailAddresses = GetEmails(responseFromServer);
+         
+            List<EmailAddress> emailAddresses = GetEmails(responseStr);
 
           
             // Clean up the streams.
@@ -137,7 +139,7 @@ namespace DiScribe.Meeting
 
         
         [ObsoleteAttribute("This method is depricated and does not work in all cases.")]
-        public static DateTime GetMeetingTimeByXML(string accessCode)
+        public static DateTime GetMeetingTimeByXML(string accessCode, WebexHostInfo meetingInfo)
         {
             Console.WriteLine(">\tRetrieving Meeting Info...");
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -149,7 +151,7 @@ namespace DiScribe.Meeting
             request.ContentType = "application/x-www-form-urlencoded";
 
             // Create POST data and convert it to a byte array.
-            string strXML = XMLHelper.GenerateInfoXML(accessCode);
+            string strXML = XMLHelper.GenerateInfoXML(accessCode, meetingInfo);
 
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 

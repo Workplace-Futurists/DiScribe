@@ -238,9 +238,9 @@ namespace DiScribe.Email
                 Subscription mailSubscription = new Subscription
                 {
                     ChangeType = "created,updated",
-                    //NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/OutlookMessageWebhookCreator1?code=oCrAsapgfgt68ChnQMGBmkTsYOdRuEGT2KB3yogU0ML4rLgdgIWMkQ==",
+                    
                     NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/subCreatorTest?code=h74tSOzgvTGtYZQ6pql0gEPxR1gnmDjL2bD67/hdqzho86y3vMa3Ww==",
-                    //NotificationUrl = "http://localhost:7071/api/CreateSubscription",
+                    
 
                     Resource = "me/mailFolders('Inbox')/messages",
                     // This is the max expiration datetime for a mail subscription

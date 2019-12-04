@@ -18,10 +18,11 @@ namespace DiScribe.Transcriber
         /// </summary>
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
-        public TranscribeController(FileInfo meetingRecording, List<User> voiceprints)
+        public TranscribeController(FileInfo meetingRecording, List<User> voiceprints, 
+            SpeechConfig speechConfig, string speakerIDSubKey = "7fb70665af5b4770a94bb097e15b8ae0")
         {
-            SpeechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
-            SpeakerIDSubKey = "7fb70665af5b4770a94bb097e15b8ae0";
+            SpeechConfig = speechConfig;
+            SpeakerIDSubKey = speakerIDSubKey;
 
             Voiceprints = voiceprints;
             FileSplitter = new AudioFileSplitter(meetingRecording);

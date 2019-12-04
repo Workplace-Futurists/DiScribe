@@ -6,16 +6,16 @@ namespace DiScribe.Meeting
 {
     static class XMLHelper
     {
-        public static string GenerateMeetingXML(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration)
+        public static string GenerateMeetingXML(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration, WebexHostInfo hostInfo)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
             strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n";
             strXML += "<header>\r\n";
             strXML += "<securityContext>\r\n";
-            strXML += "<webExID>kengqiangmk</webExID>\r\n";
-            strXML += "<password>Cs319_APP</password>\r\n";
-            strXML += "<siteName>companykm.my</siteName>\r\n";
-            strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
+            strXML += $"<webExID>{hostInfo.ID}</webExID>\r\n";
+            strXML += $"<password>{hostInfo.Password}</password>\r\n";
+            strXML += $"<siteName>{hostInfo.Company}</siteName>\r\n";
+            strXML += $"<email>{hostInfo.Email}</email>\r\n";
             strXML += "</securityContext>\r\n";
             strXML += "</header>\r\n";
             strXML += "<body>\r\n";
@@ -95,16 +95,16 @@ namespace DiScribe.Meeting
             return strXML;
         }
 
-        public static string GenerateXML(string accessCode)
+        public static string GenerateXML(string accessCode, WebexHostInfo hostInfo)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
             strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n";
             strXML += "<header>\r\n";
             strXML += "<securityContext>\r\n";
-            strXML += "<webExID>kengqiangmk</webExID>\r\n";
-            strXML += "<password>Cs319_APP</password>\r\n";
-            strXML += "<siteName>companykm.my</siteName>\r\n";
-            strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
+            strXML += $"<webExID>{hostInfo.ID}</webExID>\r\n";
+            strXML += $"<password>{hostInfo.Password}</password>\r\n";
+            strXML += $"<siteName>{hostInfo.Company}</siteName>\r\n";
+            strXML += $"<email>{hostInfo.Email}</email>\r\n";
             strXML += "</securityContext>\r\n";
             strXML += "</header>\r\n";
             strXML += "<body>\r\n";
@@ -119,16 +119,16 @@ namespace DiScribe.Meeting
             return strXML;
         }
 
-        public static string GenerateInfoXML(string accessCode)
+        public static string GenerateInfoXML(string accessCode, WebexHostInfo hostInfo)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"ISO - 8859 - 1\"?>\r\n";
             strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:serv=\"http://www.webex.com/schemas/2002/06/service\">\r\n";
             strXML += "<header>\r\n";
             strXML += "<securityContext>\r\n";
-            strXML += "<webExID>kengqiangmk</webExID>\r\n";
-            strXML += "<password>Cs319_APP</password>\r\n";
-            strXML += "<siteName>companykm.my</siteName>\r\n";
-            strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
+            strXML += $"<webExID>{hostInfo.ID}</webExID>\r\n";
+            strXML += $"<password>{hostInfo.Password}</password>\r\n";
+            strXML += $"<siteName>{hostInfo.Company}</siteName>\r\n";
+            strXML += $"<email>{hostInfo.Email}</email>\r\n";
             strXML += "</securityContext>\r\n";
             strXML += "</header>\r\n";
             strXML += "<body>\r\n";

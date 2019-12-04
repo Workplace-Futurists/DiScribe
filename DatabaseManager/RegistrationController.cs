@@ -54,10 +54,11 @@ namespace DiScribe.DatabaseManager
         /// <param name="dbConnectionString"></param>
         /// <param name="userEmails"></param>
         /// <param name="speakerIDKeySub"></param>
-        public static RegistrationController BuildController(List<string> registeredEmails,
-            string enrollmentLocale = "en-us", int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
+        public static RegistrationController BuildController(string dbConnectionStr, List<string> registeredEmails,
+             string speakerIDSubKey = "7fb70665af5b4770a94bb097e15b8ae0", string enrollmentLocale = "en-us", 
+             int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
-            SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDKeySub);
+            SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDSubKey);
             List<User> userProfiles = new List<User>();
 
             Console.WriteLine(">\tLoading All Attendees' Voice Profiles From Database...");
@@ -67,6 +68,7 @@ namespace DiScribe.DatabaseManager
                 try
                 {
                     email = curEmail;
+                    DatabaseController.Initialize(dbConnectionStr);
                     User curUser = DatabaseController.LoadUser(curEmail);
                     if (curUser is null)
                         continue;
@@ -92,7 +94,7 @@ namespace DiScribe.DatabaseManager
 
         private string EnrollmentLocale { get; set; }
 
-        private static readonly string speakerIDKeySub = "7fb70665af5b4770a94bb097e15b8ae0";
+        
 
         /// <summary>
         /// Creates a new user profile for a User in the DiScribe database.
