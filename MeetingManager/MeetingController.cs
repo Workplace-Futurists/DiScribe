@@ -82,6 +82,18 @@ namespace DiScribe.Meeting
             }
         }
 
+        public static void SendEmailsOfStartURL(List<EmailAddress> attendees, string accesscode, string subject)
+        {
+            try
+            {
+                EmailSender.SendEmailForStartURL(attendees, accesscode, subject);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+        }
+
         public static List<EmailAddress> GetAttendeeEmails(string accessCode)
         {
             Console.WriteLine(">\tRetrieving All Attendees' Emails...");

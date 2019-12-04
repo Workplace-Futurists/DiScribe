@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 using System.Xml;
 
 namespace DiScribe.Meeting
@@ -142,6 +145,69 @@ namespace DiScribe.Meeting
 
 
             return strXML;
+        }
+
+        public static string GenerateStartURLXML(string accessCode)
+        {
+            string strXML = "<?xml version=\"1.0\" encoding=\"ISO - 8859 - 1\"?>\r\n";
+            strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:serv=\"http://www.webex.com/schemas/2002/06/service\">\r\n";
+            strXML += "<header>\r\n";
+            strXML += "<securityContext>\r\n";
+            strXML += "<webExID>kengqiangmk</webExID>\r\n";
+            strXML += "<password>Cs319_APP</password>\r\n";
+            strXML += "<siteName>companykm.my</siteName>\r\n";
+            strXML += "<email>kengqiangmk@gmail.com</email>\r\n";
+            strXML += "</securityContext>\r\n";
+            strXML += "</header>\r\n";
+            strXML += "<body>\r\n";
+            strXML += "<bodyContent xsi:type=\"java:com.webex.service.binding.meeting.GethosturlMeeting\">\r\n";
+            strXML += "<meetingKey>";
+            strXML += accessCode;
+            strXML += "</meetingKey>\r\n";
+            strXML += "</bodyContent>\r\n";
+            strXML += "</body>\r\n";
+            strXML += "</serv:message>\r\n";
+
+
+            return strXML;
+        }
+
+        public static string RetrieveStartUrl(string accessCode)
+        {
+            string myXML = GenerateStartURLXML(accessCode);
+            string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
+            WebRequest request = WebRequest.Create(strXMLServer);
+            request.Method = "POST";
+            // Set the ContentType property of the WebRequest.
+            request.ContentType = "application/x-www-form-urlencoded";
+            byte[] byteArray = Encoding.UTF8.GetBytes(myXML);
+            // Set the ContentLength property of the WebRequest.
+            request.ContentLength = byteArray.Length;
+            // Get the request stream.
+            Stream dataStream = request.GetRequestStream();
+            // Write the data to the request stream.
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            // Close the Stream object.
+            dataStream.Close();
+            // Get the response.
+            WebResponse response = request.GetResponse();
+            dataStream = response.GetResponseStream();
+            // Open the stream using a StreamReader for easy access.
+            StreamReader reader = new StreamReader(dataStream);
+            // Read the content.
+            string responseFromServer = reader.ReadToEnd();
+            // Display the content.
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(responseFromServer);
+            XmlNodeList stratURLNode = xml.GetElementsByTagName("meet:hostMeetingURL");
+            string startURL = stratURLNode[0].InnerText;
+
+            // Clean up the streams.
+            reader.Close();
+            dataStream.Close();
+            response.Close();
+
+            return startURL;
         }
 
         public static string RetrieveStartDate(string myXML)

@@ -44,6 +44,7 @@ namespace DiScribe.WebMVC.Controllers
             {
                 var attendees = MeetingController.GetAttendeeEmails(access_code);
                 MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
+                MeetingController.SendEmailsOfStartURL(attendees, access_code, mc.MeetingSubject);
             }
             catch (Exception ex)
             {

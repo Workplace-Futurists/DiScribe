@@ -21,7 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
+    <ProjectReference Include="..\MeetingManager\MeetingManager.csproj">
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
