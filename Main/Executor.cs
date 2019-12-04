@@ -66,8 +66,19 @@ namespace DiScribe.Main
                 Console.WriteLine(">\tNew Meeting Found at: " +
                     meeting_info.StartTime.ToLocalTime());
 
-                MeetingController.SendEmailsToAnyUnregisteredUsers(
-                    MeetingController.GetAttendeeEmails(meeting_info.AccessCode));      
+                try
+                {
+                    var emails = MeetingController.GetAttendeeEmails(meeting_info.AccessCode);
+                    
+                    //MeetingController.SendEmailsToAnyUnregisteredUsers(
+                     //   );
+                } catch (Exception ex)
+                {
+                    Console.WriteLine($">\tNo emails sent to unregistered users. Reason: {ex.Message}");
+                }
+
+
+                Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meeting_info.StartTime}");
 
                 await SchedulerController.Schedule(Run,
                     meeting_info.AccessCode, appConfig, meeting_info.StartTime);       //Schedule dialer-transcriber workflow as separate task

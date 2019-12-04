@@ -96,6 +96,8 @@ namespace DiScribe.Meeting
             // Create POST data and convert it to a byte array.
             string strXML = XMLHelper.GenerateXML(accessCode);
 
+            Console.WriteLine(strXML);
+            
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
             // Set the ContentLength property of the WebRequest.
@@ -108,7 +110,13 @@ namespace DiScribe.Meeting
             // Close the Stream object.
             dataStream.Close();
             // Get the response.
+
+
+
             WebResponse response = request.GetResponse();
+
+
+            Console.WriteLine(response);
 
             // Get the stream containing content returned by the server.
             dataStream = response.GetResponseStream();
@@ -120,6 +128,8 @@ namespace DiScribe.Meeting
 
             List<EmailAddress> emailAddresses = GetEmails(responseFromServer);
 
+            Console.WriteLine(responseFromServer);
+
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
@@ -128,10 +138,7 @@ namespace DiScribe.Meeting
             return emailAddresses;
         }
 
-        //TODO: Lookup meeting start time in database instead
-        //      OR from custom scheduling email from DiScribe web.
-        //     Otherwise, only the webex host (person who scheduled the meeting)
-        //     can use the bot due to authentication issues.
+        
         [ObsoleteAttribute("This method is depricated and does not work in all cases.")]
         public static DateTime GetMeetingTimeByXML(string accessCode)
         {
