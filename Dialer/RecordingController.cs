@@ -67,8 +67,17 @@ namespace DiScribe.Dialer
                         filePath = (@"Record/" + rid + ".wav");
                     #endif
 
+                    var file = new FileInfo(filePath);
                     Console.WriteLine(">\tDownloading Recording as\n\t[" +
-                        new FileInfo(filePath).FullName + "]");
+                        file.FullName + "]");
+
+                    if (!file.Directory.Exists)
+                    {
+                        Console.WriteLine(">\tFile Path \n[" + file.Directory.FullName + "]\n Does Not Exist\n\t " +
+                            "Creating the Directory name \t [" + file.Directory.Name + "]");
+                        file.Directory.Create();
+                    }
+                    file.Create().Close();
 
                     // Read from response and write to file
                     using FileStream fileStream = File.Create(filePath);
@@ -81,7 +90,7 @@ namespace DiScribe.Dialer
             }
             catch (Exception err)
             {
-                Console.Error.WriteLine(err);
+                Console.Error.WriteLine(err.Message);
                 return null;
             }
         }
