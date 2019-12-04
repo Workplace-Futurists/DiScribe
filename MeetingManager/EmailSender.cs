@@ -69,17 +69,17 @@ namespace DiScribe.Email
                 Console.Error.WriteLine(">\tWarning: No recipients were found");
         }
 
-        public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string meeting_info = "your recent meeting")
+        public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string accessCode = "your recent meeting")
         {
             Console.WriteLine(">\tSending the Transcription Results to users...");
             foreach (var email in recipients)
             {
                 Console.WriteLine(">\t-\t" + email.Email);
             }
-            string subject = "Meeting minutes of " + meeting_info;
+            string subject = $"Meeting minutes of {accessCode}";
 
             // TODO need the infos
-            var htmlContent = "<h2>Meeting information</h2>\n<h4>Meeting Number: </h4>\n";
+            var htmlContent = $"<h2>Meeting information</h2>\n<h4>Meeting Number: {accessCode}</h4>\n";
             SendEmail(recipients, subject, htmlContent, file);
         }
 

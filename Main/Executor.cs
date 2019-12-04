@@ -124,7 +124,7 @@ namespace DiScribe.Main
                 // Performs transcription and speaker recognition. If success, then send email minutes to all participants
                 if (transcribeController.Perform())
                 {
-                    EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid));
+                    EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid), accessCode);
                     Console.WriteLine(">\tTask Complete!");
                     return 0;
                 }
