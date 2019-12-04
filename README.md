@@ -34,6 +34,7 @@ The bot could not only correctly transcribes the content of speech but also coul
 * [x]   **Transcribes** the meeting recording into text
 * [x]   **Recognizes** the speakers and labelling them
 * [x]   Outputs the formatted **text file**
+* [ ]	 <span style="color:red">*(stretch goal)*</span> Speaker recognition with n > 10 meeting participants
 
 ### Emailing Component
 * [x]    **Sends the Email** to meeting attendees upon transcription result is received
