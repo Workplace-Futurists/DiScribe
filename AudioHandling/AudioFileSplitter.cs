@@ -220,7 +220,7 @@ namespace DiScribe.AudioHandling
 
                     MemoryStream outStream = new MemoryStream();
 
-                    /*Write origin data to stream as 16 bit PCM */
+                    /*Ensure that header has correct RIFF format with data appended after header.*/
                     WaveFileWriter.WriteWavFileToStream(outStream, resampler.ToWaveProvider16());
 
                 outStream.Position = 0;

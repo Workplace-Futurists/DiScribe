@@ -113,13 +113,14 @@ namespace DiScribe.Transcriber
                 /* Overwrite any existing MeetingMinutes file with the same name,
                  * else create file. Output results to text file.
                  */
-                if (!transcript.Exists)
+                if (!transcript.Directory.Exists)
                 {
-                    Console.WriteLine(">\tFile [" + transcript.Name + "] Does Not Exist\n\t " +
-                        "Creating the File Under the Directory \n\t [" + transcript.DirectoryName + "]");
+                    Console.WriteLine(">\tFile Path \n[" + transcript.Directory.FullName + "]\n Does Not Exist\n\t " +
+                        "Creating the Directory name \t [" + transcript.Directory.Name + "]");
                     transcript.Directory.Create();
-                    transcript.Create().Close();
                 }
+                transcript.Create().Close();
+
                 using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(transcript.FullName, false))
                 {

@@ -14,15 +14,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
-    <ProjectReference Include="..\SpeakerRecognitionClientLibrary\SpeakerRecognitionClientLibrary.csproj" />
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
     <ProjectReference Include="..\Dialer\Dialer.csproj" />
     <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
-    <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.json">
+    <None Include="..\appsettings.json">
+      <Link>appsettings.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

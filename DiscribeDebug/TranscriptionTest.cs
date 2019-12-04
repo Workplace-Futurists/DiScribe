@@ -29,7 +29,7 @@ namespace DiScribe.DiScribeDebug
 
             //var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
 
-            string userEmail = "kengqiangmk@gmail.com";
+            string userEmail = "testad12@gmail.com";
 
             var voiceprints = new List<User> { DatabaseManager.DatabaseController.LoadUser(userEmail) };
 

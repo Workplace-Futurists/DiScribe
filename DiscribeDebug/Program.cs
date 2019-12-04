@@ -10,9 +10,12 @@ namespace DiScribe.DiScribeDebug
     {
         static void Main(string[] args)
         {
-            
 
-            TrancriptionTest.TestTranscription(@"REc5fdd0946766f2d4049b79da49c1d037.wav");
+            User testUser = RegAudioTest.TestLoadUser("testad12@gmail.com");
+
+            Console.WriteLine(testUser.FirstName);
+
+            TrancriptionTest.TestTranscription(@"REb3a5300a60b1641db4c633564c5673aa.wav");
 
 
         }

@@ -71,7 +71,7 @@ namespace DiScribe.DatabaseManager
                     if (curUser is null)
                         continue;
 
-                    AudioFileSplitter.Resample(curUser.AudioStream, 16000);
+                    curUser.AudioStream = AudioFileSplitter.Resample(curUser.AudioStream, 16000);
 
                     userProfiles.Add(curUser);
                     Console.WriteLine($"\t-\t{email}\tLoad Succeeded.");
