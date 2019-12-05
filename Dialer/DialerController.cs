@@ -51,8 +51,7 @@ namespace DiScribe.Dialer
             // call in number and call from number
             const string vancouverTollNum = "+14084189388";
             const string twilioAccNum = "+15046366992";
-            //string meetingNum = "628079791";
-
+            
             // this is the webex call vancouver toll number
             var to = new PhoneNumber(vancouverTollNum);
             // This will work if you call a verified phone number (currently has mine)
@@ -68,7 +67,7 @@ namespace DiScribe.Dialer
                 sendDigits: FormatDigits(mNum) + "wwww#",
                 // Records the outgoing call
                 record: true,
-                // I think this is a default message that plays from the url?
+                // default message that plays from the url
                 url: new Uri("http://lonelycompany.ca/test.xml")
              // default demo uri
              //url: new Uri("http://demo.twilio.com/docs/voice.xml")
@@ -86,7 +85,7 @@ namespace DiScribe.Dialer
             while (status != CallResource.StatusEnum.Completed)
             {
                 // return all the call resources for account user
-                var calls = await CallResource.ReadAsync();
+                var calls = CallResource.ReadAsync().Result;
 
                 // find element in list
                 finishedCall = calls.First(record => record.Sid == callSid);
@@ -110,10 +109,7 @@ namespace DiScribe.Dialer
 
             //var subresourceUri = finishedCall.SubresourceUris;
 
-            //Console.WriteLine("\nThe meeting has ended. The Call Resource status was: " + status + "\n");
-            //Console.WriteLine("The call resource is: " + finishedCall);
-            //Console.WriteLine("The call sid is: " + callSid);
-
+           
             // retrieve 10 most recent recordings
             var recordings = RecordingResource.Read(limit: 10);
             var resultRecording = recordings.First(recording => recording.CallSid == callSid);

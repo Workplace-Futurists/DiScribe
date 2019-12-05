@@ -219,6 +219,8 @@ namespace DiScribe.DatabaseManager
                     //@RowID INT OUTPUT
                     command.CommandType = System.Data.CommandType.StoredProcedure;
 
+                  
+
                     var parameters = new List<SqlParameter>
                     {
                         new SqlParameter("@LookupEmail", lookupEmail),
@@ -226,22 +228,24 @@ namespace DiScribe.DatabaseManager
                         new SqlParameter("@LastName", user.LastName),
                         new SqlParameter("@Email", user.Email),
                         new SqlParameter("@ProfileGUID", user.ProfileGUID.ToString()),
+                        new SqlParameter("@AudioSample", user.AudioStream.ToArray()),
                         new SqlParameter("@TimeStamp", user.TimeStamp),
                         new SqlParameter("@Password", user.Password)
                     };
 
                     SqlParameter result = new SqlParameter("@RowID", System.Data.SqlDbType.Int);
+                    result.Direction = System.Data.ParameterDirection.Output;
 
                     command.Parameters.AddRange(parameters.ToArray());
-                    command.Parameters.Add(result).Direction = System.Data.ParameterDirection.Output;
+                    command.Parameters.Add(result);
+                                        
 
                     command.ExecuteNonQuery();
 
                     transaction.Commit();
 
-                    Boolean outcome = Convert.ToInt32(command.Parameters["@RowID"].Value) > 0;
 
-                    return outcome;
+                    return true;
                 }
                 catch (Exception ex)
                 {

@@ -12,6 +12,7 @@ using Microsoft.ProjectOxford.SpeakerRecognition.Contract;
 using NAudio.Wave;
 using DiScribe.Transcriber;
 using DiScribe.AudioHandling;
+using DiScribe.DatabaseManager;
 
 namespace DiScribe.DiScribeDebug
 {
@@ -29,17 +30,15 @@ namespace DiScribe.DiScribeDebug
 
             //var voiceprints = MakeTestVoiceprints(testRecording);                   //Make a test set of voiceprint objects
 
-            string userEmail = "testad12@gmail.com";
+            string userEmail = "kengqiangmk@yahoo.ca";
 
-            var voiceprints = new List<User> { DatabaseManager.DatabaseController.LoadUser(userEmail) };
+            var regCon = RegistrationController.BuildController("Server=tcp:dbcs319discribe.database.windows.net, 1433; Initial Catalog=db_cs319_discribe; Persist Security Info=False;User ID=obiermann; Password=JKm3rQ~t9sBiemann; MultipleActiveResultSets=True; Encrypt=True;TrustServerCertificate=False; Connection Timeout=30", 
+                new List<string>() { userEmail });
 
-            voiceprints[0].AudioStream = AudioFileSplitter.Resample(voiceprints[0].AudioStream, 16000);
+            var speechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
             
-
-            EnrollUsers(speakerIDKey, voiceprints).Wait();
-
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
-            var controller = new TranscribeController(testRecording, voiceprints);
+            var controller = new TranscribeController(testRecording, regCon.UserProfiles, speechConfig);
 
             Console.WriteLine("Please press <Return> to continue.");
             Console.ReadLine();

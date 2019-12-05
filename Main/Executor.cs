@@ -132,9 +132,13 @@ namespace DiScribe.Main
             try
             {
                 // dialing & recording
-                var rid = new DialerController(appConfig).CallMeetingAsync(accessCode).Result;
-                var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
+                var dialerController = new DialerController(appConfig);
+                
+                
+                var rid = dialerController.CallMeetingAsync(accessCode).Result;
 
+                var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
+                
                 // retrieving all attendees' emails as a List
                 var invitedUsers = MeetingController.GetAttendeeEmails(accessCode, 
                     new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));

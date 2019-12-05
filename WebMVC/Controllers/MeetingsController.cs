@@ -34,15 +34,17 @@ namespace DiScribe.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(MeetingClass mc, string Participants, string ParticiNames)
         {
+            WebexHostInfo meetingHost = new WebexHostInfo("kengqiangmk@gmail.com", "Cs319_APP", "kengqiangmk", "companykm.my");
+
             List<string> emails = new List<string>(Participants.Split(','));
             List<string> names = new List<string>(ParticiNames.Split(','));
             string startDateTimeStr = mc.MeetingStartDate.ToString("MM/dd/yyyy HH:mm:ss");
             string endDateTimeStr = mc.MeetingEndDate.ToString("MM/dd/yyyy HH:mm:ss");
             Int64 duration = (Int64)(mc.MeetingEndDate - mc.MeetingStartDate).TotalMinutes;
-            var access_code = MeetingController.CreateWebExMeeting(mc.MeetingSubject, names, emails, startDateTimeStr, duration.ToString());
+            var access_code = MeetingController.CreateWebExMeeting(mc.MeetingSubject, names, emails, startDateTimeStr, duration.ToString(), meetingHost);
             try
             {
-                var attendees = MeetingController.GetAttendeeEmails(access_code);
+                var attendees = MeetingController.GetAttendeeEmails(access_code, meetingHost);
                 MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
             }
             catch (Exception ex)

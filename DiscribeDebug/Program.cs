@@ -11,7 +11,7 @@ namespace DiScribe.DiScribeDebug
         static void Main(string[] args)
         {
 
-            User testUser = RegAudioTest.TestLoadUser("testad12@gmail.com");
+            User testUser = RegAudioTest.TestLoadUser("kengqiangmk@yahoo.ca");
 
             Console.WriteLine(testUser.FirstName);
 

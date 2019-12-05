@@ -66,7 +66,15 @@ namespace DiScribe.Meeting
         /* This function sends email to all unregistered users
          * given all the meeting attendees
          */
-        public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees, string dbConnectionString)
+        public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees, 
+            string dbConnectionString = 
+            "Server=tcp:dbcs319discribe.database.windows.net, 1433; " +
+            "Initial Catalog=db_cs319_discribe; " +
+            "Persist Security Info=False;User ID=obiermann; " +
+            "Password=JKm3rQ~t9sBiemann; " +
+            "MultipleActiveResultSets=True; " +
+            "Encrypt=True;TrustServerCertificate=False; " +
+            "Connection Timeout=30")
         {
             try
             {
