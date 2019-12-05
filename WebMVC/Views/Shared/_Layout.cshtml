@@ -24,6 +24,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Meetings" asp-action="Create">Schedule Meeting</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Meetings" asp-action="Index">Lookup Past Meetings</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -46,7 +49,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!--<script src="~/lib/audio/audio_record_lib_cust.js"></script>-->
-    <script src="~/lib/audio/app_audio.js"></script>
+    <!--<script src="~/lib/audio/app_audio.js"></script>-->
+    <script src="~/lib/audio/RecordRTC.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>

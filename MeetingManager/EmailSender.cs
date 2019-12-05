@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using DiScribe.Meeting;
 
 
 namespace DiScribe.Email
@@ -53,6 +54,10 @@ namespace DiScribe.Email
             OfficialEmail = new EmailAddress(appConfig["BOT_MAIL_ACCOUNT"], "DiScribe Bot");
             RegUrl = appConfig["DEFAULT_REG_URL"];
 
+            //string sendGridAPI = "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";
+            //OfficialEmail = new EmailAddress("levana@workplacefupurists.onmicrosoft.com", "DiScribe Bot");
+            //RegUrl = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
+
             return new SendGridClient(sendGridAPI);
         }
 
@@ -98,6 +103,23 @@ namespace DiScribe.Email
                 htmlContent += "<a href=\""+ registrationURL + "\">"+ registrationURL + "</a>";
                 htmlContent += "</h4>";
                 SendEmail(email, "Voice Registration for Your Upcoming Meeting", htmlContent);
+            }
+        }
+
+        public static void SendEmailForStartURL(List<EmailAddress> emails, string accessCode, string meetingSubj)
+        {
+            Console.WriteLine(">\tSending Emails to Users...");
+            if (emails.Count == 0)
+                throw new Exception(">\tNo recipients were found");
+
+            string startURL = XMLHelper.RetrieveStartUrl(accessCode);
+
+            foreach (EmailAddress email in emails)
+            {
+                var htmlContent = "<h2>When it is time, please click on this link to start the meeting: "+ meetingSubj + "</h2><h4>Link: ";
+                htmlContent += "<a href=\"" + startURL + "\">" + startURL + "</a>";
+                htmlContent += "</h4>";
+                SendEmail(email, "Link to Start Your Meeting - "+ meetingSubj, htmlContent);
             }
         }
 

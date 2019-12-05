@@ -39,20 +39,23 @@
                     8. Dachshunds were originally bred to fight badgers.
                 </textarea>
                 <div id="controls">
-                    <button id="recordButton">Record</button>
-                    <button id="pauseButton" disabled>Pause</button>
-                    <button id="stopButton" disabled>Stop</button>
+                    <!--<button id="recordButton">Record</button>
+        <button id="pauseButton" disabled>Pause</button>
+        <button id="stopButton" disabled>Stop</button>-->
+                    <button id="btn-start-recording">Start Recording</button>
+                    <button id="btn-stop-recording" disabled>Stop Recording</button>
                 </div>
                 <div id="formats">Format: start recording to see sample rate</div>
                 <div id="curAction">Current Action: None</div>
-                <ol id="recordingsList">
-                </ol>
-                <!--<label>Audio Recording Field, will be filled once you complete recording.</label>-->
-                <input asp-for="AudioSample_str" class="form-control" id="audio_sample" type="hidden"/>
-                <span asp-validation-for="AudioSample_str" class="text-danger"></span>
-            </div>
+                <!--<ol id="recordingsList"></ol>-->
+                <audio controls playsinline id="the_audio"></audio>
+                <div id="time" style="font-weight:bold;font-size:larger;width:100%;text-align:center"></div>
+                    <!--<label>Audio Recording Field, will be filled once you complete recording.</label>-->
+                    <input asp-for="AudioSample_str" class="form-control" id="audio_sample" type="hidden" />
+                    <span asp-validation-for="AudioSample_str" class="text-danger"></span>
+                </div>
             <div class="form-group">
-                <input type="submit" value="Register Audio Profile" class="btn btn-primary"/>
+                <input type="submit" value="Register Audio Profile" class="btn btn-primary" disabled id="submitform"/>
             </div>
             <b>@ViewBag.message</b>
         </form>
@@ -65,4 +68,109 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+
+    //-------------Below are for countdown-----------------------------------
+        //function startTimer() {
+        //    var duration = 60,
+        //    //display = document.getElementById('btn-stop-recording').innerHTML= false;
+        //    var timer = duration, minutes, seconds;
+        //    setInterval(function () {
+        //        minutes = parseInt(timer / 60, 10);
+        //        seconds = parseInt(timer % 60, 10);
+
+        //        minutes = minutes < 10 ? "0" + minutes : minutes;
+        //        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        //        var countdown_cd = document.querySelector('time');
+
+        //        countdown_cd.textContent = minutes + ":" + seconds;
+
+        //        if (--timer < 0) {
+        //            timer = duration;
+        //            countdown_cd.textContent = "1 minute complete";
+        //        }
+        //    }, 1000);
+        //}
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = "Recording Count Down: "+minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                }
+            }, 1000);
+        }
+    //-------------Above are for countdown-----------------------------------
+
+     var audio = document.querySelector('audio');
+
+    function captureMicrophone(callback) {
+        navigator.mediaDevices.getUserMedia({audio: true}).then(callback).catch(function(error) {
+            alert('Unable to access your microphone.');
+            console.error(error);
+        });
+    }
+
+    function _arrayBufferToBase64(buffer) {
+        var binary = '';
+        var bytes = new Uint8Array(buffer);
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
+
+    function stopRecordingCallback() {
+        audio.srcObject = null;
+        var blob = recorder.getBlob();
+        audio.src = URL.createObjectURL(blob);
+        blob.arrayBuffer().then(buffer => document.getElementById("audio_sample").value = _arrayBufferToBase64(buffer));
+        recorder.microphone.stop();
+        var btn = document.querySelector('#submitform');
+        btn.disabled = false;
+    }
+
+    var recorder; // globally accessible
+
+    document.getElementById('btn-start-recording').onclick = function() {
+        this.disabled = true;
+        captureMicrophone(function(microphone) {
+            audio.srcObject = microphone;
+
+            recorder = RecordRTC(microphone, {
+                type: 'audio',
+                recorderType: StereoAudioRecorder,
+                desiredSampRate: 16000
+            });
+
+            recorder.startRecording();
+
+            var oneMinutes = 60 * 1,
+            display = document.querySelector('#time');
+            startTimer(oneMinutes, display);
+
+            // release microphone on stopRecording
+            recorder.microphone = microphone;
+
+            document.getElementById('btn-stop-recording').disabled = false;
+
+            
+        });
+    };
+
+    document.getElementById('btn-stop-recording').onclick = function() {
+        this.disabled = true;
+        recorder.stopRecording(stopRecordingCallback);
+        };
+
+    </script>
 }
