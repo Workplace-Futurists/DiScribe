@@ -28,5 +28,7 @@ namespace DiScribe.Meeting
         public string Password { get; set; }
 
         public DateTime StartTime { get; set; }
+
+        public string Subject { get; set; }
     }
 }

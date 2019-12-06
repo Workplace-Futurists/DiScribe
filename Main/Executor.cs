@@ -93,9 +93,22 @@ namespace DiScribe.Main
                         new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));
 
                      MeetingController.SendEmailsToAnyUnregisteredUsers(emails, appConfig["DB_CONN_STR"]);
+
                 } catch (Exception ex)
                 {
                     Console.WriteLine($">\tNo emails sent to unregistered users. Reason: {ex.Message}");
+                }
+
+                try
+                {
+                    var emails = MeetingController.GetAttendeeEmails(meeting_info.AccessCode,
+                        new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));
+                    
+                    EmailSender.SendEmailForStartURL(emails, meeting_info.AccessCode, meeting_info.Subject);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($">\tError in SendEmailForStartURL. Reason: {ex.Message}");
                 }
 
                 Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meeting_info.StartTime}");

@@ -181,6 +181,17 @@ namespace DiScribe.Email
             if (htmlNodes is null)
                 throw new Exception("Email is not in proper format");
 
+            string meeting_Sbj = message.Subject;
+            if (!String.IsNullOrEmpty(meeting_Sbj))
+            {
+                meeting_Sbj = meeting_Sbj.Replace("Webex meeting invitation:", "");
+            }
+            else
+            {
+                meeting_Sbj = "";
+            }
+            meetingInfo.Subject = meeting_Sbj;
+
             for (int i = 0; i < htmlNodes.Count; i++)
             {
                 var node = htmlNodes[i];
