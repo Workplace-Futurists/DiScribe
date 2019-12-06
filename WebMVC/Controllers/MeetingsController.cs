@@ -9,6 +9,7 @@ using DiScribe.Meeting;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
+using DiScribe.Email;
 
 namespace DiScribe.WebMVC.Controllers
 {
@@ -46,7 +47,7 @@ namespace DiScribe.WebMVC.Controllers
             {
                 var attendees = MeetingController.GetAttendeeEmails(access_code, meetingHost);
                 MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
-                MeetingController.SendEmailsOfStartURL(attendees, access_code, mc.MeetingSubject);
+                EmailSender.SendEmailForStartURL(attendees, access_code, mc.MeetingSubject);
             }
             catch (Exception ex)
             {
