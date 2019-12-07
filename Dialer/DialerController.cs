@@ -54,9 +54,7 @@ namespace DiScribe.Dialer
             
             // this is the webex call vancouver toll number
             var to = new PhoneNumber(vancouverTollNum);
-            // This will work if you call a verified phone number (currently has mine)
-            //var to = new PhoneNumber("+17786886112");
-
+            
             // This is the twilio number linked to our account
             var from = new PhoneNumber(twilioAccNum);
 
@@ -69,8 +67,7 @@ namespace DiScribe.Dialer
                 record: true,
                 // default message that plays from the url
                 url: new Uri("http://lonelycompany.ca/test.xml")
-             // default demo uri
-             //url: new Uri("http://demo.twilio.com/docs/voice.xml")
+             
              );
 
             var callSid = call.Sid;
