@@ -16,7 +16,7 @@ namespace DiScribe.Main
         public static void Execute()
         {
             // Set Authentication configurations
-            var appConfig = Configurations.LoadAppSettings(); 
+            var appConfig = Configurations.LoadAppSettings();
 
             EmailListener.Initialize(
                 appConfig["appId"], //
@@ -35,7 +35,8 @@ namespace DiScribe.Main
                 try
                 {
                     ListenForInvitations(appConfig).Wait();
-                } catch (AggregateException errors)
+                }
+                catch (AggregateException errors)
                 {
                     Console.Error.WriteLine($">\tError in listener. Reason: {errors.InnerException.Message} \tRestarting listener...");
                 }
@@ -55,11 +56,11 @@ namespace DiScribe.Main
         /// <returns></returns>
         private static async Task ListenForInvitations(IConfigurationRoot appConfig, int seconds = 10)
         {
-           try
+            try
             {
                 /*Attempt latest email from bot's inbox every 3 seconds. 
                  * If inbox is empty, no meeting will be scheduled. */
-                var message = EmailListener.GetEmailAsync().Result;                      
+                var message = EmailListener.GetEmailAsync().Result;
 
                 if (!EmailListener.IsValidWebexInvitation(message))
                 {
@@ -73,7 +74,8 @@ namespace DiScribe.Main
                 {
                     meeting_info = EmailListener.GetMeetingInfo(message);               //Get access code from bot's invite email
                     messageRead = true;
-                } catch (Exception readMessageEx)
+                }
+                catch (Exception readMessageEx)
                 {
                     EmailListener.DeleteEmailAsync(message).Wait();
                     Console.Error.WriteLine(">\tCould not read invite email. Reason: " + readMessageEx.Message);
@@ -86,15 +88,16 @@ namespace DiScribe.Main
                         meeting_info.StartTime.ToLocalTime());
                 }
 
-                              
+
                 try
                 {
                     var emails = MeetingController.GetAttendeeEmails(meeting_info.AccessCode,
                         new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));
 
-                     MeetingController.SendEmailsToAnyUnregisteredUsers(emails, appConfig["DB_CONN_STR"]);
+                    MeetingController.SendEmailsToAnyUnregisteredUsers(emails, appConfig["DB_CONN_STR"]);
 
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine($">\tNo emails sent to unregistered users. Reason: {ex.Message}");
                 }
@@ -103,7 +106,7 @@ namespace DiScribe.Main
                 {
                     var emails = MeetingController.GetAttendeeEmails(meeting_info.AccessCode,
                         new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));
-                    
+
                     EmailSender.SendEmailForStartURL(emails, meeting_info.AccessCode, meeting_info.Subject);
                 }
                 catch (Exception ex)
@@ -130,7 +133,7 @@ namespace DiScribe.Main
                 }
             }
 
-            await Task.Delay(seconds * 3000);            
+            await Task.Delay(seconds * 3000);
         }
 
         /// <summary>
@@ -146,14 +149,14 @@ namespace DiScribe.Main
             {
                 // dialing & recording
                 var dialerController = new DialerController(appConfig);
-                
-                
+
+
                 var rid = dialerController.CallMeetingAsync(accessCode).Result;
 
                 var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
-                
+
                 // retrieving all attendees' emails as a List
-                var invitedUsers = MeetingController.GetAttendeeEmails(accessCode, 
+                var invitedUsers = MeetingController.GetAttendeeEmails(accessCode,
                     new WebexHostInfo(appConfig["WEBEX_EMAIL"], appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]));
 
                 // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
@@ -163,7 +166,7 @@ namespace DiScribe.Main
                 // initializing the transcribe controller
                 SpeechConfig speechConfig = SpeechConfig.FromSubscription(appConfig["SPEECH_RECOGNITION_KEY"], appConfig["SPEECH_RECOGNITION_LOCALE"]);
                 var transcribeController = new TranscribeController(recording, regController.UserProfiles, speechConfig, appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
-                
+
 
                 // Performs transcription and speaker recognition. If success, then send email minutes to all participants
                 if (transcribeController.Perform())
