@@ -173,6 +173,9 @@ namespace DiScribe.Email
             if (message is null)
                 throw new Exception("Email Message Received was <NULL>");
 
+            if (!IsValidWebexInvitation(message))
+                throw new Exception("Not a Webex Meeting Invitation Email");
+
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(message.Body.Content);
