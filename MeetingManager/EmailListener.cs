@@ -10,6 +10,7 @@ using Microsoft.Graph.Auth;
 using System.Globalization;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace DiScribe.Email
 {
@@ -177,11 +178,27 @@ namespace DiScribe.Email
             if (!IsValidWebexInvitation(message))
                 throw new Exception("Not a Webex Meeting Invitation Email");
 
+            var meetingInfo = GetMeetingInfoFromHTML(message);
+
+            meetingInfo.HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                    appConfig["WEBEX_PW"],
+                    appConfig["WEBEX_ID"],
+                    appConfig["WEBEX_COMPANY"]);
+
+            meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
+            meetingInfo.AttendeesEmails.Add(new EmailAddress(message.Sender.EmailAddress.Address));
+            foreach (var attendee in meetingInfo.AttendeesEmails)
+            {
+                Console.WriteLine("\t-\t" + attendee.Email);
+            }
+            return meetingInfo;
+        }
+
+        private static Meeting.MeetingInfo GetMeetingInfoFromHTML(Message message)
+        {
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(message.Body.Content);
-
-            string email_sender = message.Sender.EmailAddress.Address;
 
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
 
@@ -258,17 +275,6 @@ namespace DiScribe.Email
             if (meetingInfo.MissingField())
                 throw new Exception("Important fields missing for MeetingInfo class");
 
-            meetingInfo.HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                    appConfig["WEBEX_PW"],
-                    appConfig["WEBEX_ID"],
-                    appConfig["WEBEX_COMPANY"]);
-
-            meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
-            meetingInfo.AttendeesEmails.Add(new EmailAddress(email_sender));
-            foreach (var attendee in meetingInfo.AttendeesEmails)
-            {
-                Console.WriteLine("\t-\t" + attendee.Email);
-            }
             return meetingInfo;
         }
 
