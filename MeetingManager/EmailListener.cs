@@ -241,6 +241,9 @@ namespace DiScribe.Email
                     // TODO timezone differentiation
                 }
             }
+            if (meetingInfo.MissingField())
+                throw new Exception("Important fields missing for MeetingInfo class");
+
             return meetingInfo;
         }
 
