@@ -65,7 +65,7 @@ namespace DiScribe.Main
                 MeetingInfo meetingInfo;
                 try
                 {
-                    meetingInfo = EmailListener.GetMeetingInfo(message);               //Get access code from bot's invite email                    messageRead = true;
+                    meetingInfo = EmailListener.GetMeetingInfo(message, appConfig);               //Get access code from bot's invite email                    messageRead = true;
                 }
                 catch (Exception readMessageEx)
                 {
@@ -75,11 +75,6 @@ namespace DiScribe.Main
                 }
                 Console.WriteLine(">\tNew Meeting Found at: " +
                     meetingInfo.StartTime.ToLocalTime());
-
-                meetingInfo.HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                    appConfig["WEBEX_PW"],
-                    appConfig["WEBEX_ID"],
-                    appConfig["WEBEX_COMPANY"]);
 
                 MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
