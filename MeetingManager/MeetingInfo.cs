@@ -20,7 +20,9 @@ namespace DiScribe.Meeting
 
         public bool MissingField()
         {
-            return AccessCode == "" || Password == "" || StartTime.Equals(new DateTime());
+            return AccessCode == ""
+                || Password == ""
+                || StartTime.Equals(new DateTime());
         }
 
         public string AccessCode { get; set; }

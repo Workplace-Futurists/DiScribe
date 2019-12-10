@@ -103,7 +103,7 @@ namespace DiScribe.Main
                 }
             }
 
-            await Task.Delay(seconds * 3000);
+            await Task.Delay(seconds * 1000);
         }
 
         /// <summary>
