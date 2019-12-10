@@ -83,7 +83,7 @@ namespace DiScribe.Main
 
                 MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
-                EmailSender.SendEmailForStartURL(meetingInfo.AttendeesEmails, meetingInfo.AccessCode, meetingInfo.Subject);
+                EmailSender.SendEmailForStartURL(meetingInfo);
 
                 Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
@@ -132,13 +132,13 @@ namespace DiScribe.Main
                 // Performs transcription and speaker recognition. If success, then send email minutes to all participants
                 if (transcribeController.Perform())
                 {
-                    EmailSender.SendMinutes(meetingInfo.AttendeesEmails, transcribeController.WriteTranscriptionFile(rid), meetingInfo.AccessCode);
+                    EmailSender.SendMinutes(meetingInfo, transcribeController.WriteTranscriptionFile(rid));
                     Console.WriteLine(">\tTask Complete!");
                     return 0;
                 }
                 else
                 {
-                    EmailSender.SendEmail(meetingInfo.AttendeesEmails, "Failed To Generate Meeting Transcription", "");
+                    EmailSender.SendEmail(meetingInfo, $"Failed to Generate Meeting Minutes for {meetingInfo.Subject}");
                     Console.WriteLine(">\tFailed to generate!");
                     return -1;
                 }
