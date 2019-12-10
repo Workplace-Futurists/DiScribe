@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 
 namespace DiScribe.Meeting
 {
@@ -34,5 +36,7 @@ namespace DiScribe.Meeting
         public string Subject { get; set; }
 
         public WebexHostInfo HostInfo { get; set; }
+
+        public List<EmailAddress> AttendeesEmails { get; set; } 
     }
 }

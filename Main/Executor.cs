@@ -81,11 +81,9 @@ namespace DiScribe.Main
                     appConfig["WEBEX_ID"],
                     appConfig["WEBEX_COMPANY"]);
 
-                var emails = MeetingController.GetAttendeeEmails(meetingInfo);
+                MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
-                MeetingController.SendEmailsToAnyUnregisteredUsers(emails, appConfig["DB_CONN_STR"]);
-
-                EmailSender.SendEmailForStartURL(emails, meetingInfo.AccessCode, meetingInfo.Subject);
+                EmailSender.SendEmailForStartURL(meetingInfo.AttendeesEmails, meetingInfo.AccessCode, meetingInfo.Subject);
 
                 Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
@@ -110,7 +108,6 @@ namespace DiScribe.Main
         /// Runs when DiScribe bot dials in to Webex meeting. Performs transcription and speaker
         /// recognition, and emails meeting transcript to all participants.
         /// </summary>
-        /// <param name="accessCode"></param>
         /// <param name="appConfig"></param>
         /// <returns></returns>
         static int Run(MeetingInfo meetingInfo, IConfigurationRoot appConfig)
@@ -124,12 +121,9 @@ namespace DiScribe.Main
 
                 var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
 
-                // retrieving all attendees' emails as a List
-                var invitedUsers = MeetingController.GetAttendeeEmails(meetingInfo);
-
                 // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
                 var regController = RegistrationController.BuildController(appConfig["dbConnectionString"],
-                    EmailHelper.FromEmailAddressListToStringList(invitedUsers), appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
+                    EmailHelper.FromEmailAddressListToStringList(meetingInfo.AttendeesEmails), appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
 
                 // initializing the transcribe controller
                 SpeechConfig speechConfig = SpeechConfig.FromSubscription(appConfig["SPEECH_RECOGNITION_KEY"], appConfig["SPEECH_RECOGNITION_LOCALE"]);
@@ -138,13 +132,13 @@ namespace DiScribe.Main
                 // Performs transcription and speaker recognition. If success, then send email minutes to all participants
                 if (transcribeController.Perform())
                 {
-                    EmailSender.SendMinutes(invitedUsers, transcribeController.WriteTranscriptionFile(rid), meetingInfo.AccessCode);
+                    EmailSender.SendMinutes(meetingInfo.AttendeesEmails, transcribeController.WriteTranscriptionFile(rid), meetingInfo.AccessCode);
                     Console.WriteLine(">\tTask Complete!");
                     return 0;
                 }
                 else
                 {
-                    EmailSender.SendEmail(invitedUsers, "Failed To Generate Meeting Transcription", "");
+                    EmailSender.SendEmail(meetingInfo.AttendeesEmails, "Failed To Generate Meeting Transcription", "");
                     Console.WriteLine(">\tFailed to generate!");
                     return -1;
                 }
