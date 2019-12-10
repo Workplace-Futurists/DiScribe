@@ -95,6 +95,7 @@ namespace DiScribe.Transcriber
 
             try
             {
+                bool last_was_nomatch = false;
                 /*Iterate over the list of TranscrtiptionOutputs in order and add them to
                  * output that will be written to file.
                  * Order is by start offset.
@@ -103,12 +104,21 @@ namespace DiScribe.Transcriber
                  */
                 foreach (var curNode in Transcriber.TranscriptionOutputs)
                 {
+                    if (!curNode.Value.TranscriptionSuccess
+                        && last_was_nomatch)
+                        continue;
+
                     string curSegmentText = curNode.Value.ToString();
                     if (curSegmentText.Length > lineLength)
                     {
                         curSegmentText = Helper.WrapText(curSegmentText, lineLength);
                     }
                     output.AppendLine(curSegmentText + "\n");
+
+                    if (!curNode.Value.TranscriptionSuccess)
+                        last_was_nomatch = true;
+                    else
+                        last_was_nomatch = false;
                 }
 
                 /* Overwrite any existing MeetingMinutes file with the same name,

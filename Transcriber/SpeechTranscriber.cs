@@ -83,8 +83,6 @@ namespace DiScribe.Transcriber
         {
             var stopRecognition = new TaskCompletionSource<int>();
             var entireAudio = Controller.FileSplitter.GetEntireAudio();
-            int errorCounter = 0;                                                //Number of failed recognitions to detect if recognizer gets stuck
-            const int ERROR_MAX = 20;
 
             using var audioInput = AudioConfig.FromStreamInput(entireAudio.AudioStream);
             // Creates a speech recognizer using audio stream input.
@@ -106,21 +104,13 @@ namespace DiScribe.Transcriber
                     resultAvailable = true;
                     Console.WriteLine($"RECOGNIZED: Text = {e.Result.Text}\n");
                     transcribedText = e.Result.Text;                                      //Write transcription text to result
-                    success = true;                                                       //Set flag to indicate that transcription succeeded.
-                    errorCounter = 0;                                                     //Reset error counter
+                    success = true;                                                       //Set flag to indicate that transcription succeeded.                                                //Reset error counter
                 }
                 else if (e.Result.Reason == ResultReason.NoMatch)
                 {
                     resultAvailable = true;
                     Console.WriteLine($">\tNOMATCH: Speech could not be recognized.");
                     transcribedText = $"NOMATCH: Speech could not be recognized.";        //Write fail message to result
-                    errorCounter++;                                                       //Increment error counter
-
-                    if (errorCounter > ERROR_MAX)                                         //If ERROR_MAX failures occur in a row, stop recognition
-                    {
-                        Console.WriteLine("Maximum NOMATCH counts reached. Transcription stopping...");
-                        speech_recogniser.StopContinuousRecognitionAsync().ConfigureAwait(false);
-                    }
                 }
                 if (resultAvailable)
                 {
