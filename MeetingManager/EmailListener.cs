@@ -187,6 +187,7 @@ namespace DiScribe.Email
 
             meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
             meetingInfo.AttendeesEmails.Add(new EmailAddress(message.Sender.EmailAddress.Address));
+            meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
             foreach (var attendee in meetingInfo.AttendeesEmails)
             {
                 Console.WriteLine("\t-\t" + attendee.Email);
