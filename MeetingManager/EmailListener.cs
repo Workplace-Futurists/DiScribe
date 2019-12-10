@@ -179,6 +179,7 @@ namespace DiScribe.Email
 
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(message.Body.Content);
 
             string email_sender = message.Sender.EmailAddress.Address;
 
