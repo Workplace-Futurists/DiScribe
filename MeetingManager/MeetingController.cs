@@ -210,7 +210,6 @@ namespace DiScribe.Meeting
 
                 if (emails[i].Equals(BOT_EMAIL, StringComparison.CurrentCultureIgnoreCase))
                     continue;
-                Console.WriteLine("\t-\t" + emails[i]);
                 emailAddresses.Add(new EmailAddress(emails[i], names[i]));
             }
 
