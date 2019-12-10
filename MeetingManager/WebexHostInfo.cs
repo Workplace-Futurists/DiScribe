@@ -21,7 +21,5 @@ namespace DiScribe
         public string ID { get; private set; }
 
         public string Company { get; private set; }
-
-
     }
 }

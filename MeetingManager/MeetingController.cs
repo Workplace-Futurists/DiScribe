@@ -92,7 +92,7 @@ namespace DiScribe.Meeting
             }
         }
 
-        public static List<EmailAddress> GetAttendeeEmails(string accessCode, WebexHostInfo meetingInfo)
+        public static List<EmailAddress> GetAttendeeEmails(MeetingInfo meetingInfo)
         {
             Console.WriteLine(">\tRetrieving All Attendees' Emails...");
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
@@ -104,14 +104,12 @@ namespace DiScribe.Meeting
             request.ContentType = "application/x-www-form-urlencoded";
 
             // Create POST data and convert it to a byte array.
-            string strXML = XMLHelper.GenerateXML(accessCode, meetingInfo);
+            string strXML = XMLHelper.GenerateXML(meetingInfo.AccessCode, meetingInfo.HostInfo);
                                     
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
             // Set the ContentLength property of the WebRequest.
             request.ContentLength = byteArray.Length;
-
-
 
             // Get the request stream.
             Stream dataStream = request.GetRequestStream();
@@ -119,10 +117,8 @@ namespace DiScribe.Meeting
             dataStream.Write(byteArray, 0, byteArray.Length);
             // Close the Stream object.
             dataStream.Close();
+
             // Get the response.
-
-
-
             WebResponse response = request.GetResponse();
 
             // Get the stream containing content returned by the server.
@@ -131,11 +127,9 @@ namespace DiScribe.Meeting
             StreamReader reader = new StreamReader(dataStream);
             // Read the content.
             string responseStr = reader.ReadToEnd();
-            // Display the content.
 
-         
+            // Display the content.         
             List<EmailAddress> emailAddresses = GetEmails(responseStr);
-
           
             // Clean up the streams.
             reader.Close();
@@ -211,6 +205,9 @@ namespace DiScribe.Meeting
 
             for (int i = 0; i < emails.Count; i++)
             {
+                if (BOT_EMAIL.Equals(""))
+                    throw new Exception("BOT EMAIL missing");
+
                 if (emails[i].Equals(BOT_EMAIL, StringComparison.CurrentCultureIgnoreCase))
                     continue;
                 Console.WriteLine("\t-\t" + emails[i]);
