@@ -115,7 +115,7 @@ namespace DiScribe.Email
 
         public static void SendEmailForStartURL(MeetingInfo meetingInfo)
         {
-            Console.WriteLine(">\tSending Emails to Users...");
+            Console.WriteLine(">\tSending Email to Meeting Host for Meeting Reminder...");
             if (meetingInfo.AttendeesEmails.Count == 0)
                 throw new Exception(">\tNo recipients were found");
 

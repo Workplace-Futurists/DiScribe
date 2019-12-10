@@ -32,8 +32,6 @@ namespace DiScribe.Dialer
         // given an rid, download a recording
         public async Task<FileInfo> DownloadRecordingAsync(string rid)
         {
-            Console.WriteLine(">\tDownloading Recording...");
-
             try
             {
                 using (var httpClient = new HttpClient())

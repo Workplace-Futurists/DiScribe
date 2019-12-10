@@ -9,12 +9,15 @@ using DiScribe.Meeting;
 using DiScribe.Scheduler;
 using Microsoft.CognitiveServices.Speech;
 
+
 namespace DiScribe.Main
 {
     static class Executor
     {
         public static void Execute()
         {
+            Console.WriteLine(">\tDiScribe Initializing...");
+
             // Set Authentication configurations
             var appConfig = Configurations.LoadAppSettings();
 
@@ -110,9 +113,7 @@ namespace DiScribe.Main
             try
             {
                 // dialing & recording
-                var dialerController = new DialerController(appConfig);
-
-                var rid = dialerController.CallMeetingAsync(meetingInfo.AccessCode).Result;
+                var rid = new DialerController(appConfig).CallMeetingAsync(meetingInfo.AccessCode).Result;
 
                 var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
 
