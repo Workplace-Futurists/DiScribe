@@ -8,7 +8,8 @@ using DiScribe.Dialer;
 using DiScribe.Meeting;
 using DiScribe.Scheduler;
 using Microsoft.CognitiveServices.Speech;
-
+using System.IO;
+using System.Linq;
 
 namespace DiScribe.Main
 {
@@ -147,6 +148,50 @@ namespace DiScribe.Main
                 }
                 return -1;
             }
+            finally
+            {
+                try
+                {
+                    int max_size = 100;
+                    Console.WriteLine("Recordings in total exceeds"
+                        + max_size + "Mb in size. Removing Oldest Recording\n["
+                        + DeleteOldestRecordingIfLargerThan(max_size) +"]");
+                }
+                catch (Exception)
+                {
+                    //
+                }
+            }
+        }
+
+
+        /*  Deletes the oldest recording
+         *  If the Record folder is larger than
+         *  <param name="max_size"></param> Mb
+         */
+        static string DeleteOldestRecordingIfLargerThan(long max_size)
+        {
+            string directoryPath;
+            #if (DEBUG)
+                directoryPath = (@"../../../../Record/");
+            #else
+                filePath = (@"Record/");
+            #endif
+
+            long dir_size = 0;
+            foreach (var file_ in new DirectoryInfo(directoryPath).GetFiles())
+            {
+                dir_size += file_.Length;
+            }
+
+            if (dir_size < max_size * 1024)
+                throw new Exception();
+
+            FileSystemInfo fileInfo = new DirectoryInfo(directoryPath).GetFileSystemInfos()
+                    .OrderBy(fi => fi.CreationTime).First();
+            var file = new FileInfo(fileInfo.FullName);
+            file.Delete();
+            return file.DirectoryName + "/" + file.Name;
         }
     }
 }
