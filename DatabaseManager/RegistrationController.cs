@@ -76,11 +76,11 @@ namespace DiScribe.DatabaseManager
                     curUser.AudioStream = AudioFileSplitter.Resample(curUser.AudioStream, 16000);
 
                     userProfiles.Add(curUser);
-                    Console.WriteLine($"\t-\t{email}\tLoad Succeeded.");
+                    Console.WriteLine($"\t-\t[Load Succeeded]\t{email}");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.Error.WriteLine($"\t-\t[{email}]\t\tLoad Failed.");
+                    Console.Error.WriteLine($"\t-\t[Load Failed]\t{email}");
                 }
             }
             return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);

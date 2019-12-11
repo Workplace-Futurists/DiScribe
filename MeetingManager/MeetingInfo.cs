@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 
 namespace DiScribe.Meeting
 {
@@ -20,7 +22,8 @@ namespace DiScribe.Meeting
 
         public bool MissingField()
         {
-            return AccessCode == "" || Password == "" || StartTime.Equals(new DateTime());
+            return AccessCode == ""
+                || StartTime.Equals(new DateTime());
         }
 
         public string AccessCode { get; set; }
@@ -28,5 +31,11 @@ namespace DiScribe.Meeting
         public string Password { get; set; }
 
         public DateTime StartTime { get; set; }
+
+        public string Subject { get; set; }
+
+        public WebexHostInfo HostInfo { get; set; }
+
+        public List<EmailAddress> AttendeesEmails { get; set; } 
     }
 }

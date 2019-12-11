@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Microsoft.Graph.Auth;
 using System.Globalization;
-
+using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
+using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace DiScribe.Email
 {
@@ -168,18 +170,52 @@ namespace DiScribe.Email
                 || !content.Contains("Meeting password: ");
         }
 
-        public static Meeting.MeetingInfo GetMeetingInfo(Message message)
+        public static Meeting.MeetingInfo GetMeetingInfo(Message message, IConfigurationRoot appConfig)
         {
             if (message is null)
                 throw new Exception("Email Message Received was <NULL>");
 
+            if (!IsValidWebexInvitation(message))
+                throw new Exception("Not a Webex Meeting Invitation Email");
+
+            var meetingInfo = GetMeetingInfoFromHTML(message);
+
+            meetingInfo.HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                    appConfig["WEBEX_PW"],
+                    appConfig["WEBEX_ID"],
+                    appConfig["WEBEX_COMPANY"]);
+
+            meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
+            meetingInfo.AttendeesEmails.Add(new EmailAddress(message.Sender.EmailAddress.Address));
+            meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
+            foreach (var attendee in meetingInfo.AttendeesEmails)
+            {
+                Console.WriteLine("\t-\t" + attendee.Email);
+            }
+            return meetingInfo;
+        }
+
+        private static Meeting.MeetingInfo GetMeetingInfoFromHTML(Message message)
+        {
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(message.Body.Content);
+
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
 
             if (htmlNodes is null)
                 throw new Exception("Email is not in proper format");
+
+            string meeting_Sbj = message.Subject;
+            if (!String.IsNullOrEmpty(meeting_Sbj))
+            {
+                meeting_Sbj = meeting_Sbj.Replace("Webex meeting invitation:", "");
+            }
+            else
+            {
+                meeting_Sbj = "";
+            }
+            meetingInfo.Subject = meeting_Sbj;
 
             for (int i = 0; i < htmlNodes.Count; i++)
             {
@@ -215,18 +251,31 @@ namespace DiScribe.Email
                         StringComparison.Ordinal))
                         .ToUpper();
 
-                    if (DateTime.TryParse(date + " " + time,
-                        new CultureInfo("en-US"),
-                        DateTimeStyles.AssumeLocal,
-                        out DateTime date_time))
-                        meetingInfo.StartTime = date_time;
+                    text = htmlNodes[i + 1].InnerText
+                        .Trim()
+                        .Replace(time, "", StringComparison.OrdinalIgnoreCase)
+                        .Replace("&nbsp;", "")
+                        .Replace("|", "")
+                        .Replace(" ", "");
+
+                    var timezone = text.Substring(0,
+                        text.IndexOf(")",
+                        StringComparison.Ordinal))
+                        .Replace("(", "")
+                        .Replace("UTC", "");
+
+                    var sum = (date + " " + time + " " + timezone).Trim();
+
+                    if (DateTime.TryParse(sum, out DateTime date_time))
+                        meetingInfo.StartTime = date_time.ToLocalTime();
                     else
                         continue;
                     break;
-
-                    // TODO timezone differentiation
                 }
             }
+            if (meetingInfo.MissingField())
+                throw new Exception("Important fields missing for MeetingInfo class");
+
             return meetingInfo;
         }
 
@@ -238,9 +287,9 @@ namespace DiScribe.Email
                 Subscription mailSubscription = new Subscription
                 {
                     ChangeType = "created,updated",
-                    
+
                     NotificationUrl = "https://discribefunctionapp.azurewebsites.net/api/subCreatorTest?code=h74tSOzgvTGtYZQ6pql0gEPxR1gnmDjL2bD67/hdqzho86y3vMa3Ww==",
-                    
+
 
                     Resource = "me/mailFolders('Inbox')/messages",
                     // This is the max expiration datetime for a mail subscription

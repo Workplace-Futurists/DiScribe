@@ -74,18 +74,25 @@ namespace DiScribe.Email
                 Console.Error.WriteLine(">\tWarning: No recipients were found");
         }
 
-        public static void SendMinutes(List<EmailAddress> recipients, FileInfo file, string accessCode = "your recent meeting")
+        public static void SendEmail(MeetingInfo meetingInfo, string subject, string htmlContent = "", FileInfo file = null)
+        {
+            if (htmlContent.Equals(""))
+                htmlContent = $"<h2>Meeting information</h2>\n<h4>Meeting Number: {meetingInfo.AccessCode}</h4>\n";
+            SendEmailHelper(OfficialEmail, meetingInfo.AttendeesEmails, subject, htmlContent, file).Wait();
+        }
+
+        public static void SendMinutes(MeetingInfo meetingInfo, FileInfo file)
         {
             Console.WriteLine(">\tSending the Transcription Results to users...");
-            foreach (var email in recipients)
+            foreach (var email in meetingInfo.AttendeesEmails)
             {
                 Console.WriteLine(">\t-\t" + email.Email);
             }
-            string subject = $"Meeting minutes of {accessCode}";
+            string subject = $"Meeting minutes of {meetingInfo.Subject}";
 
             // TODO need the infos
-            var htmlContent = $"<h2>Meeting information</h2>\n<h4>Meeting Number: {accessCode}</h4>\n";
-            SendEmail(recipients, subject, htmlContent, file);
+            var htmlContent = $"<h2>Meeting information</h2>\n<h4>Meeting Number: {meetingInfo.AccessCode}</h4>\n";
+            SendEmail(meetingInfo.AttendeesEmails, subject, htmlContent, file);
         }
 
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
@@ -106,20 +113,20 @@ namespace DiScribe.Email
             }
         }
 
-        public static void SendEmailForStartURL(List<EmailAddress> emails, string accessCode, string meetingSubj)
+        public static void SendEmailForStartURL(MeetingInfo meetingInfo)
         {
-            Console.WriteLine(">\tSending Emails to Users...");
-            if (emails.Count == 0)
+            Console.WriteLine(">\tSending Email to Meeting Host for Meeting Reminder...");
+            if (meetingInfo.AttendeesEmails.Count == 0)
                 throw new Exception(">\tNo recipients were found");
 
-            string startURL = XMLHelper.RetrieveStartUrl(accessCode);
+            string startURL = XMLHelper.RetrieveStartUrl(meetingInfo.AccessCode);
 
-            foreach (EmailAddress email in emails)
+            foreach (EmailAddress email in meetingInfo.AttendeesEmails)
             {
-                var htmlContent = "<h2>When it is time, please click on this link to start the meeting: "+ meetingSubj + "</h2><h4>Link: ";
+                var htmlContent = "<h2>When it is time, please click on this link to start the meeting: "+ meetingInfo.Subject + "</h2><h4>Link: ";
                 htmlContent += "<a href=\"" + startURL + "\">" + startURL + "</a>";
                 htmlContent += "</h4>";
-                SendEmail(email, "Link to Start Your Meeting - "+ meetingSubj, htmlContent);
+                SendEmail(email, "Link to Start Your Meeting - "+ meetingInfo.Subject, htmlContent);
             }
         }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DiScribe.Meeting;
 
 
 namespace DiScribe.Scheduler
@@ -13,11 +14,10 @@ namespace DiScribe.Scheduler
         /// asynchronously for meeting time.
         /// </summary>
         /// <param name="meetingFunction"></param>
-        /// <param name="meetingAccessCode"></param>
         /// <param name="dateTime"></param>
-        public static async Task Schedule(Func<string, IConfigurationRoot, int> meetingFunction, string meetingAccessCode, IConfigurationRoot appConfig, DateTime dateTime)
+        public static async Task Schedule(Func<MeetingInfo, IConfigurationRoot, int> meetingFunction, MeetingInfo meetingInfo, IConfigurationRoot appConfig, DateTime dateTime)
         {
-            Task meetingTask = ScheduleHelperAsync(meetingFunction, meetingAccessCode, appConfig, dateTime);
+            Task meetingTask = ScheduleHelperAsync(meetingFunction, meetingInfo, appConfig, dateTime);
             await meetingTask;
         }
 
@@ -25,10 +25,9 @@ namespace DiScribe.Scheduler
         /// Runs the meeting function at the scheduled time. Waits asynchronously until the meeting time occurs.
         /// </summary>
         /// <param name="meetingFunction"></param>
-        /// <param name="meetingAccessCode"></param>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        private static async Task ScheduleHelperAsync(Func<string, IConfigurationRoot, int> meetingFunction, string meetingAccessCode, IConfigurationRoot appConfig, DateTime dateTime)
+        private static async Task ScheduleHelperAsync(Func<MeetingInfo, IConfigurationRoot, int> meetingFunction, MeetingInfo meetingInfo, IConfigurationRoot appConfig, DateTime dateTime)
         {
             var difference = (int)(dateTime - DateTime.Now).TotalMilliseconds;
             if (difference > 0)
@@ -36,7 +35,7 @@ namespace DiScribe.Scheduler
 
             Task meetingTask = Task.Run(() =>
             {
-                meetingFunction(meetingAccessCode, appConfig);
+                meetingFunction(meetingInfo, appConfig);
             });
 
             await meetingTask;

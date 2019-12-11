@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Security;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Twilio;
@@ -87,6 +85,18 @@ namespace DiScribe.Dialer
                 // find element in list
                 finishedCall = calls.First(record => record.Sid == callSid);
                 var pendingStatus = finishedCall.Status;
+
+                if (pendingStatus == CallResource.StatusEnum.Ringing)
+                {
+                    Console.WriteLine(">\tRinging...");
+                    status = pendingStatus;
+                }
+                else if (pendingStatus == CallResource.StatusEnum.InProgress
+                    && status == pendingStatus)
+                {
+                    Console.WriteLine(">\tCalled in!");
+                    status = pendingStatus;
+                }
 
                 // check if the record is
                 if (pendingStatus == CallResource.StatusEnum.Completed)

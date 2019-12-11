@@ -9,6 +9,7 @@ using DiScribe.Meeting;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using SendGrid.Helpers.Mail;
 using System.Diagnostics;
+using DiScribe.Email;
 
 namespace DiScribe.WebMVC.Controllers
 {
@@ -42,11 +43,11 @@ namespace DiScribe.WebMVC.Controllers
             string endDateTimeStr = mc.MeetingEndDate.ToString("MM/dd/yyyy HH:mm:ss");
             Int64 duration = (Int64)(mc.MeetingEndDate - mc.MeetingStartDate).TotalMinutes;
             var access_code = MeetingController.CreateWebExMeeting(mc.MeetingSubject, names, emails, startDateTimeStr, duration.ToString(), meetingHost);
-            try
+            /*try
             {
                 var attendees = MeetingController.GetAttendeeEmails(access_code, meetingHost);
-                MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
-                MeetingController.SendEmailsOfStartURL(attendees, access_code, mc.MeetingSubject);
+                //MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
+                //EmailSender.SendEmailForStartURL(attendees, access_code, mc.MeetingSubject);
             }
             catch (Exception ex)
             {
@@ -62,7 +63,7 @@ namespace DiScribe.WebMVC.Controllers
             catch (Exception ex)
             {
 
-            }
+            }*/
 
             //MeetingControllers.EmailController.Initialize();
             //EmailController.SendEmailForVoiceRegistration(emailAddresses);
