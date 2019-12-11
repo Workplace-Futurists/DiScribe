@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Microsoft.Graph.Auth;
 using System.Globalization;
-using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
+using SendGrid.Helpers.Mail;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 
@@ -170,7 +171,70 @@ namespace DiScribe.Email
                 || !content.Contains("Meeting password: ");
         }
 
-        public static Meeting.MeetingInfo GetMeetingInfo(Message message, IConfigurationRoot appConfig)
+
+
+
+        public static Meeting.MeetingInfo GetMeetingInfoFromOutlookInvite(Message message)
+        {
+            var body = message.Body.Content;
+
+            string subject = "";
+            var participants = new List<SendGrid.Helpers.Mail.EmailAddress>();
+            DateTime startTime = new DateTime();
+            DateTime endTime = new DateTime();
+
+            List<string> properties = new List<string> { "Subject", "Participants", "Start Date Time", "End Date Time" };
+
+            /*Get the meeting subject and remove the property name for next property from this string*/
+            var subjectRegex = new Regex("Subject:.+Participants:");
+            subject = subjectRegex.Match(body).Value.Replace("Participants:", "");
+
+            /*Get the list of participant emails as a string and remove the property name of next property */
+            var emailsRegex = new Regex("Participants:.+Start Date Time:");
+            var emailsString = emailsRegex.Match(body).Value;
+            emailsString = emailsString.Replace("Participants:", "").Replace("Start Date Time:", "");
+
+            /*Convert email string to a list of SendGrid.Helpers.Mail.EmailAddress object */
+            participants = parseOutlookEmailsString(emailsString);
+
+            /*Attempt to get start time */
+            var startTimeRegex = new Regex("Start Date Time:+.End Date Time:");
+            var startTimeStr = startTimeRegex.Match(body).Value;
+            startTimeStr = startTimeStr.Replace("Start Date Time:", "").Replace("End Date Time:", "");
+            Boolean startTimeParsed = DateTime.TryParse(startTimeStr, out startTime);
+
+            /*Attempt to get end time */
+            var endTimeRegex = new Regex("End Date Time:.+");
+            var endTimeStr = endTimeRegex.Match(body).Value.Replace("End Date Time:", "");
+            Boolean endTimeParsed = DateTime.TryParse(endTimeStr, out startTime);
+
+
+
+            return new Meeting.MeetingInfo(subject, participants, startTime, endTime);
+
+        }
+
+
+        /// <summary>
+        /// Converts a string list of email address to a list of SendGrid.Helpers.Mail.EmailAddress objects. 
+        /// </summary>
+        /// <param name="emailList"></param>
+        /// <returns></returns>
+        private static List<SendGrid.Helpers.Mail.EmailAddress> parseOutlookEmailsString(string emailList)
+        {
+            var emails = emailList.Trim().Split(",");
+            var sendGridEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
+
+            foreach (var emailStr in emails)
+            {
+                sendGridEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(emailStr));
+            }
+
+            return sendGridEmails;
+        }
+
+
+        public static Meeting.MeetingInfo GetMeetingInfoFromWebexInvite(Message message, IConfigurationRoot appConfig)
         {
             if (message is null)
                 throw new Exception("Email Message Received was <NULL>");
@@ -178,16 +242,21 @@ namespace DiScribe.Email
             if (!IsValidWebexInvitation(message))
                 throw new Exception("Not a Webex Meeting Invitation Email");
 
-            var meetingInfo = GetMeetingInfoFromHTML(message);
+            var meetingInfo = GetMeetingInfoFromWebexHTML(message);
 
             meetingInfo.HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
                     appConfig["WEBEX_PW"],
                     appConfig["WEBEX_ID"],
                     appConfig["WEBEX_COMPANY"]);
 
+            /*Add all other meeting attendees to meetingInfo*/
             meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
-            meetingInfo.AttendeesEmails.Add(new EmailAddress(message.Sender.EmailAddress.Address));
+
+            /* Add the host who scheduled meeting as well */
+            meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(message.Sender.EmailAddress.Address));          
             meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
+
+
             foreach (var attendee in meetingInfo.AttendeesEmails)
             {
                 Console.WriteLine("\t-\t" + attendee.Email);
@@ -195,7 +264,9 @@ namespace DiScribe.Email
             return meetingInfo;
         }
 
-        private static Meeting.MeetingInfo GetMeetingInfoFromHTML(Message message)
+
+
+        private static Meeting.MeetingInfo GetMeetingInfoFromWebexHTML(Message message)
         {
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
@@ -273,11 +344,12 @@ namespace DiScribe.Email
                     break;
                 }
             }
-            if (meetingInfo.MissingField())
+            if (meetingInfo.MissingAccessInfo())
                 throw new Exception("Important fields missing for MeetingInfo class");
 
             return meetingInfo;
         }
+
 
         [HttpGet]
         private static async Task<Subscription> AddMailSubscription()
