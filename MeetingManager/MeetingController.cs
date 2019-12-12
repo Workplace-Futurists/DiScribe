@@ -15,7 +15,17 @@ namespace DiScribe.Meeting
     {
         public static string BOT_EMAIL;
 
-        public static string CreateWebExMeeting(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration, WebexHostInfo hostInfo)
+        /// <summary>
+        /// Creates a webex meeting with the specified parameters. Note that duration is in minutes.
+        /// </summary>
+        /// <param name="meetingSubject"></param>
+        /// <param name="names"></param>
+        /// <param name="emails"></param>
+        /// <param name="startDate"></param>
+        /// <param name="duration"></param>
+        /// <param name="hostInfo"></param>
+        /// <returns></returns>
+        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration, WebexHostInfo hostInfo, string password = "")
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
@@ -59,13 +69,23 @@ namespace DiScribe.Meeting
             dataStream.Close();
             response.Close();
 
+
+            
+            DateTime start = DateTime.Parse(startDate);
+            var sendGridEmails = EmailListener.parseEmailList(emails);
+
+
             Console.WriteLine("\tMeeting has been successfully created");
-            return accessCode;
+            return new MeetingInfo(meetingSubject, sendGridEmails, start, start.AddMinutes(Double.Parse(duration)), 
+                accessCode, password, hostInfo);
         }
 
-        /* This function sends email to all unregistered users
-         * given all the meeting attendees
-         */
+        /// <summary>
+        /// Sends email to all unregistered users given all the meeting attendees.
+        ///
+        /// </summary>
+        /// <param name="attendees"></param>
+        /// <param name="dbConnectionString"></param>
         public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees, 
             string dbConnectionString = 
             "Server=tcp:dbcs319discribe.database.windows.net, 1433; " +
@@ -92,6 +112,14 @@ namespace DiScribe.Meeting
             }
         }
 
+
+
+        /// <summary>
+        /// Get attendees via the Webex Meetings API. Uses the access info in meetingInfo
+        /// as parameters to API call.
+        /// </summary>
+        /// <param name="meetingInfo"></param>
+        /// <returns></returns>
         public static List<EmailAddress> GetAttendeeEmails(MeetingInfo meetingInfo)
         {
             Console.WriteLine(">\tRetrieving All Attendees' Emails...");
@@ -138,6 +166,10 @@ namespace DiScribe.Meeting
 
             return emailAddresses;
         }
+
+
+       
+
 
         
         [ObsoleteAttribute("This method is depricated and does not work in all cases.")]

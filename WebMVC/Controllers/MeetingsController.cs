@@ -39,10 +39,13 @@ namespace DiScribe.WebMVC.Controllers
 
             List<string> emails = new List<string>(Participants.Split(','));
             List<string> names = new List<string>(ParticiNames.Split(','));
+
+            var sendGridEmails = EmailListener.parseEmailList(emails);
+
             string startDateTimeStr = mc.MeetingStartDate.ToString("MM/dd/yyyy HH:mm:ss");
             string endDateTimeStr = mc.MeetingEndDate.ToString("MM/dd/yyyy HH:mm:ss");
             Int64 duration = (Int64)(mc.MeetingEndDate - mc.MeetingStartDate).TotalMinutes;
-            var access_code = MeetingController.CreateWebExMeeting(mc.MeetingSubject, names, emails, startDateTimeStr, duration.ToString(), meetingHost);
+            var access_code = MeetingController.CreateWebexMeeting(mc.MeetingSubject, names, emails, startDateTimeStr, duration.ToString(), meetingHost);
             /*try
             {
                 var attendees = MeetingController.GetAttendeeEmails(access_code, meetingHost);

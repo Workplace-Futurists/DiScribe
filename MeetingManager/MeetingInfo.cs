@@ -25,6 +25,8 @@ namespace DiScribe.Meeting
             EndTime = endTime;
             AccessCode = accessCode;
             HostInfo = hostInfo;
+
+            Names = GetNames();
         }
 
         /// <summary>
@@ -50,6 +52,45 @@ namespace DiScribe.Meeting
         }
 
 
+        /// <summary>
+        /// Get attendee emails as a list of strings with addresses.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetStringEmails()
+        {
+            var emails = new List<string>();
+            foreach (var email in AttendeesEmails)
+            {
+                emails.Add(email.Email);
+            }
+
+            return emails;
+        }
+
+
+        /// <summary>
+        /// Get the meeting duration in minutes.
+        /// </summary>
+        /// <returns></returns>
+        public double GetDuration()
+        {
+            return StartTime.Subtract(EndTime).TotalMinutes;
+
+        }
+
+        private List<string> GetNames()
+        {
+            List<string> names = new List<string>();
+            foreach(var email in AttendeesEmails)
+            {
+                names.Add(email.Name);
+            }
+
+            return names;
+        }
+
+
+
         public string Subject { get; set; }
 
         public List<EmailAddress> AttendeesEmails { get; set; }
@@ -61,6 +102,8 @@ namespace DiScribe.Meeting
         public string AccessCode { get; set; }
 
         public string Password { get; set; }
+
+        public List<string> Names { get; set; }
 
         public WebexHostInfo HostInfo { get; set; }
     }

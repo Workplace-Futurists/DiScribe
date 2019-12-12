@@ -220,9 +220,9 @@ namespace DiScribe.Email
         /// </summary>
         /// <param name="emailList"></param>
         /// <returns></returns>
-        private static List<SendGrid.Helpers.Mail.EmailAddress> parseOutlookEmailsString(string emailList)
+        public static List<SendGrid.Helpers.Mail.EmailAddress> parseOutlookEmailsString(string emailListStr)
         {
-            var emails = emailList.Trim().Split(",");
+            var emails = emailListStr.Trim().Split(",");
             var sendGridEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
 
             foreach (var emailStr in emails)
@@ -231,6 +231,27 @@ namespace DiScribe.Email
             }
 
             return sendGridEmails;
+        }
+
+
+        /// <summary>
+        /// Converts a list of strings into a list of SendGrid.Helpers.Mail.EmailAddress representing
+        /// emails.
+        /// </summary>
+        /// <param name="emailList"></param>
+        /// <returns></returns>
+        public static List<SendGrid.Helpers.Mail.EmailAddress> parseEmailList(List<string> emailList)
+        {
+            var sendGridEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
+
+            foreach (var emailStr in emailList)
+            {
+                sendGridEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(emailStr));
+            }
+
+
+            return sendGridEmails;
+                                 
         }
 
 
