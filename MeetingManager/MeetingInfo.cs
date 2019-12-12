@@ -12,6 +12,11 @@ namespace DiScribe.Meeting
     {
         public MeetingInfo()
         {
+            Names = new List<string>();
+            HostInfo = new WebexHostInfo();
+            AttendeesEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
+            StartTime = new DateTime();
+            EndTime = new DateTime();
 
         }
 
@@ -30,14 +35,15 @@ namespace DiScribe.Meeting
         }
 
         /// <summary>
-        /// Determine if there are any misisng fields in this instance.
+        /// Determine if there are any misisng fields in this instance. Password
+        /// is considered optional, so it is not checked
         /// </summary>
         /// <returns></returns>
         public bool MissingField()
         {
-            return Subject == "" || AttendeesEmails is null || AttendeesEmails.Count == 0 ||
+            return Subject == "" || AttendeesEmails.Count == 0 || 
                 StartTime.Equals(new DateTime()) || EndTime.Equals(new DateTime())
-                || AccessCode == "" || Password == "";
+                || AccessCode == "" ;
         }
 
 
@@ -93,7 +99,23 @@ namespace DiScribe.Meeting
 
         public string Subject { get; set; }
 
-        public List<EmailAddress> AttendeesEmails { get; set; }
+
+        /// <summary>
+        /// The emails of meeting attendees. Note that if emails are updated, then names are also updated.
+        /// </summary>
+        public List<EmailAddress> AttendeesEmails 
+        { 
+                get { return _AttendeeEmails; } 
+                set {       
+                         _AttendeeEmails = value;
+                        foreach (var curEmail in value)
+                        {
+                            if (curEmail == null || curEmail.Name == null)
+                                continue;
+                             Names.Add(curEmail.Name);
+                        }
+                } 
+        }
 
         public DateTime StartTime { get; set; }
 
@@ -106,5 +128,8 @@ namespace DiScribe.Meeting
         public List<string> Names { get; set; }
 
         public WebexHostInfo HostInfo { get; set; }
+
+
+        private List<EmailAddress> _AttendeeEmails; 
     }
 }

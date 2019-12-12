@@ -11,9 +11,7 @@ namespace DiScribe.DatabaseManager
     /// </summary>
     public static class DatabaseController
     {
-        /*Temporary DB connection string. In production, this will be a different connection string. */
-        private static readonly string dbConnectionStr;
-
+        
         private static SqlConnection DBConnection = null;
 
         public static void Initialize(string connectionStr)

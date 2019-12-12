@@ -6,6 +6,12 @@ namespace DiScribe
 {
     public class WebexHostInfo
     {
+
+        public WebexHostInfo()
+        {
+
+        }
+
         public WebexHostInfo(string email, string password, string id, string company)
         {
             Email = email;

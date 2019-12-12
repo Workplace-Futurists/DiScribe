@@ -14,7 +14,7 @@ namespace DiScribe.Main
 {
     static class Executor
     {
-        public static void Execute()
+        public static async Task Execute()
         {
             Console.WriteLine(">\tDiScribe Initializing...");
 
@@ -37,11 +37,15 @@ namespace DiScribe.Main
 
                 try
                 {
-                    ListenForInvitations(appConfig).Wait();
+                    await ListenForInvitations(appConfig);
+
                 }
-                catch (AggregateException errors)
+                 catch (AggregateException exs)
                 {
-                    Console.Error.WriteLine($">\tError in listener. Reason: {errors.InnerException.Message} \tRestarting listener...");
+                    foreach (var ex in exs.InnerExceptions)
+                    {
+                        Console.Error.WriteLine($">\t{ex.Message}");
+                    }
                 }
             }
         }
@@ -49,14 +53,8 @@ namespace DiScribe.Main
         /// <summary>
         /// Listens for a new WebEx invitation to the DiScribe bot email account.
         /// Logic:
-        ///     -> Every 10 seconds, read inbox
-        ///     -> Determine if this is an invite from DiScribe web (webex invite) or an template invite from Outlook
-        ///          If invite is from DiScribe web then
-        ///             Get meeting access code
-        ///             Call Webex API to get meeting time and participant emails using access code
-        ///          
-        ///          else if invite is template invite from Outlook
-        ///             Call Webex API to create meeting and get the meeting access code
+        ///     -> Every 10 seconds, read events
+        ///     -> Call Webex API to create meeting and get the meeting access code
         ///             
         ///     -> Schedule the rest of the dialer-transcriber workflow to dial in to meeting at the specified time
         ///
@@ -65,52 +63,52 @@ namespace DiScribe.Main
         /// <returns></returns>
         private static async Task ListenForInvitations(IConfigurationRoot appConfig, int seconds = 10)
         {
+
+            MeetingInfo meetingInfo;
+            Microsoft.Graph.Event inviteEvent = null;
+
+            
             try
             {
                
-                MeetingInfo meetingInfo;
-                Microsoft.Graph.Message message = null;
                 try
                 {
-                    /*Attempt to get. latest email from bot's inbox. 
-                        * If inbox is empty, no meeting will be scheduled. */
-                    message = EmailListener.GetEmailAsync().Result;
-
+                    /*Attempt to get. latest event from bot's Outlook account. 
+                     If there are no events, nothing will be scheduled. */
+                    inviteEvent = await EmailListener.GetEventAsync();
+                    
+                    
                 }
                 catch (Exception readMessageEx)
                 {
-                    EmailListener.DeleteEmailAsync(message).Wait();
-                    Console.Error.WriteLine(">\tCould not get invite email. Reason: " + readMessageEx.Message);
-                    throw new Exception("Unable to continue, as invite email acount not be read...");
+                    //EmailListener.DeleteEmailAsync(message).Wait();
+                    throw new Exception("No meeting invites read from Outlook inbox. Reason: " + readMessageEx.Message);
+                    
                 }
 
-                /*Handle the invite. Accommodate both webex invites from DiScribe AND Outlook template invites.
+                /*Handle the invite.
                   Assign the returned meeting info about the scheduled meeting */
-                meetingInfo = HandleInvite(message, appConfig);
+                meetingInfo = HandleInvite(inviteEvent, appConfig);
 
 
                 Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
 
                 /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
-                MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
+                //MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
                 /*Send an email to meeting host and any delegate enabling Webex meeting start */
-                EmailSender.SendEmailForStartURL(meetingInfo);
+                //EmailSender.SendEmailForStartURL(meetingInfo);
 
-                Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
+                //Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
-                await SchedulerController.Schedule(Run,
-                    meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
-
-                EmailListener.DeleteEmailAsync(message).Wait();                        //Deletes the email that was read
-
+                //await SchedulerController.Schedule(Run,
+                    //meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
             }
-            catch (AggregateException exs)
+          
+            finally
             {
-                foreach (var ex in exs.InnerExceptions)
-                {
-                    Console.Error.WriteLine(ex.Message);
-                }
+                EmailListener.DeleteEventAsync(inviteEvent).Wait();                        //Deletes the event that was read
+
             }
 
             await Task.Delay(seconds * 1000);
@@ -168,37 +166,41 @@ namespace DiScribe.Main
 
 
 
-        private static Meeting.MeetingInfo HandleInvite(Microsoft.Graph.Message message, IConfigurationRoot appConfig)
+        private static Meeting.MeetingInfo HandleInvite(Microsoft.Graph.Event inviteEvent, IConfigurationRoot appConfig)
         {
+            MeetingInfo meetingInfo = new MeetingInfo();
 
-            MeetingInfo meetingInfo = null;
-
-            /*If this is a webex-generated email, then parse it as such and
-              call Webex API to get meeting time and participant emails using access code. */
-            if (EmailListener.IsValidWebexInvitation(message))
+            if (EmailListener.IsValidWebexInvitation(inviteEvent))
             {
-                meetingInfo = EmailListener.GetMeetingInfoFromWebexInvite(message, appConfig);
-                meetingInfo.AttendeesEmails = MeetingController.GetAttendeeEmails(meetingInfo);
+                meetingInfo = EmailListener.GetMeetingInfoFromWebexInvite(inviteEvent, appConfig);
             }
 
-            /*Handle email as a template email from Outlook. Parse email and then schedule
-              the meeting at the requested time. */
             else
             {
-                meetingInfo = EmailListener.GetMeetingInfoFromOutlookInvite(message);
-
                 WebexHostInfo hostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                    appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]);
+                 appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]);
 
-                
+                var something = inviteEvent.Start;
 
-                MeetingController.CreateWebexMeeting(meetingInfo.Subject, meetingInfo.Names,
-                    meetingInfo.GetStringEmails(), meetingInfo.StartTime.ToString(), meetingInfo.GetDuration().ToString(), hostInfo);
-              
+                inviteEvent.Start.TimeZone = System.TimeZoneInfo.Local.ToString();             //Set timezone of meeting start to local system time of bot
+                inviteEvent.End.TimeZone = System.TimeZoneInfo.Local.ToString();                  
+
+                string meetingStart = inviteEvent.Start.DateTime;                               //Get this start time in local time.
+                string meetingEnd = inviteEvent.End.DateTime;
+
+                string meetingDuration = (DateTime.Parse(meetingEnd).Subtract(DateTime.Parse(meetingStart))).ToString();          //Calc meeting duration.
+
+
+                meetingInfo = MeetingController.CreateWebexMeeting(inviteEvent.Subject, EmailListener.GetAttendeeEmails(inviteEvent),
+                EmailListener.GetAttendeeNames(inviteEvent), meetingStart, meetingDuration, hostInfo);
 
             }
 
+
             return meetingInfo;
+                
+
+           // return meetingInfo;
 
 
 
