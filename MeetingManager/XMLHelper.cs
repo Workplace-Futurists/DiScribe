@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Microsoft.Graph;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Web;
 using System.Xml;
 
 namespace DiScribe.Meeting
 {
     static class XMLHelper
     {
-        public static string GenerateMeetingXML(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration, WebexHostInfo hostInfo)
+        public static string GenerateMeetingXML(string meetingSubject, List<string> names, List<string> emails, string startTime, string duration, WebexHostInfo hostInfo)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
             strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n";
@@ -45,14 +47,16 @@ namespace DiScribe.Meeting
             strXML += "</enableOptions>\r\n";
             strXML += "<schedule>\r\n";
             strXML += "<startDate>";
-            strXML += startDate;
+            strXML += startTime;
             strXML += "</startDate>\r\n";
             strXML += "<openTime>900</openTime>\r\n";
             strXML += "<joinTeleconfBeforeHost>true</joinTeleconfBeforeHost>\r\n";
             strXML += "<duration>";
             strXML += duration;
             strXML += "</duration>\r\n";
-            strXML += "<timeZoneID>4</timeZoneID>\r\n";
+            strXML += "<timeZoneID>";
+            strXML += "-1";
+            strXML += "</timeZoneID>\r\n";
             strXML += "</schedule>\r\n";
             strXML += "<telephony>\r\n";
             strXML += "<telephonySupport>CALLIN</telephonySupport>\r\n";
@@ -242,5 +246,28 @@ namespace DiScribe.Meeting
 
             return accessCode;
         }
+
+
+
+
+        public static string GetGMTLocalTime()
+        {
+            var utcTimeZone = TimeZoneInfo.Local.ToString();
+            string gmtTimeZone = utcTimeZone.Replace("UTC", "GMT");
+
+            /*Revert first parentheses*/
+            gmtTimeZone = gmtTimeZone.Remove(gmtTimeZone.IndexOf("("), 1);
+            gmtTimeZone = gmtTimeZone.Remove(gmtTimeZone.IndexOf(")"), 1);
+
+            
+            gmtTimeZone = "GMT-08:00, Pacific(San Jose)";                   //Ensure & and other reserved chars are html encoded.
+
+            return gmtTimeZone;
+
+
+        }
+
+
+    
     }
 }

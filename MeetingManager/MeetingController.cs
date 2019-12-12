@@ -8,6 +8,8 @@ using DiScribe.Email;
 using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
 using DiScribe.DatabaseManager;
 using System.Text.RegularExpressions;
+using Microsoft.Graph;
+using System.Globalization;
 
 namespace DiScribe.Meeting
 {
@@ -25,7 +27,7 @@ namespace DiScribe.Meeting
         /// <param name="duration"></param>
         /// <param name="hostInfo"></param>
         /// <returns></returns>
-        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, string startDate, string duration, WebexHostInfo hostInfo, string password = "")
+        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, DateTime startTime, string duration, WebexHostInfo hostInfo, string password = "")
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
@@ -39,7 +41,13 @@ namespace DiScribe.Meeting
             // string strXML = GenerateXMLCreateMeeting();
 
             // string strXML = File.ReadAllText(@"createMeeting.xml");
-            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, startDate, duration, hostInfo);
+
+
+            string formattedStartTime = startTime.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+
+            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, formattedStartTime, duration, hostInfo);
+
+            Console.WriteLine(strXML);
 
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
@@ -61,8 +69,17 @@ namespace DiScribe.Meeting
             StreamReader reader = new StreamReader(dataStream);
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
+
+
+            Console.WriteLine(responseFromServer);
+
             // Display the content.
             string accessCode = XMLHelper.RetrieveAccessCode(responseFromServer);
+
+            
+            Console.WriteLine(accessCode);
+
+
 
             // Clean up the streams.
             reader.Close();
@@ -70,13 +87,12 @@ namespace DiScribe.Meeting
             response.Close();
 
 
-            
-            DateTime start = DateTime.Parse(startDate);
+                        
             var sendGridEmails = EmailListener.parseEmailList(emails);
 
 
             Console.WriteLine("\tMeeting has been successfully created");
-            return new MeetingInfo(meetingSubject, sendGridEmails, start, start.AddMinutes(Double.Parse(duration)), 
+            return new MeetingInfo(meetingSubject, sendGridEmails, startTime, startTime.AddMinutes(Double.Parse(duration)), 
                 accessCode, password, hostInfo);
         }
 

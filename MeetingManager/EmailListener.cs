@@ -109,7 +109,7 @@ namespace DiScribe.Email
 
 
             if (events.Count == 0)
-                throw new Exception("No events for bot account...");
+                throw new Exception("No meetings scheduled.");
 
 
             return events.ToArray()[0];
