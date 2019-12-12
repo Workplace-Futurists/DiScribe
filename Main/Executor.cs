@@ -131,11 +131,14 @@ namespace DiScribe.Main
 
             Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
 
-             /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
+            /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
             //MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
-            /*Send an email to meeting host and any delegate enabling Webex meeting start */
-            //EmailSender.SendEmailForStartURL(meetingInfo);
+            var organizerEmail = inviteEvent.Organizer.EmailAddress;
+
+            /*Send an email to meeting host and any delegate enabling Webex meeting start*/
+            EmailSender.SendEmailForStartURL(meetingInfo, 
+                new SendGrid.Helpers.Mail.EmailAddress(organizerEmail.Address, organizerEmail.Name));
 
             //Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
@@ -236,7 +239,7 @@ namespace DiScribe.Main
 
                 meetingInfo = MeetingController.CreateWebexMeeting(inviteEvent.Subject, EmailListener.GetAttendeeNames(inviteEvent),
                     EmailListener.GetAttendeeEmails(inviteEvent), meetingStart, 
-                    meetingDurationStr, hostInfo);
+                    meetingDurationStr, hostInfo, inviteEvent.Organizer.EmailAddress);
 
             }
 

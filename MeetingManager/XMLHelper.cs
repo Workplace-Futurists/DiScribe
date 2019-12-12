@@ -11,7 +11,8 @@ namespace DiScribe.Meeting
 {
     static class XMLHelper
     {
-        public static string GenerateMeetingXML(string meetingSubject, List<string> names, List<string> emails, string startTime, string duration, WebexHostInfo hostInfo)
+        public static string GenerateMeetingXML(string meetingSubject, List<string> names, List<string> emails, string startTime, string duration, 
+            WebexHostInfo hostInfo, Microsoft.Graph.EmailAddress hostDelegate = default)
         {
             string strXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
             strXML += "<serv:message xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n";
@@ -35,7 +36,7 @@ namespace DiScribe.Meeting
             strXML += "<participants>\r\n";
             strXML += "<maxUserNumber>10</maxUserNumber>\r\n";
             strXML += "<attendees>\r\n";
-            strXML += GenerateAttendeeElement(names, emails);
+            strXML += GenerateAttendeeElement(names, emails, hostDelegate.Address);
             strXML += "</attendees>\r\n";
             strXML += "</participants>\r\n";
             strXML += "<enableOptions>\r\n";
@@ -74,18 +75,18 @@ namespace DiScribe.Meeting
             return strXML;
         }
 
-        public static string GenerateAttendeeElement(List<string> names, List<string> emails)
+        public static string GenerateAttendeeElement(List<string> names, List<string> emails, string hostDelegateEmail)
         {
             string xml = "";
             for (int i = 0; i < emails.Count; i++)
             {
-                xml += GenerateAttendeeSingleElement(names[i], emails[i]);
+                xml += GenerateAttendeeSingleElement(names[i], emails[i], hostDelegateEmail);
             }
 
             return xml;
         }
 
-        public static string GenerateAttendeeSingleElement(string name, string email)
+        public static string GenerateAttendeeSingleElement(string name, string email, string hostDelegateEmail)
         {
             string strXML = "";
             strXML += "<attendee>\r\n";
@@ -95,6 +96,13 @@ namespace DiScribe.Meeting
             strXML += "</name>\r\n";
             strXML += "<email>";
             strXML += email;
+            if (email == hostDelegateEmail)
+            {
+                strXML += "<role>";
+                strXML += "<HOST>";
+                strXML += "</role>\r\n";
+            }
+
             strXML += "</email>\r\n";
             strXML += "</person>\r\n";
             strXML += "</attendee>\r\n";
@@ -247,26 +255,8 @@ namespace DiScribe.Meeting
             return accessCode;
         }
 
-
-
-
-        public static string GetGMTLocalTime()
-        {
-            var utcTimeZone = TimeZoneInfo.Local.ToString();
-            string gmtTimeZone = utcTimeZone.Replace("UTC", "GMT");
-
-            /*Revert first parentheses*/
-            gmtTimeZone = gmtTimeZone.Remove(gmtTimeZone.IndexOf("("), 1);
-            gmtTimeZone = gmtTimeZone.Remove(gmtTimeZone.IndexOf(")"), 1);
-
-            
-            gmtTimeZone = "GMT-08:00, Pacific(San Jose)";                   //Ensure & and other reserved chars are html encoded.
-
-            return gmtTimeZone;
-
-
-        }
-
+               
+       
 
     
     }

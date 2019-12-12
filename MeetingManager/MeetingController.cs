@@ -27,7 +27,8 @@ namespace DiScribe.Meeting
         /// <param name="duration"></param>
         /// <param name="hostInfo"></param>
         /// <returns></returns>
-        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, DateTime startTime, string duration, WebexHostInfo hostInfo, string password = "")
+        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, DateTime startTime, string duration, WebexHostInfo hostInfo,
+            Microsoft.Graph.EmailAddress hostDelegate = default, string password = "")
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
 
@@ -45,7 +46,7 @@ namespace DiScribe.Meeting
 
             string formattedStartTime = startTime.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
 
-            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, formattedStartTime, duration, hostInfo);
+            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, formattedStartTime, duration, hostInfo, hostDelegate);
 
             Console.WriteLine(strXML);
 
