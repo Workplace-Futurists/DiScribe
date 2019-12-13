@@ -74,12 +74,14 @@ namespace DiScribe.Email
                 Console.Error.WriteLine(">\tWarning: No recipients were found");
         }
 
+
         public static void SendEmail(MeetingInfo meetingInfo, string subject, string htmlContent = "", FileInfo file = null)
         {
             if (htmlContent.Equals(""))
                 htmlContent = $"<h2>Meeting information</h2>\n<h4>Meeting Number: {meetingInfo.AccessCode}</h4>\n";
             SendEmailHelper(OfficialEmail, meetingInfo.AttendeesEmails, subject, htmlContent, file).Wait();
         }
+
 
         public static void SendMinutes(MeetingInfo meetingInfo, FileInfo file)
         {

@@ -71,9 +71,8 @@ namespace DiScribe.Main
             while(true)
             {
                 await CheckForGraphEvents(appConfig);
-                          
-
-                await Task.Delay(delayInterval * 1000);
+               
+                await Task.Delay(delayInterval * 1000);                   //Resume listening
             }
 
         }
@@ -115,18 +114,22 @@ namespace DiScribe.Main
             } catch (Exception ex)
             {
                 throw new Exception($"Could not get any MS Graph events. Reason: {ex.Message}");
-
             }
 
             finally
             {
-                if (inviteEvent != null)
-                   EmailListener.DeleteEventAsync(inviteEvent).Wait();                        //Deletes any matching event that was read.
+                //if (inviteEvent != null)
+                //   EmailListener.DeleteEventAsync(inviteEvent).Wait();                        //Deletes any matching event that was read.
             }
+
+
+            WebexHostInfo hostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                 appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]);
+
 
             /*Handle the invite.
               Assign the returned meeting info about the scheduled meeting */
-            meetingInfo = HandleInvite(inviteEvent, appConfig);
+            meetingInfo = await MeetingController.HandleInvite(inviteEvent, hostInfo, appConfig["mailUser"]);
 
 
             Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
@@ -134,13 +137,14 @@ namespace DiScribe.Main
             /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
             //MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
+            
+            /*Send an email to only meeting host and any delegate enabling Webex meeting start*/
             var organizerEmail = inviteEvent.Organizer.EmailAddress;
-
-            /*Send an email to meeting host and any delegate enabling Webex meeting start*/
             EmailSender.SendEmailForStartURL(meetingInfo, 
                 new SendGrid.Helpers.Mail.EmailAddress(organizerEmail.Address, organizerEmail.Name));
 
-            //Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
+            Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
+
 
             //SchedulerController.Schedule(Run,
             //meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
@@ -199,67 +203,7 @@ namespace DiScribe.Main
 
         }
 
-
-
-        /// <summary>
-        /// Handles meeting invite and returns a MeetingInfo object representing the meeting.
-        /// Separate cases for a Webex invite event and a
-        /// </summary>
-        /// <param name="inviteEvent"></param>
-        /// <param name="appConfig"></param>
-        /// <returns></returns>
-        private static Meeting.MeetingInfo HandleInvite(Microsoft.Graph.Event inviteEvent, IConfigurationRoot appConfig)
-        {
-            MeetingInfo meetingInfo = new MeetingInfo();
-
-            /*If invite is a Webex email, parse email and use Webex API */
-            if (EmailListener.IsValidWebexInvitation(inviteEvent))
-            {
-                meetingInfo = EmailListener.GetMeetingInfoFromWebexInvite(inviteEvent, appConfig);
-            }
-
-            else
-            {
-                WebexHostInfo hostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                 appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]);
-
-                var something = inviteEvent.Start;
-
-                
-                /*Get start and end time in UTC */
-                DateTime meetingStartUTC = DateTime.Parse(inviteEvent.Start.DateTime);          
-                DateTime meetingEndUTC = DateTime.Parse(inviteEvent.End.DateTime);
-
-                /*Convert UTC start and end times to bot local system time */
-                DateTime meetingStart = TimeZoneInfo.ConvertTimeFromUtc(meetingStartUTC, TimeZoneInfo.Local);
-                DateTime meetingEnd = TimeZoneInfo.ConvertTimeFromUtc(meetingEndUTC, TimeZoneInfo.Local);
-
-                var meetingDuration = meetingEnd.Subtract(meetingStart);
-                string meetingDurationStr = meetingDuration.TotalMinutes.ToString();
-
-                meetingInfo = MeetingController.CreateWebexMeeting(inviteEvent.Subject, EmailListener.GetAttendeeNames(inviteEvent),
-                    EmailListener.GetAttendeeEmails(inviteEvent), meetingStart, 
-                    meetingDurationStr, hostInfo, inviteEvent.Organizer.EmailAddress);
-
-            }
-
-
-            return meetingInfo;
-                
-
-           // return meetingInfo;
-
-
-
-
-
-
-        }
-
-
-
-
-                                    
+                                            
 
     }
 }

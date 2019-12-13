@@ -99,7 +99,7 @@ namespace DiScribe.Meeting
             if (email == hostDelegateEmail)
             {
                 strXML += "<role>";
-                strXML += "<HOST>";
+                strXML += "HOST";
                 strXML += "</role>\r\n";
             }
 

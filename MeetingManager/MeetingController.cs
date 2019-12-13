@@ -10,12 +10,96 @@ using DiScribe.DatabaseManager;
 using System.Text.RegularExpressions;
 using Microsoft.Graph;
 using System.Globalization;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace DiScribe.Meeting
 {
     public static class MeetingController
     {
         public static string BOT_EMAIL;
+
+
+
+
+        /// <summary>
+        /// Handles meeting invite and returns a MeetingInfo object representing the meeting.
+        /// Separate cases for a Webex invite event and Outlook invites
+        /// </summary>
+        /// <param name="inviteEvent"></param>
+        /// <param name="appConfig"></param>
+        /// <returns></returns>
+        public static async Task<Meeting.MeetingInfo> HandleInvite(Microsoft.Graph.Event inviteEvent, WebexHostInfo hostInfo, string botEmail)
+        {
+            MeetingInfo meetingInfo = new MeetingInfo();
+
+            /*If invite is a Webex from DiScribe website or from Webex website, parse email and use Webex API 
+             to get meeting metadata.*/
+            if (EmailListener.IsValidWebexInvitation(inviteEvent))
+            {
+                meetingInfo = EmailListener.GetMeetingInfoFromWebexInvite(inviteEvent, hostInfo);
+            }
+
+            /*Otherwise, handle invite event as an Outlook invite. Here, a new meeting is created
+             * at the time requested in the event received. Metadata can be obtained from the event
+             in this case.*/
+            else
+            {
+
+                var something = inviteEvent.Start;
+
+
+                /*Get start and end time in UTC */
+                DateTime meetingStartUTC = DateTime.Parse(inviteEvent.Start.DateTime);
+                DateTime meetingEndUTC = DateTime.Parse(inviteEvent.End.DateTime);
+
+                /*Convert UTC start and end times to bot local system time */
+                DateTime meetingStart = TimeZoneInfo.ConvertTimeFromUtc(meetingStartUTC, TimeZoneInfo.Local);
+                DateTime meetingEnd = TimeZoneInfo.ConvertTimeFromUtc(meetingEndUTC, TimeZoneInfo.Local);
+
+                var meetingDuration = meetingEnd.Subtract(meetingStart);
+                string meetingDurationStr = meetingDuration.TotalMinutes.ToString();
+
+                var attendeeNames = EmailListener.GetAttendeeNames(inviteEvent);
+                var attendeeEmails = EmailListener.GetAttendeeEmails(inviteEvent).Distinct().ToList();
+
+                /*Remove the bot email, as the bot must not receive another event. */
+                foreach(var curEmail in attendeeEmails)
+                {
+                    if (curEmail == botEmail)
+                    {
+                        attendeeEmails.Remove(curEmail);
+                        break;
+                    }
+                }
+
+                meetingInfo = MeetingController.CreateWebexMeeting(inviteEvent.Subject, attendeeNames, attendeeEmails,
+                    meetingStart, meetingDurationStr, hostInfo, inviteEvent.Organizer.EmailAddress);
+
+            }
+
+
+            return meetingInfo;
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Creates a webex meeting with the specified parameters. Note that duration is in minutes.
@@ -48,8 +132,6 @@ namespace DiScribe.Meeting
 
             string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, formattedStartTime, duration, hostInfo, hostDelegate);
 
-            Console.WriteLine(strXML);
-
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
             // Set the ContentLength property of the WebRequest.
@@ -71,8 +153,6 @@ namespace DiScribe.Meeting
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
 
-
-            Console.WriteLine(responseFromServer);
 
             // Display the content.
             string accessCode = XMLHelper.RetrieveAccessCode(responseFromServer);

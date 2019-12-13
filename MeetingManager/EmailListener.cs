@@ -418,6 +418,7 @@ namespace DiScribe.Email
 
             foreach (var curAttendee in inviteEvent.Attendees)
             {
+
                 names.Add(curAttendee.EmailAddress.Name);
 
             }
@@ -429,7 +430,7 @@ namespace DiScribe.Email
 
 
 
-        public static Meeting.MeetingInfo GetMeetingInfoFromWebexInvite(Microsoft.Graph.Event inviteEvent, IConfigurationRoot appConfig)
+        public static Meeting.MeetingInfo GetMeetingInfoFromWebexInvite(Microsoft.Graph.Event inviteEvent, WebexHostInfo hostInfo)
         {
             if (inviteEvent is null)
                 throw new Exception("Email Message Received was <NULL>");
@@ -439,10 +440,7 @@ namespace DiScribe.Email
 
             var meetingInfo = GetMeetingInfoFromWebexHTML(inviteEvent);
 
-            meetingInfo.HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                    appConfig["WEBEX_PW"],
-                    appConfig["WEBEX_ID"],
-                    appConfig["WEBEX_COMPANY"]);
+            meetingInfo.HostInfo = hostInfo;
 
             /*Add all other meeting attendees to meetingInfo*/
              meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
