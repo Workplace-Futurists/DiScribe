@@ -66,7 +66,7 @@ namespace DiScribe.Meeting
                 /*Remove the bot email, as the bot must not receive another event. */
                 foreach(var curEmail in attendeeEmails)
                 {
-                    if (curEmail == botEmail)
+                    if (curEmail.Equals(botEmail, StringComparison.OrdinalIgnoreCase))
                     {
                         attendeeEmails.Remove(curEmail);
                         break;
@@ -158,10 +158,7 @@ namespace DiScribe.Meeting
             string accessCode = XMLHelper.RetrieveAccessCode(responseFromServer);
 
             
-            Console.WriteLine(accessCode);
-
-
-
+            
             // Clean up the streams.
             reader.Close();
             dataStream.Close();

@@ -118,8 +118,8 @@ namespace DiScribe.Main
 
             finally
             {
-                //if (inviteEvent != null)
-                //   EmailListener.DeleteEventAsync(inviteEvent).Wait();                        //Deletes any matching event that was read.
+                if (inviteEvent != null)
+                     EmailListener.DeleteEventAsync(inviteEvent).Wait();                        //Deletes any matching event that was read.
             }
 
 
@@ -135,7 +135,7 @@ namespace DiScribe.Main
             Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
 
             /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
-            //MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
+            MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
             
             /*Send an email to only meeting host and any delegate enabling Webex meeting start*/
@@ -146,8 +146,8 @@ namespace DiScribe.Main
             Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
 
-            //SchedulerController.Schedule(Run,
-            //meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
+            SchedulerController.Schedule(Run,
+            meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
 
 
             
