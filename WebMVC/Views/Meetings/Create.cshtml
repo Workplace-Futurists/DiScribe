@@ -16,24 +16,32 @@
                 <span asp-validation-for="MeetingSubject" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MeetingStartDate" class="control-label"></label>
-                <input asp-for="MeetingStartDate" class="form-control" />
-                <span asp-validation-for="MeetingStartDate" class="text-danger"></span>
+                <label asp-for="MeetingStartDateTime" class="control-label"></label>
+                <input asp-for="MeetingStartDateTime" class="form-control" />
+                <span asp-validation-for="MeetingStartDateTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MeetingEndDate" class="control-label"></label>
-                <input asp-for="MeetingEndDate" class="form-control" />
-                <span asp-validation-for="MeetingEndDate" class="text-danger"></span>
+                <label asp-for="MeetingEndDateTime" class="control-label"></label>
+                <input asp-for="MeetingEndDateTime" class="form-control" />
+                <span asp-validation-for="MeetingEndDateTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label>Please enter participant email addresses below, separated by commas.</label>
-                <textarea id="Participants" rows="3" cols="100" asp-for="Participants"></textarea>
-                <span asp-validation-for="Participants" class="text-danger"></span>
+                <label>Please enter Meeting Host Name, only one allowed</label>
+                <textarea id="HostName" rows="1" cols="100" asp-for="HostName"></textarea>
+                <span asp-validation-for="HostName" class="text-danger"></span>
+                <label>Please enter Meeting Host Email, only one allowed</label>
+                <textarea id="HostEmail" rows="1" cols="100" asp-for="HostEmail"></textarea>
+                <span asp-validation-for="HostEmail" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label>Please enter participant names below, separated by commas.</label>
+                <label>Please enter participant names below, separated by commas. Please donot include host name.</label>
                 <textarea id="ParticiNames" rows="3" cols="100" asp-for="ParticiNames"></textarea>
                 <span asp-validation-for="ParticiNames" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Please enter participant email addresses below, separated by commas. Please donot include host email.</label>
+                <textarea id="Participants" rows="3" cols="100" asp-for="Participants"></textarea>
+                <span asp-validation-for="Participants" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

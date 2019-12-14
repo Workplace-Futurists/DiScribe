@@ -24,17 +24,11 @@ namespace DiScribe.WebMVC.Models
 
         [Display(Name = "Meeting Start Date Time")]
         [Required(ErrorMessage = "Please enter meeting start date and time")]
-        public DateTime MeetingStartDate { get; set; }
+        public DateTime MeetingStartDateTime { get; set; }
 
         [Display(Name = "Meeting End Date Time")]
         [Required(ErrorMessage = "Please enter meeting end date and time")]
-        public DateTime MeetingEndDate { get; set; }
-
-        [Display(Name = "Meeting Start Time")]
-        public DateTime MeetingStartTime { get; set; }
-
-        [Display(Name = "Meeting End Time")]
-        public DateTime MeetingEndTime { get; set; }
+        public DateTime MeetingEndDateTime { get; set; }
 
         [Display(Name = "Meeting File Location")]
         public string MeetingFileLocation { get; set; }
@@ -49,5 +43,15 @@ namespace DiScribe.WebMVC.Models
         [NotMapped]
         [Required(ErrorMessage = "Please enter participants names separated by comma")]
         public string ParticiNames { get; set; }
+
+        [Display(Name = "Meeting Host Name")]
+        [Required(ErrorMessage = "Please enter meeting host name")]
+        [NotMapped]
+        public string HostName { get; set; }
+
+        [Display(Name = "Meeting Host Email")]
+        [Required(ErrorMessage = "Please enter meeting host email")]
+        [NotMapped]
+        public string HostEmail { get; set; }
     }
 }

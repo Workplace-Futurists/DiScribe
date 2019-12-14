@@ -1,163 +1,97 @@
-﻿@model DiScribe.WebMVC.Models.MeetingClass
+﻿@model IEnumerable<DiScribe.WebMVC.Models.MeetingClass>
 
 @{
     ViewData["Title"] = "Meeting Classes";
 }
 
-<style>
-    #viewContent h4, #viewContent h5 {
-        margin: 10px 0;
-    }
-
-    #viewContent h4 {
-        color: #0184e3;
-    }
-
-    #viewContent h5, .insertLink a {
-        color: #00e8ff;
-    }
-
-    #viewContent .insertLink {
-        text-align: center;
-    }
-
-    #viewContent .studentFormDiv label {
-        display: block;
-        margin: 0;
-        text-transform: capitalize;
-    }
-
-    #viewContent .studentFormDiv span {
-        display: block;
-        color: red;
-    }
-
-    #viewContent .studentFormDiv > form > div > div {
-        padding-top: 25px;
-    }
-
-    #viewContent table {
-        width: 100%;
-    }
-
-    #viewContent .studentDiv {
-        padding-top: 25px;
-    }
-
-        #viewContent .studentDiv table thead {
-            background-color: #0f40e0;
-        }
-
-        #viewContent .studentDiv table tbody {
-            background-color: #ff6a00;
-        }
-
-    .pagingDiv {
-        background: #f2f2f2;
-    }
-
-        .pagingDiv > a {
-            display: inline-block;
-            padding: 0px 9px;
-            margin-right: 4px;
-            border-radius: 3px;
-            border: solid 1px #c0c0c0;
-            background: #e9e9e9;
-            box-shadow: inset 0px 1px 0px rgba(255,255,255, .8), 0px 1px 3px rgba(0,0,0, .1);
-            font-size: .875em;
-            font-weight: bold;
-            text-decoration: none;
-            color: #717171;
-            text-shadow: 0px 1px 0px rgba(255,255,255, 1);
-        }
-
-            .pagingDiv > a:hover {
-                background: #fefefe;
-                background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FEFEFE), to(#f0f0f0));
-                background: -moz-linear-gradient(0% 0% 270deg,#FEFEFE, #f0f0f0);
-            }
-
-            .pagingDiv > a.active {
-                border: none;
-                background: #616161;
-                box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .8);
-                color: #f0f0f0;
-                text-shadow: 0px 0px 3px rgba(0,0,0, .5);
-            }
-</style>
-
-<h4>@ViewBag.Operation</h4>
-<h5>@TempData["Result"]</h5>
-
-<div class="studentFormDiv">
-    @using (Html.BeginForm())
+<br />
+<p>
+    @using (Html.BeginForm("Index", "Meetings", FormMethod.Get))
     {
-        <table>
-            <tr>
-                <td>
-                    @Html.DisplayNameFor(model => model.MeetingSubject)
-                    @Html.DisplayFor(model => model.MeetingSubject)
-                </td>
-                <td>
-                    @Html.DisplayNameFor(model => model.MeetingStartDate)
-                    @Html.DisplayFor(model => model.MeetingStartDate)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.DisplayNameFor(model => model.MeetingEndDate)
-                    @Html.DisplayFor(model => model.MeetingEndDate)
-                </td>
-                <td>
-                    @Html.DisplayNameFor(model => model.MeetingStartTime)
-                    @Html.DisplayFor(model => model.MeetingStartTime)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.DisplayNameFor(model => model.MeetingEndTime)
-                    @Html.DisplayFor(model => model.MeetingEndTime)
-                </td>
-                <td>
-            </tr>
-            <tr><td><button id="submitButton" type="submit">Submit</button></td></tr>
-        </table>
-    }
-</div>
+        <b>Search:</b>
+    <p>Note if you don't specify a subject, we will show all subjects. If you don't specify earliest start date, we will set the earliest start date to be 30 days before today. If you donnot specify latest start date, we will set the latest start date to be 30 days after today.</p>
+    <label class="control-label">Meeting Subject</label>
+    <input type="text" id="subject" name="subject" value="@(ViewBag.Subject)" />
+    <label class="control-label">Earliest Start Date</label>
+    <input type="date" id="earliestDate" name="earliestDate" value="@(ViewBag.EarliestDate)" />
+    <label class="control-label">Latest Start Date</label>
+    <input type="date" id="latestDate" name="latestDate" value="@(ViewBag.LatestDate)" />
 
-<!--<div>
-    <h4>MeetingClass</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-           
-        </dt>
-        <dd class="col-sm-10">
-            
-        </dd>
-        <dt class="col-sm-2">
-            
-        </dt>
-        <dd class="col-sm-10">
-            
-        </dd>
-        <dt class="col-sm-2">
-           
-        </dt>
-        <dd class="col-sm-10">
-           
-        </dd>
-        <dt class="col-sm-2">
-            
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MeetingStartTime)
-        </dd>
-        <dt class="col-sm-2">
-           
-        </dt>
-        <dd class="col-sm-10">
-            
-        </dd>
-    </dl>
-</div>-->
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+}
+    </p>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">@Html.DisplayNameFor(model => model.MeetingSubject)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.MeetingStartDateTime)</th>
+                <th scope="col">@Html.DisplayNameFor(model => model.MeetingEndDateTime)</th>
+                <th scope="col">Meeting Minutes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count() == 0)
+            {
+                <tr>
+                    <td colspan="5">
+                        No Matching Record
+                    </td>
+                </tr>
+            }
+            else
+            {
+                //foreach (var item in Model)
+                for(int i=0; i<Model.Count(); i++)
+                {
+                    var item = Model.ElementAt(i);
+                    var filename = "filename" + i.ToString();
+                    var filetext = "filetext" + i.ToString();
+                        <tr>
+                        <td>@item.MeetingSubject</td>
+                        <td>@item.MeetingStartDateTime</td>
+                        <td>@item.MeetingEndDateTime</td>
+                        <td>
+                            <!--<form onsubmit="download(this['filename'].value, this['filetext'].value)">-->
+                            <div>
+                                <textarea name="@filename" style="display:none;">@item.MeetingSubject</textarea>
+                                <textarea name="@filetext" style="display:none;">@item.MeetingMinutes</textarea>
+                                <!--<input type="submit" value="Download">-->
+                                
+                                <button onclick="download(document.getElementsByName('@filename')[0].value, document.getElementsByName('@filetext')[0].value)">Download</button>
+                            </div>                        
+                            <!--</form>-->
+                        </td>
+                        </tr>
+                }
+            }
+</tbody>
+    </table>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script>
+            function download(filename, text) {
+              //ViewBag.Subject = subject;
+              //ViewBag.EarliestDate = earliestDate.ToString("yyyy-MM-dd");
+              //ViewBag.LatestDate = latestDate.ToString("yyyy-MM-dd");
+              var filename1 = filename.split(' ').join('_') + ".txt";
+                var element = document.createElement('a');
+                //var data = new Blob(text, { type: 'text/plain' });
+                //var url = window.URL.createObjectURL(data);
+                //element.setAttribute('href', url);
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+              //element.setAttribute('target', '_blank');
+              element.setAttribute('download', filename1);
+
+              element.style.display = 'none';
+              document.body.appendChild(element);
+
+              element.click();
+              //window.URL.revokeObjectURL(url);
+              document.body.removeChild(element);
+           }
+        </script>
+    }

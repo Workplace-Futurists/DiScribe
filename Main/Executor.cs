@@ -121,9 +121,9 @@ namespace DiScribe.Main
             MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
             /*Send an email to only meeting host and any delegate enabling Webex meeting start*/
-            var organizerEmail = inviteEvent.Organizer.EmailAddress;
-            EmailSender.SendEmailForStartURL(meetingInfo,
-                new SendGrid.Helpers.Mail.EmailAddress(organizerEmail.Address, organizerEmail.Name));
+            //var organizerEmail = inviteEvent.Organizer.EmailAddress;
+            //EmailSender.SendEmailForStartURL(meetingInfo,
+            //    new SendGrid.Helpers.Mail.EmailAddress(organizerEmail.Address, organizerEmail.Name));
 
             Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
@@ -216,7 +216,7 @@ namespace DiScribe.Main
             #if (DEBUG)
                 directoryPath = (@"../../../../Record/");
             #else
-                filePath = (@"Record/");
+                directoryPath = (@"Record/");
             #endif
 
             long dir_size = 0;

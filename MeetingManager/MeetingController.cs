@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using DiScribe.Email;
 
 
 namespace DiScribe.Meeting
@@ -90,8 +91,7 @@ namespace DiScribe.Meeting
         /// <param name="duration"></param>
         /// <param name="hostInfo"></param>
         /// <returns></returns>
-        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, DateTime startTime, string duration, WebexHostInfo hostInfo,
-            string hostDelegate = default, string password = "")
+        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, DateTime startTime, string duration, WebexHostInfo hostInfo, Microsoft.Graph.EmailAddress delegateEmail)
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
             
@@ -106,7 +106,8 @@ namespace DiScribe.Meeting
 
             string formattedStartTime = startTime.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
 
-            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, formattedStartTime, duration, hostInfo, hostDelegate);
+            string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, formattedStartTime, duration, hostInfo, delegateEmail);
+            //string strXML = XMLHelper.GenerateMeetingXML(meetingSubject, names, emails, formattedStartTime, duration, hostInfo);
 
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
@@ -139,9 +140,14 @@ namespace DiScribe.Meeting
 
             var sendGridEmails = EmailListener.parseEmailList(emails);
 
+            
+
             Console.WriteLine("\tMeeting has been successfully created");
-            return new MeetingInfo(meetingSubject, sendGridEmails, startTime, startTime.AddMinutes(Double.Parse(duration)),
-                accessCode, password, hostInfo);
+            MeetingInfo mi = new MeetingInfo(meetingSubject, sendGridEmails, startTime, startTime.AddMinutes(Double.Parse(duration)), accessCode, "", hostInfo);
+
+            EmailSender.SendEmailForStartURL(mi, new EmailAddress(delegateEmail.Address, delegateEmail.Name));
+
+            return mi;
         }
 
         /// <summary>

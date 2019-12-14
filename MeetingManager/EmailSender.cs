@@ -129,7 +129,7 @@ namespace DiScribe.Email
 
             string startURL = XMLHelper.RetrieveStartUrl(meetingInfo.AccessCode);
 
-            var htmlContent = "<h2>When it is time, please click on this link to start the meeting: "+ meetingInfo.Subject + "</h2><h4>Link: ";
+            var htmlContent = "<h4>Dear "+ organizer.Name + ": </h4><br/><h2>When it is time, please click on this link to start the meeting: "+ meetingInfo.Subject + "</h2><h4>Link: ";
             htmlContent += "<a href=\"" + startURL + "\">" + startURL + "</a>";
             htmlContent += "</h4>";
             SendEmail(organizer, "Link to Start Your Meeting - "+ meetingInfo.Subject, htmlContent);

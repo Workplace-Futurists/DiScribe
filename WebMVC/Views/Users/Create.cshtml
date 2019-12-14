@@ -108,6 +108,10 @@
                 }
             }, 1000);
         }
+
+        function endTimer(display) {
+            display.style.display = "none";
+        }
     //-------------Above are for countdown-----------------------------------
 
      var audio = document.querySelector('audio');
@@ -136,6 +140,8 @@
         blob.arrayBuffer().then(buffer => document.getElementById("audio_sample").value = _arrayBufferToBase64(buffer));
         recorder.microphone.stop();
         var btn = document.querySelector('#submitform');
+        display = document.querySelector('#time');
+        endTimer(display);
         btn.disabled = false;
     }
 
