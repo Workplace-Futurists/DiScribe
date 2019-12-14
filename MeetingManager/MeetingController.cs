@@ -91,10 +91,10 @@ namespace DiScribe.Meeting
         /// <param name="hostInfo"></param>
         /// <returns></returns>
         public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, DateTime startTime, string duration, WebexHostInfo hostInfo,
-            Microsoft.Graph.EmailAddress hostDelegate = default, string password = "")
+            string hostDelegate = default, string password = "")
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
-
+            
             WebRequest request = WebRequest.Create(strXMLServer);
             // Set the Method property of the request to POST.
             request.Method = "POST";

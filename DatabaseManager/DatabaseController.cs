@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text;
 using DiScribe.DatabaseManager.Data;
 
 namespace DiScribe.DatabaseManager
@@ -231,7 +232,7 @@ namespace DiScribe.DatabaseManager
                         new SqlParameter("@Password", user.Password)
                     };
 
-                    SqlParameter result = new SqlParameter("@RowID", System.Data.SqlDbType.Int);
+                    SqlParameter result = new SqlParameter("@Outcome", System.Data.SqlDbType.Int);
                     result.Direction = System.Data.ParameterDirection.Output;
 
                     command.Parameters.AddRange(parameters.ToArray());
@@ -300,5 +301,181 @@ namespace DiScribe.DatabaseManager
             }
             return unregistered;
         }
+
+
+
+        /// <summary>
+        /// Creates a Meeting record with fields corresponding to the specified meeting params.
+        /// </summary>
+        /// <returns></returns>
+        public static Meeting CreateMeeting(List<User> users, 
+            DateTime meetingStartDateTime,
+            DateTime meetingEndDateTime,
+            string webExID,
+            string meetingSubject = "",
+            string meetingMinutes = "",
+            string meetingFileLocation = "" )
+        {
+
+            string userIDString = CreateUserIdString(users);                         //Convert user IDs to a comma-delimited string.
+
+
+            SqlTransaction transaction = DBConnection.BeginTransaction();
+            string execStr = "dbo.stpCreateMeeting";
+
+            using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
+            {
+                try
+                {
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    
+                    /* 
+                        @AttendeesStr nvarchar(MAX),
+	                    @MeetingStartDateTime datetime = null,
+                        @MeetingEndDateTime datetime = null,
+	                    @WebExID nvarchar(100) = null,
+                        @MeetingSubject nvarchar(500) = null,
+	                    @MeetingMinutes nvarchar(MAX) = null,
+	                    @MeetingFileLocation nvarchar(500) = null
+                    */
+
+                    var parameters = new List<SqlParameter>
+                    {
+                        new SqlParameter("@AttendeesStr", userIDString),
+                        new SqlParameter("@MeetingStartDateTime", meetingStartDateTime),
+                        new SqlParameter("@MeetingEndDateTime", meetingEndDateTime),
+                        new SqlParameter("@WebExID", webExID),
+                        new SqlParameter("@MeetingSubject", meetingSubject),
+                        new SqlParameter("@MeetingMinutes", meetingMinutes),
+                        new SqlParameter("@MeetingFileLocation", meetingFileLocation)
+                    };
+
+                    SqlParameter result = new SqlParameter("@RowID", System.Data.SqlDbType.Int);
+
+                    command.Parameters.AddRange(parameters.ToArray());
+                    command.Parameters.Add(result).Direction = System.Data.ParameterDirection.Output;
+
+                    command.ExecuteNonQuery();
+
+                    transaction.Commit();
+
+                    int rowID = Convert.ToInt32(command.Parameters["@RowID"].Value);
+
+                    /*Return User object representing this user */
+                    return new Meeting(rowID,
+                        meetingSubject,
+                        meetingMinutes,
+                        meetingStartDateTime,
+                        meetingEndDateTime,
+                        meetingFileLocation,
+                        webExID);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.Write($"Error creating user profile in database. {ex.Message}");
+                    transaction.Rollback();
+                }
+            }
+
+
+
+            return null;
+        }
+
+
+
+
+
+        /// <summary>
+        /// Updates the Meeting record with the properties of the specified Meeting object.
+        /// </summary>
+        /// <param name="meeting"></param>
+        /// <returns>True if update is successful, false otherwise</returns>
+        public static Boolean UpdateMeeting(Meeting meeting)
+        {
+            
+            SqlTransaction transaction = DBConnection.BeginTransaction();
+            string execStr = "dbo.stpUpdateMeeting";
+
+            using (SqlCommand command = new SqlCommand(execStr, DBConnection, transaction))
+            {
+                try
+                {
+                    /* stpUpdateMeeting params:
+                        @LookupID bigint,
+                        @MeetingStartDateTime datetime = null,
+	                    @MeetingEndDateTime datetime = null,
+                        @WebExID nvarchar(100) = null,
+                        @MeetingSubject nvarchar(500) = null,
+	                    @MeetingMinutes nvarchar(MAX) = null,
+	                    @MeetingFileLocation nvarchar(500) = null,
+	                    @Outcome int OUT
+                     */
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    
+                    var parameters = new List<SqlParameter>
+                    {
+                        new SqlParameter("@LookupID", meeting.MeetingId),
+                        new SqlParameter("@MeetingStartDateTime", meeting.MeetingStartDateTime),
+                        new SqlParameter("@MeetingEndDateTime", meeting.MeetingEndDateTime),
+                        new SqlParameter("@WebExID", meeting.WebExID),
+                        new SqlParameter("@MeetingSubject", meeting.MeetingSubject),
+                        new SqlParameter("@MeetingMinutes", meeting.MeetingMinutes),
+                        new SqlParameter("@MeetingFileLocation", meeting.MeetingFileLocation),
+                    };
+
+                    SqlParameter result = new SqlParameter("@Outcome", System.Data.SqlDbType.Int);
+                    result.Direction = System.Data.ParameterDirection.Output;
+
+                    command.Parameters.AddRange(parameters.ToArray());
+                    command.Parameters.Add(result);
+
+
+                    command.ExecuteNonQuery();
+
+                    transaction.Commit();
+
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.Write($"Error updating meeting record in database. {ex.Message}");
+                    transaction.Rollback();
+                }
+            }
+            return false;
+ 
+        }
+
+
+
+        /// <summary>
+        /// Create a string containing all user ids in users delimited by commas.
+        /// </summary>
+        /// <param name="users"></param>
+        private static string CreateUserIdString(List<User> users)
+        {
+            if (users.Count == 0)
+                return "";
+
+            StringBuilder builder = new StringBuilder();
+            
+            /*Append user ID's to the stringbuilder delimited by commas. Do not add a comma after the last id*/
+            for(int i = 0; i < users.Count; i++)
+            {
+                builder.Append((i < users.Count - 1 ? $"{users[i].UserID.ToString()}," : users[i].UserID.ToString()));
+            }
+
+
+            return builder.ToString();
+
+        }
+
+
+
+
+
     }
 }
