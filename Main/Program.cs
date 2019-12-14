@@ -4,7 +4,7 @@
     {
         public static void Main(string[] args)
         {
-            Executor.Execute();
+            Executor.Execute().Wait();
         }
     }
 }
