@@ -12,27 +12,27 @@ namespace DiScribe.Meeting
     {
         public MeetingInfo()
         {
+            Meeting = new DatabaseManager.Data.Meeting();
             Names = new List<string>();
             HostInfo = new WebexHostInfo();
             AttendeesEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
-            StartTime = new DateTime();
-            EndTime = new DateTime();
+            Meeting.MeetingStartDateTime = new DateTime();
+            Meeting.MeetingEndDateTime = new DateTime();
 
         }
 
-        public MeetingInfo(string subject, List<EmailAddress> attendeesEmails,
-            DateTime startTime, DateTime endTime = new DateTime(), string accessCode = "", string password = "", WebexHostInfo hostInfo = null)
+
+        public MeetingInfo(DatabaseManager.Data.Meeting meeting, List<EmailAddress> attendeesEmails, 
+            string password = "", WebexHostInfo hostInfo = null)
 
         {
-            Subject = subject;
+            Meeting = meeting;
             AttendeesEmails = attendeesEmails;
-            StartTime = startTime;
-            EndTime = endTime;
-            AccessCode = accessCode;
             HostInfo = hostInfo;
 
             Names = GetNames();
         }
+
 
         /// <summary>
         /// Determine if there are any misisng fields in this instance. Password
@@ -41,9 +41,9 @@ namespace DiScribe.Meeting
         /// <returns></returns>
         public bool MissingField()
         {
-            return Subject == "" || AttendeesEmails.Count == 0 || 
+            return Subject == "" || AttendeesEmails.Count == 0 ||
                 StartTime.Equals(new DateTime()) || EndTime.Equals(new DateTime())
-                || AccessCode == "" ;
+                || AccessCode == "";
         }
 
 
@@ -87,7 +87,7 @@ namespace DiScribe.Meeting
         private List<string> GetNames()
         {
             List<string> names = new List<string>();
-            foreach(var email in AttendeesEmails)
+            foreach (var email in AttendeesEmails)
             {
                 names.Add(email.Name);
             }
@@ -97,8 +97,18 @@ namespace DiScribe.Meeting
 
 
 
-        public string Subject { get; set; }
+        public string Subject
+        {
+            get
+            {
+                return Meeting.MeetingSubject;
+            }
 
+            set
+            {
+                Meeting.MeetingSubject = value;
+            }
+        }
 
         /// <summary>
         /// The emails of meeting attendees. Note that if emails are updated, then names are also updated.
@@ -117,15 +127,56 @@ namespace DiScribe.Meeting
                 } 
         }
 
-        public DateTime StartTime { get; set; }
+        public DateTime StartTime 
+        {
+            get
+            {
+                return Meeting.MeetingStartDateTime;
+            }
+                
+            set
+            {
+                Meeting.MeetingStartDateTime = value;
+            }
+        }
 
-        public DateTime EndTime { get; set; }
+        public DateTime EndTime
+        {
+            get
+            {
+                return Meeting.MeetingEndDateTime;
+            }
 
-        public string AccessCode { get; set; }
+            set
+            {
+                Meeting.MeetingEndDateTime = value;
+            }
+        }
+
+
+        public string AccessCode
+        {
+            get
+            {
+                return Meeting.WebExID;
+            }
+
+            set
+            {
+                Meeting.WebExID = value;
+            }
+        }
 
         public string Password { get; set; }
 
+
+        public DatabaseManager.Data.Meeting Meeting { get; set; }
+
+
         public List<string> Names { get; set; }
+
+
+
 
         public WebexHostInfo HostInfo { get; set; }
 

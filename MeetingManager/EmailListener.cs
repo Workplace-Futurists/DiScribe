@@ -276,7 +276,9 @@ namespace DiScribe.Email
                  && content.Contains("End Date Time: ", StringComparison.OrdinalIgnoreCase);
         }
 
-        [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
+
+
+        [ObsoleteAttribute("This method is obsolete and is no longer supported.")]
         public static Meeting.MeetingInfo GetMeetingInfoFromOutlookInvite(Message message)
         {
             var body = message.Body.Content;
@@ -310,7 +312,13 @@ namespace DiScribe.Email
             var endTimeStr = endTimeRegex.Match(body).Value.Replace("End Date Time:", "");
             Boolean endTimeParsed = DateTime.TryParse(endTimeStr, out startTime);
 
-            return new Meeting.MeetingInfo(subject, participants, startTime, endTime);
+            var meeting = new DatabaseManager.Data.Meeting(0, subject, "",
+                startTime, endTime);
+
+
+
+
+            return new Meeting.MeetingInfo(meeting, participants);
         }
 
         /// <summary>

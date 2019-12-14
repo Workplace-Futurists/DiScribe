@@ -29,6 +29,15 @@ namespace DiScribe.Transcriber
             Transcriber = new SpeechTranscriber(this);
             Recognizer = new Recognizer(this);
 
+
+            // Changes location of stored meeting minutes in release mode
+            #if (DEBUG)
+                MeetingMinutesFile = new FileInfo(@"../../../../Transcripts/minutes.txt");
+            #else
+                MeetingMinutesFile = new FileInfo(@"Transcripts/minutes.txt");
+            #endif
+
+
             Console.WriteLine(">\tTranscription Controller initialized \n\t" +
                 "on Audio Recording [" + meetingRecording.FullName + "].");
         }
@@ -45,12 +54,17 @@ namespace DiScribe.Transcriber
 
         public string SpeakerIDSubKey { get; private set; }
 
+
+        public FileInfo MeetingMinutesFile { get; private set; }
+
+        public string Transcription { get; private set; }
+
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
         /// Creates a formatted text output file holding the transcription.
         /// </summary>
         /// <returns>A FileInfo instance holding information about the transcript file that was created.</returns>
-        public Boolean Perform()
+        public Boolean Perform(int lineLength = 120)
         {
             try
             {
@@ -67,61 +81,31 @@ namespace DiScribe.Transcriber
             /*Do speaker recognition concurrently for each TranscriptionOutput. */
             Recognizer.DoSpeakerRecognition(Transcriber.TranscriptionOutputs).Wait();
 
+            MakeTranscription(lineLength);
+
             Console.WriteLine(">\tTranscription && Recognition Complete");
             return true;
         }
 
-        public FileInfo WriteTranscriptionFile(string rid = "", int lineLength = 120)
+
+
+        public FileInfo WriteTranscriptionFile(string rid = "")
         {
-            FileInfo meetingMinutes;
-
-            // Changes location of stored meeting minutes in release mode
-            #if (DEBUG)
-                meetingMinutes = new FileInfo(@"../../../../Transcripts/minutes.txt");
-            #else
-                meetingMinutes = new FileInfo(@"Transcripts/minutes.txt");
-            #endif
-
+           
             FileInfo transcript;
             if (rid.Equals(""))
-                transcript = meetingMinutes;
+                transcript = MeetingMinutesFile;
             else
-                transcript = new FileInfo(meetingMinutes.
+                transcript = new FileInfo(MeetingMinutesFile.
                     FullName.Replace("minutes.txt", "minutes_" + rid + ".txt"));
 
             Console.WriteLine(">\tBegin Writing Transcription " +
                 "& Speaker Recognition Result into File \n\t[" + transcript.Name + "]");
-            StringBuilder output = new StringBuilder();
+            
 
             try
             {
-                bool last_was_nomatch = false;
-                /*Iterate over the list of TranscrtiptionOutputs in order and add them to
-                 * output that will be written to file.
-                 * Order is by start offset.
-                 * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
-                 * if width goes over limit of chars per line.
-                 */
-                foreach (var curNode in Transcriber.TranscriptionOutputs)
-                {
-                    if (!curNode.Value.TranscriptionSuccess
-                        && last_was_nomatch)
-                        continue;
-
-                    string curSegmentText = curNode.Value.ToString();
-                    if (curSegmentText.Length > lineLength)
-                    {
-                        curSegmentText = Helper.WrapText(curSegmentText, lineLength);
-                    }
-                    output.AppendLine(curSegmentText + "\n");
-
-                    if (!curNode.Value.TranscriptionSuccess)
-                        last_was_nomatch = true;
-                    else
-                        last_was_nomatch = false;
-                }
-
-                /* Overwrite any existing MeetingMinutes file with the same name,
+                 /* Overwrite any existing MeetingMinutes file with the same name,
                  * else create file. Output results to text file.
                  */
                 if (!transcript.Directory.Exists)
@@ -132,10 +116,11 @@ namespace DiScribe.Transcriber
                 }
                 transcript.Create().Close();
 
+                 /*Write transcription to file */
                 using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(transcript.FullName, false))
                 {
-                    file.Write(output.ToString());
+                    file.Write(Transcription);
                 }
                 Console.WriteLine(">\tTranscript Successfully Written.");
                 return transcript;
@@ -145,6 +130,42 @@ namespace DiScribe.Transcriber
                 Console.Error.WriteLine("Error occurred during Write: " + WriteException.Message);
                 return null;
             }
+        }
+
+
+        private void MakeTranscription(int lineLength = 120)
+        {
+
+            /*Iterate over the list of TranscrtiptionOutputs in order and add them to
+             * output that will be written to file.
+             * Order is by start offset.
+             * Uses format set by TranscriptionOutput.ToString(). Also does text wrapping
+             * if width goes over limit of chars per line.
+             */
+            StringBuilder output = new StringBuilder();
+            bool last_was_nomatch = false;
+            foreach (var curNode in Transcriber.TranscriptionOutputs)
+            {
+                if (!curNode.Value.TranscriptionSuccess
+                    && last_was_nomatch)
+                    continue;
+
+                string curSegmentText = curNode.Value.ToString();
+                if (curSegmentText.Length > lineLength)
+                {
+                    curSegmentText = Helper.WrapText(curSegmentText, lineLength);
+                }
+                output.AppendLine(curSegmentText + "\n");
+
+                if (!curNode.Value.TranscriptionSuccess)
+                    last_was_nomatch = true;
+                else
+                    last_was_nomatch = false;
+            }
+
+            Transcription = output.ToString();
+
+
         }
     }
 }

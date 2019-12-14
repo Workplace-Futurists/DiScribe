@@ -75,6 +75,7 @@ namespace DiScribe.Main
             }
         }
 
+
         /// <summary>
         /// Listens for a new WebEx invitation to the DiScribe bot email account.
         /// Logic:
@@ -140,25 +141,24 @@ namespace DiScribe.Main
         {
             try
             {
-                // dialing & recording
+                /*dialing & recording */
                 var rid = new DialerController(appConfig).CallMeetingAsync(meetingInfo.AccessCode).Result;
 
                 var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
 
-                // Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint
+                /*Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint */
                 var regController = RegistrationController.BuildController(appConfig["dbConnectionString"],
                     EmailHelper.FromEmailAddressListToStringList(meetingInfo.AttendeesEmails), appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
 
-                // initializing the transcribe controller
+                /*initializing the transcribe controller */
                 SpeechConfig speechConfig = SpeechConfig.FromSubscription(appConfig["SPEECH_RECOGNITION_KEY"], appConfig["SPEECH_RECOGNITION_LOCALE"]);
                 var transcribeController = new TranscribeController(recording, regController.UserProfiles, speechConfig, appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
 
-                // Performs transcription and speaker recognition. If success, then send email minutes to all participants
+                /*Performs transcription and speaker recognition. If success, then send email minutes to all participants */
                 if (transcribeController.Perform())
                 {
                     EmailSender.SendMinutes(meetingInfo, transcribeController.WriteTranscriptionFile(rid));
                     Console.WriteLine(">\tTask Complete!");
-                    return 0;
                 }
                 else
                 {
@@ -166,6 +166,19 @@ namespace DiScribe.Main
                     Console.WriteLine(">\tFailed to generate!");
                     return -1;
                 }
+
+                /*Set meeting minutes contents and file location in the Meeting object */
+                meetingInfo.Meeting.MeetingFileLocation = transcribeController.MeetingMinutesFile.FullName;
+                meetingInfo.Meeting.MeetingMinutes = transcribeController.Transcription;
+
+                /*Sync meeting object with DiScribe DB */
+                meetingInfo.Meeting.Update();                                                  
+
+
+
+                return 0;
+
+
             }
             catch (AggregateException exs)
             {
@@ -184,12 +197,14 @@ namespace DiScribe.Main
                         + max_size + "Mb in size. Removing Oldest Recording\n["
                         + DeleteOldestRecordingIfLargerThan(max_size) + "]");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //
+                    Console.Error.WriteLine("Could not remove oldest recording Reason: " + ex.Message);
                 }
             }
         }
+
+
 
         /*  Deletes the oldest recording
          *  If the Record folder is larger than
