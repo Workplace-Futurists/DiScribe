@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 
+
 namespace DiScribe.Email
 {
     public static class EmailListener
@@ -78,16 +79,12 @@ namespace DiScribe.Email
             return resultPage.CurrentPage;
         }
 
-
-
-
         /// <summary>
         /// Get the most recent event for the bot Outlook account.
         /// </summary>
         /// <returns></returns>
         public static async Task<Event> GetEventAsync()
         {
-
             /*Get all messages for this user in inbox */
             var users = await _graphClient
                 .Users
@@ -103,19 +100,14 @@ namespace DiScribe.Email
                 .Top(1)
                 .GetAsync();
 
-
             if (events is null)
                 throw new Exception("Events retrieved were <NULL>");
-
 
             if (events.Count == 0)
                 throw new Exception("No meetings scheduled.");
 
-
             return events.ToArray()[0];
-
         }
-
 
         /// <summary>
         /// Deletes the specified event for the bot Outlook account.
@@ -138,7 +130,6 @@ namespace DiScribe.Email
                 .Request()
                 .GetAsync();
 
-
             string eventId = "";
 
             foreach (var curEvent in events)
@@ -148,14 +139,11 @@ namespace DiScribe.Email
                     eventId = curEvent.Id;
                     break;
                 }
-
             }
 
             /*No such event */
             if (eventId == "")
                 return false;
-
-
 
             /*Otherwise, delete the specified event */
             Task f = _graphClient
@@ -164,16 +152,10 @@ namespace DiScribe.Email
                 .Request()
                 .DeleteAsync();
 
-
             f.Wait();
-
 
             return true;
         }
-
-
-
-
 
         /// <summary>
         /// Check if this is a valid Webex-generated invite message.
@@ -188,17 +170,10 @@ namespace DiScribe.Email
 
             var content = inviteEvent.Body.Content;
 
-
             return content.Contains("Webex", StringComparison.OrdinalIgnoreCase)
                  && content.Contains("invites", StringComparison.OrdinalIgnoreCase)
                  && content.Contains("Meeting number (access code):", StringComparison.OrdinalIgnoreCase);
-
         }
-
-
-
-
-
 
         [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
         public static async Task<Message> GetEmailAsync()
@@ -235,12 +210,6 @@ namespace DiScribe.Email
 
             return messages[0];
         }
-
-
-
-
-
-
 
         [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
         private static async Task<bool> DeleteEmailAsync(Message message)
@@ -289,8 +258,6 @@ namespace DiScribe.Email
             return true;
         }
 
-
-
         /// <summary>
         /// Check if this is a valid Outlook template invitate message to the Webex bot.
         /// </summary>
@@ -307,14 +274,7 @@ namespace DiScribe.Email
                  && content.Contains("Participants", StringComparison.OrdinalIgnoreCase)
                  && content.Contains("Start Date Time: ", StringComparison.OrdinalIgnoreCase)
                  && content.Contains("End Date Time: ", StringComparison.OrdinalIgnoreCase);
-
-
         }
-
-
-
-
-
 
         [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
         public static Meeting.MeetingInfo GetMeetingInfoFromOutlookInvite(Message message)
@@ -350,12 +310,8 @@ namespace DiScribe.Email
             var endTimeStr = endTimeRegex.Match(body).Value.Replace("End Date Time:", "");
             Boolean endTimeParsed = DateTime.TryParse(endTimeStr, out startTime);
 
-
-
             return new Meeting.MeetingInfo(subject, participants, startTime, endTime);
-
         }
-
 
         /// <summary>
         /// Converts a string list of email address to a list of SendGrid.Helpers.Mail.EmailAddress objects. 
@@ -375,7 +331,6 @@ namespace DiScribe.Email
             return sendGridEmails;
         }
 
-
         /// <summary>
         /// Converts a list of strings into a list of SendGrid.Helpers.Mail.EmailAddress representing
         /// emails.
@@ -392,10 +347,7 @@ namespace DiScribe.Email
             }
 
             return sendGridEmails;
-
         }
-
-
 
         public static List<string> GetAttendeeEmails(Microsoft.Graph.Event inviteEvent)
         {
@@ -410,8 +362,6 @@ namespace DiScribe.Email
             return emails;
         }
 
-
-
         public static List<string> GetAttendeeNames(Microsoft.Graph.Event inviteEvent)
         {
             var names = new List<string>();
@@ -424,11 +374,7 @@ namespace DiScribe.Email
             }
 
             return names;
-
         }   
-
-
-
 
         public static Meeting.MeetingInfo GetMeetingInfoFromWebexInvite(Microsoft.Graph.Event inviteEvent, WebexHostInfo hostInfo)
         {
@@ -449,17 +395,13 @@ namespace DiScribe.Email
             meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(inviteEvent.Organizer.EmailAddress.Address));          
             meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
 
-
             foreach (var attendee in meetingInfo.AttendeesEmails)
             {
                 Console.WriteLine("\t-\t" + attendee.Email);
             }
 
-
             return meetingInfo;
         }
-
-
 
         private static Meeting.MeetingInfo GetMeetingInfoFromWebexHTML(Microsoft.Graph.Event inviteEvent)
         {

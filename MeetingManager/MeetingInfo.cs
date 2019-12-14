@@ -129,7 +129,6 @@ namespace DiScribe.Meeting
 
         public WebexHostInfo HostInfo { get; set; }
 
-
         private List<EmailAddress> _AttendeeEmails; 
     }
 }

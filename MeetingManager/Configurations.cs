@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
+
 namespace DiScribe.Meeting
 {   
     // this class is dependent on appsettings.json. if you wish to move this class, please remember to also move the dependent file appsettings.json

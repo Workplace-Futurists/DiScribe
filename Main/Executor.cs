@@ -10,7 +10,7 @@ using DiScribe.Scheduler;
 using Microsoft.CognitiveServices.Speech;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
+
 
 namespace DiScribe.Main
 {
@@ -46,21 +46,18 @@ namespace DiScribe.Main
                 }
                 catch (AggregateException exs)
                 {
-                     foreach (var ex in exs.InnerExceptions)
-                     {
+                    foreach (var ex in exs.InnerExceptions)
+                    {
                         Console.Error.WriteLine($">\t{ex.Message}");
-                     }
+                    }
                 }
                 finally
                 {
-                   await Task.Delay(graphApiDelayInterval * 1000);
+                    await Task.Delay(graphApiDelayInterval * 1000);
                 }
 
             }
         }
-
-
-
 
         /// <summary>
         /// Listens for graph events. Exceptions will bubble up to caller.
@@ -70,16 +67,13 @@ namespace DiScribe.Main
         /// <returns></returns>
         private static async Task StartInvitationListening(IConfigurationRoot appConfig, int delayInterval)
         {
-            while(true)
+            while (true)
             {
                 await CheckForGraphEvents(appConfig);
 
                 await Task.Delay(delayInterval * 1000);                   //Resume listening
             }
-
         }
-
-
 
         /// <summary>
         /// Listens for a new WebEx invitation to the DiScribe bot email account.
@@ -97,48 +91,33 @@ namespace DiScribe.Main
         ///    -> Schedule the rest of the dialer-transcriber workflow to dial in to meeting at the specified time
         ///
         /// </summary>
-        /// <param name="seconds"></param>
         /// <returns></returns>
         private static async Task CheckForGraphEvents(IConfigurationRoot appConfig)
         {
 
             MeetingInfo meetingInfo;
-            Microsoft.Graph.Event inviteEvent = null;
-
+            Microsoft.Graph.Event inviteEvent;
 
             try
             {
-                 /*Attempt to get. latest event from bot's Outlook account.
-                 If there are no events, nothing will be scheduled. */
+                /*Attempt to get. latest event from bot's Outlook account.
+                If there are no events, nothing will be scheduled. */
                 inviteEvent = await EmailListener.GetEventAsync();
-
-
-            } catch (Exception ex)
+                await EmailListener.DeleteEventAsync(inviteEvent);
+            }
+            catch (Exception ex)
             {
                 throw new Exception($"Could not get any MS Graph events. Reason: {ex.Message}");
             }
 
-            finally
-            {
-                if (inviteEvent != null)
-                     EmailListener.DeleteEventAsync(inviteEvent).Wait();                        //Deletes any matching event that was read.
-            }
-
-
-            WebexHostInfo hostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                 appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]);
-
-
             /*Handle the invite.
               Assign the returned meeting info about the scheduled meeting */
-            meetingInfo = await MeetingController.HandleInvite(inviteEvent, hostInfo, appConfig["mailUser"]);
-
+            meetingInfo = await MeetingController.HandleInvite(inviteEvent, appConfig);
 
             Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
 
             /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
             MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
-
 
             /*Send an email to only meeting host and any delegate enabling Webex meeting start*/
             var organizerEmail = inviteEvent.Organizer.EmailAddress;
@@ -147,15 +126,9 @@ namespace DiScribe.Main
 
             Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
-
             SchedulerController.Schedule(Run,
-            meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
-
-
-
-
+                meetingInfo, appConfig, meetingInfo.StartTime).Wait();                    //Schedule dialer-transcriber workflow as separate task
         }
-
 
         /// <summary>
         /// Runs when DiScribe bot dials in to Webex meeting. Performs transcription and speaker
@@ -209,7 +182,7 @@ namespace DiScribe.Main
                     int max_size = 100;
                     Console.WriteLine("Recordings in total exceeds"
                         + max_size + "Mb in size. Removing Oldest Recording\n["
-                        + DeleteOldestRecordingIfLargerThan(max_size) +"]");
+                        + DeleteOldestRecordingIfLargerThan(max_size) + "]");
                 }
                 catch (Exception)
                 {
@@ -217,7 +190,6 @@ namespace DiScribe.Main
                 }
             }
         }
-
 
         /*  Deletes the oldest recording
          *  If the Record folder is larger than
@@ -247,8 +219,5 @@ namespace DiScribe.Main
             file.Delete();
             return file.DirectoryName + "/" + file.Name;
         }
-
-
-
     }
 }

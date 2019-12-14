@@ -12,15 +12,14 @@ using Microsoft.Graph;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+
 
 namespace DiScribe.Meeting
 {
     public static class MeetingController
     {
         public static string BOT_EMAIL;
-
-
-
 
         /// <summary>
         /// Handles meeting invite and returns a MeetingInfo object representing the meeting.
@@ -29,15 +28,19 @@ namespace DiScribe.Meeting
         /// <param name="inviteEvent"></param>
         /// <param name="appConfig"></param>
         /// <returns></returns>
-        public static async Task<Meeting.MeetingInfo> HandleInvite(Microsoft.Graph.Event inviteEvent, WebexHostInfo hostInfo, string botEmail)
+        public static async Task<Meeting.MeetingInfo> HandleInvite(Microsoft.Graph.Event inviteEvent, IConfigurationRoot appConfig)
         {
-            MeetingInfo meetingInfo = new MeetingInfo();
+            MeetingInfo meetingInfo = new MeetingInfo
+            {
+                HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                 appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"])
+            };
 
             /*If invite is a Webex from DiScribe website or from Webex website, parse email and use Webex API 
              to get meeting metadata.*/
             if (EmailListener.IsValidWebexInvitation(inviteEvent))
             {
-                meetingInfo = EmailListener.GetMeetingInfoFromWebexInvite(inviteEvent, hostInfo);
+                meetingInfo = EmailListener.GetMeetingInfoFromWebexInvite(inviteEvent, meetingInfo.HostInfo);
             }
 
             /*Otherwise, handle invite event as an Outlook invite. Here, a new meeting is created
@@ -45,9 +48,7 @@ namespace DiScribe.Meeting
              in this case.*/
             else
             {
-
                 var something = inviteEvent.Start;
-
 
                 /*Get start and end time in UTC */
                 DateTime meetingStartUTC = DateTime.Parse(inviteEvent.Start.DateTime);
@@ -64,9 +65,9 @@ namespace DiScribe.Meeting
                 var attendeeEmails = EmailListener.GetAttendeeEmails(inviteEvent).Distinct().ToList();
 
                 /*Remove the bot email, as the bot must not receive another event. */
-                foreach(var curEmail in attendeeEmails)
+                foreach (var curEmail in attendeeEmails)
                 {
-                    if (curEmail.Equals(botEmail, StringComparison.OrdinalIgnoreCase))
+                    if (curEmail.Equals(appConfig["mailUser"], StringComparison.OrdinalIgnoreCase))
                     {
                         attendeeEmails.Remove(curEmail);
                         break;
@@ -74,32 +75,11 @@ namespace DiScribe.Meeting
                 }
 
                 meetingInfo = MeetingController.CreateWebexMeeting(inviteEvent.Subject, attendeeNames, attendeeEmails,
-                    meetingStart, meetingDurationStr, hostInfo, inviteEvent.Organizer.EmailAddress);
-
+                    meetingStart, meetingDurationStr, meetingInfo.HostInfo, inviteEvent.Organizer.EmailAddress);
             }
 
-
             return meetingInfo;
-
-
-
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         /// <summary>
         /// Creates a webex meeting with the specified parameters. Note that duration is in minutes.
@@ -107,7 +87,6 @@ namespace DiScribe.Meeting
         /// <param name="meetingSubject"></param>
         /// <param name="names"></param>
         /// <param name="emails"></param>
-        /// <param name="startDate"></param>
         /// <param name="duration"></param>
         /// <param name="hostInfo"></param>
         /// <returns></returns>
@@ -124,9 +103,6 @@ namespace DiScribe.Meeting
 
             // Create POST data and convert it to a byte array.
             // string strXML = GenerateXMLCreateMeeting();
-
-            // string strXML = File.ReadAllText(@"createMeeting.xml");
-
 
             string formattedStartTime = startTime.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
 
@@ -153,24 +129,18 @@ namespace DiScribe.Meeting
             // Read the content.
             string responseFromServer = reader.ReadToEnd();
 
-
             // Display the content.
             string accessCode = XMLHelper.RetrieveAccessCode(responseFromServer);
 
-            
-            
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
             response.Close();
 
-
-                        
             var sendGridEmails = EmailListener.parseEmailList(emails);
 
-
             Console.WriteLine("\tMeeting has been successfully created");
-            return new MeetingInfo(meetingSubject, sendGridEmails, startTime, startTime.AddMinutes(Double.Parse(duration)), 
+            return new MeetingInfo(meetingSubject, sendGridEmails, startTime, startTime.AddMinutes(Double.Parse(duration)),
                 accessCode, password, hostInfo);
         }
 
@@ -180,8 +150,8 @@ namespace DiScribe.Meeting
         /// </summary>
         /// <param name="attendees"></param>
         /// <param name="dbConnectionString"></param>
-        public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees, 
-            string dbConnectionString = 
+        public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees,
+            string dbConnectionString =
             "Server=tcp:dbcs319discribe.database.windows.net, 1433; " +
             "Initial Catalog=db_cs319_discribe; " +
             "Persist Security Info=False;User ID=obiermann; " +
@@ -206,8 +176,6 @@ namespace DiScribe.Meeting
             }
         }
 
-
-
         /// <summary>
         /// Get attendees via the Webex Meetings API. Uses the access info in meetingInfo
         /// as parameters to API call.
@@ -227,7 +195,7 @@ namespace DiScribe.Meeting
 
             // Create POST data and convert it to a byte array.
             string strXML = XMLHelper.GenerateXML(meetingInfo.AccessCode, meetingInfo.HostInfo);
-                                    
+
             byte[] byteArray = Encoding.UTF8.GetBytes(strXML);
 
             // Set the ContentLength property of the WebRequest.
@@ -252,7 +220,7 @@ namespace DiScribe.Meeting
 
             // Display the content.         
             List<EmailAddress> emailAddresses = GetEmails(responseStr);
-          
+
             // Clean up the streams.
             reader.Close();
             dataStream.Close();
@@ -261,11 +229,6 @@ namespace DiScribe.Meeting
             return emailAddresses;
         }
 
-
-       
-
-
-        
         [ObsoleteAttribute("This method is depricated and does not work in all cases.")]
         public static DateTime GetMeetingTimeByXML(string accessCode, WebexHostInfo meetingInfo)
         {
