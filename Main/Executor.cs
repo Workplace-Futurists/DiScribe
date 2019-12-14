@@ -10,12 +10,13 @@ using DiScribe.Scheduler;
 using Microsoft.CognitiveServices.Speech;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace DiScribe.Main
 {
     static class Executor
     {
-        public static void Execute()
+        public static async Task Execute()
         {
             Console.WriteLine(">\tDiScribe Initializing...");
 
@@ -31,6 +32,8 @@ namespace DiScribe.Main
 
             MeetingController.BOT_EMAIL = appConfig["mailUser"];
 
+            int graphApiDelayInterval = int.Parse(appConfig["graphApiDelayInterval"]);
+
             /*Main application loop */
             while (true)
             {
@@ -38,70 +41,121 @@ namespace DiScribe.Main
 
                 try
                 {
-                    ListenForInvitations(appConfig).Wait();
+                    StartInvitationListening(appConfig, graphApiDelayInterval).Wait();
+
                 }
-                catch (AggregateException errors)
+                catch (AggregateException exs)
                 {
-                    Console.Error.WriteLine($">\tError in listener. Reason: {errors.InnerException.Message} \tRestarting listener...");
+                     foreach (var ex in exs.InnerExceptions)
+                     {
+                        Console.Error.WriteLine($">\t{ex.Message}");
+                     }
                 }
+                finally
+                {
+                   await Task.Delay(graphApiDelayInterval * 1000);
+                }
+
             }
         }
+
+
+
+
+        /// <summary>
+        /// Listens for graph events. Exceptions will bubble up to caller.
+        /// </summary>
+        /// <param name="appConfig"></param>
+        /// <param name="delayInterval"></param>
+        /// <returns></returns>
+        private static async Task StartInvitationListening(IConfigurationRoot appConfig, int delayInterval)
+        {
+            while(true)
+            {
+                await CheckForGraphEvents(appConfig);
+
+                await Task.Delay(delayInterval * 1000);                   //Resume listening
+            }
+
+        }
+
+
 
         /// <summary>
         /// Listens for a new WebEx invitation to the DiScribe bot email account.
         /// Logic:
-        ///     -> Every 10 seconds, read inbox
-        ///     -> If there is a message, get access code from it
-        ///     -> Call webex API to get meeting time from access code
-        ///     -> Schedule the rest of the dial to transcribe workflow
+        ///     -> Get most recent event
+        ///     -> If invite event is for Webex invite then
+        ///         - Parse email to get Webex access code
+        ///         - Call Webex API to get meeting info using access code and host info
+        ///
+        ///    -> Else if invite is an Outlook meeting invite then
+        ///        - Call Webex API to create a meeting and use the returned meeting info
+        ///
+        ///    -> Send emails to users with no registered voice profile
+        ///    -> Send meeting to the organizer (delegated host) to allow them to start meeting
+        ///    -> Schedule the rest of the dialer-transcriber workflow to dial in to meeting at the specified time
         ///
         /// </summary>
         /// <param name="seconds"></param>
         /// <returns></returns>
-        private static async Task ListenForInvitations(IConfigurationRoot appConfig, int seconds = 10)
+        private static async Task CheckForGraphEvents(IConfigurationRoot appConfig)
         {
+
+            MeetingInfo meetingInfo;
+            Microsoft.Graph.Event inviteEvent = null;
+
+
             try
             {
-                /*Attempt latest email from bot's inbox every 3 seconds. 
-                 * If inbox is empty, no meeting will be scheduled. */
-                var message = EmailListener.GetEmailAsync().Result;
+                 /*Attempt to get. latest event from bot's Outlook account.
+                 If there are no events, nothing will be scheduled. */
+                inviteEvent = await EmailListener.GetEventAsync();
 
-                MeetingInfo meetingInfo;
-                try
-                {
-                    meetingInfo = EmailListener.GetMeetingInfo(message, appConfig);               //Get access code from bot's invite email                    messageRead = true;
-                }
-                catch (Exception readMessageEx)
-                {
-                    EmailListener.DeleteEmailAsync(message).Wait();
-                    Console.Error.WriteLine(">\tCould not read invite email. Reason: " + readMessageEx.Message);
-                    throw new Exception("Unable to continue, as invite email acoult not be read...");
-                }
-                Console.WriteLine(">\tNew Meeting Found at: " +
-                    meetingInfo.StartTime.ToLocalTime());
 
-                MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
-
-                EmailSender.SendEmailForStartURL(meetingInfo);
-
-                Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
-
-                await SchedulerController.Schedule(Run,
-                    meetingInfo, appConfig, meetingInfo.StartTime);       //Schedule dialer-transcriber workflow as separate task
-
-                EmailListener.DeleteEmailAsync(message).Wait();                        //Deletes the email that was read
-
-            }
-            catch (AggregateException exs)
+            } catch (Exception ex)
             {
-                foreach (var ex in exs.InnerExceptions)
-                {
-                    Console.Error.WriteLine(ex.Message);
-                }
+                throw new Exception($"Could not get any MS Graph events. Reason: {ex.Message}");
             }
 
-            await Task.Delay(seconds * 1000);
+            finally
+            {
+                if (inviteEvent != null)
+                     EmailListener.DeleteEventAsync(inviteEvent).Wait();                        //Deletes any matching event that was read.
+            }
+
+
+            WebexHostInfo hostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                 appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]);
+
+
+            /*Handle the invite.
+              Assign the returned meeting info about the scheduled meeting */
+            meetingInfo = await MeetingController.HandleInvite(inviteEvent, hostInfo, appConfig["mailUser"]);
+
+
+            Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
+
+            /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
+            MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
+
+
+            /*Send an email to only meeting host and any delegate enabling Webex meeting start*/
+            var organizerEmail = inviteEvent.Organizer.EmailAddress;
+            EmailSender.SendEmailForStartURL(meetingInfo,
+                new SendGrid.Helpers.Mail.EmailAddress(organizerEmail.Address, organizerEmail.Name));
+
+            Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
+
+
+            SchedulerController.Schedule(Run,
+            meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
+
+
+
+
         }
+
 
         /// <summary>
         /// Runs when DiScribe bot dials in to Webex meeting. Performs transcription and speaker
@@ -193,5 +247,8 @@ namespace DiScribe.Main
             file.Delete();
             return file.DirectoryName + "/" + file.Name;
         }
+
+
+
     }
 }

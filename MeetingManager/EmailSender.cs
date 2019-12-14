@@ -74,12 +74,14 @@ namespace DiScribe.Email
                 Console.Error.WriteLine(">\tWarning: No recipients were found");
         }
 
+
         public static void SendEmail(MeetingInfo meetingInfo, string subject, string htmlContent = "", FileInfo file = null)
         {
             if (htmlContent.Equals(""))
                 htmlContent = $"<h2>Meeting information</h2>\n<h4>Meeting Number: {meetingInfo.AccessCode}</h4>\n";
             SendEmailHelper(OfficialEmail, meetingInfo.AttendeesEmails, subject, htmlContent, file).Wait();
         }
+
 
         public static void SendMinutes(MeetingInfo meetingInfo, FileInfo file)
         {
@@ -113,22 +115,30 @@ namespace DiScribe.Email
             }
         }
 
-        public static void SendEmailForStartURL(MeetingInfo meetingInfo)
+
+
+        /// <summary>
+        /// Sends email to the meeting organizer to allow them to start the Webex meeting.
+        /// </summary>
+        /// <param name="organizer"></param>
+        public static void SendEmailForStartURL(MeetingInfo meetingInfo, EmailAddress organizer)
         {
             Console.WriteLine(">\tSending Email to Meeting Host for Meeting Reminder...");
-            if (meetingInfo.AttendeesEmails.Count == 0)
-                throw new Exception(">\tNo recipients were found");
+            if (organizer is null)
+                throw new Exception(">\tNo recipient for start meeting start email was found");
 
             string startURL = XMLHelper.RetrieveStartUrl(meetingInfo.AccessCode);
 
-            foreach (EmailAddress email in meetingInfo.AttendeesEmails)
-            {
-                var htmlContent = "<h2>When it is time, please click on this link to start the meeting: "+ meetingInfo.Subject + "</h2><h4>Link: ";
-                htmlContent += "<a href=\"" + startURL + "\">" + startURL + "</a>";
-                htmlContent += "</h4>";
-                SendEmail(email, "Link to Start Your Meeting - "+ meetingInfo.Subject, htmlContent);
-            }
+            var htmlContent = "<h2>When it is time, please click on this link to start the meeting: "+ meetingInfo.Subject + "</h2><h4>Link: ";
+            htmlContent += "<a href=\"" + startURL + "\">" + startURL + "</a>";
+            htmlContent += "</h4>";
+            SendEmail(organizer, "Link to Start Your Meeting - "+ meetingInfo.Subject, htmlContent);
+            
         }
+
+
+
+
 
         private static async Task SendEmailHelper(EmailAddress from, List<EmailAddress> recipients,
             string subject, string htmlContent, FileInfo file)

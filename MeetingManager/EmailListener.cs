@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Microsoft.Graph.Auth;
 using System.Globalization;
-using EmailAddress = SendGrid.Helpers.Mail.EmailAddress;
+using SendGrid.Helpers.Mail;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 
@@ -51,7 +52,6 @@ namespace DiScribe.Email
         /// <returns></returns>
         public static async Task<Microsoft.Graph.User> GetMeAsync(string principal)
         {
-            IGraphServiceUsersCollectionPage users;
 
             var graphUsers = await _graphClient
                 .Users
@@ -78,6 +78,129 @@ namespace DiScribe.Email
             return resultPage.CurrentPage;
         }
 
+
+
+
+        /// <summary>
+        /// Get the most recent event for the bot Outlook account.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<Event> GetEventAsync()
+        {
+
+            /*Get all messages for this user in inbox */
+            var users = await _graphClient
+                .Users
+                .Request()
+                .GetAsync();
+
+            /*Get the most recent event for this user  */
+            var events = await _graphClient
+                .Users[_userId]
+                .Events
+                .Request()
+                .OrderBy("CreatedDateTime DESC")
+                .Top(1)
+                .GetAsync();
+
+
+            if (events is null)
+                throw new Exception("Events retrieved were <NULL>");
+
+
+            if (events.Count == 0)
+                throw new Exception("No meetings scheduled.");
+
+
+            return events.ToArray()[0];
+
+        }
+
+
+        /// <summary>
+        /// Deletes the specified event for the bot Outlook account.
+        /// Return true if success, and false if no such event was found
+        /// </summary>
+        /// <param name="inviteEvent"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteEventAsync(Event inviteEvent)
+        {
+            /*Get all messages for this user in inbox */
+            var users = await _graphClient
+                .Users
+                .Request()
+                .GetAsync();
+
+            /*Get all messages for this user in inbox */
+            var events = await _graphClient
+                .Users[_userId]
+                .Events
+                .Request()
+                .GetAsync();
+
+
+            string eventId = "";
+
+            foreach (var curEvent in events)
+            {
+                if (curEvent.Id == inviteEvent.Id)
+                {
+                    eventId = curEvent.Id;
+                    break;
+                }
+
+            }
+
+            /*No such event */
+            if (eventId == "")
+                return false;
+
+
+
+            /*Otherwise, delete the specified event */
+            Task f = _graphClient
+                .Users[_userId]
+                .Events[eventId]
+                .Request()
+                .DeleteAsync();
+
+
+            f.Wait();
+
+
+            return true;
+        }
+
+
+
+
+
+        /// <summary>
+        /// Check if this is a valid Webex-generated invite message.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+
+        public static bool IsValidWebexInvitation(Event inviteEvent)
+        {
+            if (inviteEvent is null)
+                throw new Exception("IsValidWebExInvitation: Email Message Received was <NULL>");
+
+            var content = inviteEvent.Body.Content;
+
+
+            return content.Contains("Webex", StringComparison.OrdinalIgnoreCase)
+                 && content.Contains("invites", StringComparison.OrdinalIgnoreCase)
+                 && content.Contains("Meeting number (access code):", StringComparison.OrdinalIgnoreCase);
+
+        }
+
+
+
+
+
+
+        [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
         public static async Task<Message> GetEmailAsync()
         {
             /*Get all messages for this user in inbox */
@@ -95,7 +218,7 @@ namespace DiScribe.Email
                 .GetAsync();
 
             if (inbox.TotalItemCount == 0)
-                throw new Exception(">\tEmail Inbox Empty...");
+                throw new Exception("Email Inbox Empty...");
 
             // Get messages from the inbox mail folder
             var messages = await _graphClient
@@ -113,7 +236,14 @@ namespace DiScribe.Email
             return messages[0];
         }
 
-        public static async Task<bool> DeleteEmailAsync(Message message)
+
+
+
+
+
+
+        [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
+        private static async Task<bool> DeleteEmailAsync(Message message)
         {
             /*Get all messages for this user in inbox */
             var users = await _graphClient
@@ -140,6 +270,7 @@ namespace DiScribe.Email
                 .GetAsync();
 
             string messageId = "";
+
             foreach (var _message in messages)
             {
                 if (_message.Id == message.Id)
@@ -158,55 +289,190 @@ namespace DiScribe.Email
             return true;
         }
 
-        public static bool IsValidWebexInvitation(Message message)
+
+
+        /// <summary>
+        /// Check if this is a valid Outlook template invitate message to the Webex bot.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
+        public static Boolean IsValidOutlookInvitation(Message message)
         {
             if (message is null)
-                throw new Exception("ValidWebExInvitation: Email Message Received was <NULL>");
+                throw new Exception("ValidOutlookInvitation: Email Message Received was <NULL>");
 
             var content = message.Body.Content;
-            return !content.Contains("Webex")
-                || !content.Contains("invites")
-                || !content.Contains("Meeting number(access code): ")
-                || !content.Contains("Meeting password: ");
+            return content.Contains("Subject", StringComparison.OrdinalIgnoreCase)
+                 && content.Contains("Participants", StringComparison.OrdinalIgnoreCase)
+                 && content.Contains("Start Date Time: ", StringComparison.OrdinalIgnoreCase)
+                 && content.Contains("End Date Time: ", StringComparison.OrdinalIgnoreCase);
+
+
         }
 
-        public static Meeting.MeetingInfo GetMeetingInfo(Message message, IConfigurationRoot appConfig)
+
+
+
+
+
+        [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
+        public static Meeting.MeetingInfo GetMeetingInfoFromOutlookInvite(Message message)
         {
-            if (message is null)
+            var body = message.Body.Content;
+
+            string subject = "";
+            var participants = new List<SendGrid.Helpers.Mail.EmailAddress>();
+            DateTime startTime = new DateTime();
+            DateTime endTime = new DateTime();
+
+
+            /*Get the meeting subject and remove the property name for next property from this string*/
+            var subjectRegex = new Regex("Subject:.+Participants:");
+            subject = subjectRegex.Match(body).Value.Replace("Participants:", "");
+
+            /*Get the list of participant emails as a string and remove the property name of next property */
+            var emailsRegex = new Regex("Participants:.+Start Date Time:");
+            var emailsString = emailsRegex.Match(body).Value;
+            emailsString = emailsString.Replace("Participants:", "").Replace("Start Date Time:", "");
+
+            /*Convert email string to a list of SendGrid.Helpers.Mail.EmailAddress object */
+            participants = parseOutlookEmailsString(emailsString);
+
+            /*Attempt to get start time */
+            var startTimeRegex = new Regex("Start Date Time:+.End Date Time:");
+            var startTimeStr = startTimeRegex.Match(body).Value;
+            startTimeStr = startTimeStr.Replace("Start Date Time:", "").Replace("End Date Time:", "");
+            Boolean startTimeParsed = DateTime.TryParse(startTimeStr, out startTime);
+
+            /*Attempt to get end time */
+            var endTimeRegex = new Regex("End Date Time:.+");
+            var endTimeStr = endTimeRegex.Match(body).Value.Replace("End Date Time:", "");
+            Boolean endTimeParsed = DateTime.TryParse(endTimeStr, out startTime);
+
+
+
+            return new Meeting.MeetingInfo(subject, participants, startTime, endTime);
+
+        }
+
+
+        /// <summary>
+        /// Converts a string list of email address to a list of SendGrid.Helpers.Mail.EmailAddress objects. 
+        /// </summary>
+        /// <param name="emailList"></param>
+        /// <returns></returns>
+        public static List<SendGrid.Helpers.Mail.EmailAddress> parseOutlookEmailsString(string emailListStr)
+        {
+            var emails = emailListStr.Trim().Split(",");
+            var sendGridEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
+
+            foreach (var emailStr in emails)
+            {
+                sendGridEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(emailStr));
+            }
+
+            return sendGridEmails;
+        }
+
+
+        /// <summary>
+        /// Converts a list of strings into a list of SendGrid.Helpers.Mail.EmailAddress representing
+        /// emails.
+        /// </summary>
+        /// <param name="emailList"></param>
+        /// <returns></returns>
+        public static List<SendGrid.Helpers.Mail.EmailAddress> parseEmailList(List<string> emailList)
+        {
+            var sendGridEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
+
+            foreach (var emailStr in emailList)
+            {
+                sendGridEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(emailStr));
+            }
+
+            return sendGridEmails;
+
+        }
+
+
+
+        public static List<string> GetAttendeeEmails(Microsoft.Graph.Event inviteEvent)
+        {
+            var emails = new List<string>();
+
+            foreach(var curAttendee in inviteEvent.Attendees)
+            {
+                emails.Add(curAttendee.EmailAddress.Address);
+
+            }
+
+            return emails;
+        }
+
+
+
+        public static List<string> GetAttendeeNames(Microsoft.Graph.Event inviteEvent)
+        {
+            var names = new List<string>();
+
+            foreach (var curAttendee in inviteEvent.Attendees)
+            {
+
+                names.Add(curAttendee.EmailAddress.Name);
+
+            }
+
+            return names;
+
+        }   
+
+
+
+
+        public static Meeting.MeetingInfo GetMeetingInfoFromWebexInvite(Microsoft.Graph.Event inviteEvent, WebexHostInfo hostInfo)
+        {
+            if (inviteEvent is null)
                 throw new Exception("Email Message Received was <NULL>");
 
-            if (!IsValidWebexInvitation(message))
+            if (!IsValidWebexInvitation(inviteEvent))
                 throw new Exception("Not a Webex Meeting Invitation Email");
 
-            var meetingInfo = GetMeetingInfoFromHTML(message);
+            var meetingInfo = GetMeetingInfoFromWebexHTML(inviteEvent);
 
-            meetingInfo.HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                    appConfig["WEBEX_PW"],
-                    appConfig["WEBEX_ID"],
-                    appConfig["WEBEX_COMPANY"]);
+            meetingInfo.HostInfo = hostInfo;
 
-            meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
-            meetingInfo.AttendeesEmails.Add(new EmailAddress(message.Sender.EmailAddress.Address));
+            /*Add all other meeting attendees to meetingInfo*/
+             meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
+
+            /* Add the host who scheduled meeting as well */
+            meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(inviteEvent.Organizer.EmailAddress.Address));          
             meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
+
+
             foreach (var attendee in meetingInfo.AttendeesEmails)
             {
                 Console.WriteLine("\t-\t" + attendee.Email);
             }
+
+
             return meetingInfo;
         }
 
-        private static Meeting.MeetingInfo GetMeetingInfoFromHTML(Message message)
+
+
+        private static Meeting.MeetingInfo GetMeetingInfoFromWebexHTML(Microsoft.Graph.Event inviteEvent)
         {
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(message.Body.Content);
+            htmlDoc.LoadHtml(inviteEvent.Body.Content);
 
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
 
             if (htmlNodes is null)
                 throw new Exception("Email is not in proper format");
 
-            string meeting_Sbj = message.Subject;
+            string meeting_Sbj = inviteEvent.Subject;
             if (!String.IsNullOrEmpty(meeting_Sbj))
             {
                 meeting_Sbj = meeting_Sbj.Replace("Webex meeting invitation:", "");
@@ -273,11 +539,12 @@ namespace DiScribe.Email
                     break;
                 }
             }
-            if (meetingInfo.MissingField())
+            if (meetingInfo.MissingAccessInfo())
                 throw new Exception("Important fields missing for MeetingInfo class");
 
             return meetingInfo;
         }
+
 
         [HttpGet]
         private static async Task<Subscription> AddMailSubscription()
