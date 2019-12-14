@@ -14,16 +14,27 @@ namespace DiScribe.DatabaseManager
     {
         
         private static SqlConnection DBConnection = null;
+        private static Boolean initialized = false;
 
-        public static void Initialize(string connectionStr)
+        public static void Initialize(string connectionStr = "Server=tcp:dbcs319discribe.database.windows.net, 1433; " +
+            "Initial Catalog=db_cs319_discribe; " +
+            "Persist Security Info=False;" +
+            "User ID=obiermann; " +
+            "Password=JKm3rQ~t9sBiemann; " +
+            "MultipleActiveResultSets=True; " +
+            "Encrypt=True;TrustServerCertificate=False; " +
+            "Connection Timeout=30")
         {
-            if (DBConnection is null)
-            {
-                var connection = new SqlConnection(connectionStr);
-                connection.Open();
-                DBConnection = connection;
-            }
+            
+            var connection = new SqlConnection(connectionStr);
+            connection.Open();
+            DBConnection = connection;
+            
+
+            initialized = true;
         }
+
+
 
         /// <summary>
         /// Stores a user with params matching userParams in the database.
@@ -40,6 +51,8 @@ namespace DiScribe.DatabaseManager
                 userParams.TimeStamp,
                 userParams.Password);
         }
+
+
 
         /// <summary>
         /// Stores a user record in the database and returns an object representing that User.
@@ -61,6 +74,9 @@ namespace DiScribe.DatabaseManager
            DateTime timeStamp = new DateTime(),
            string password = "")
         {
+            if (!initialized)
+                  Initialize();
+
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpCreateUser";
 
@@ -114,6 +130,11 @@ namespace DiScribe.DatabaseManager
 
         public static Boolean CheckUser(string email)
         {
+
+            if (!initialized)
+                Initialize();
+
+
             using (SqlTransaction transaction = DBConnection.BeginTransaction())
             {
                 string execStr = "dbo.stpLoadUser";
@@ -153,6 +174,11 @@ namespace DiScribe.DatabaseManager
         /// <returns>Matching User object for the specified email, or null if no such user exists.</returns>
         public static User LoadUser(string email)
         {
+
+            if (!initialized)
+                Initialize();
+
+
             using (SqlTransaction transaction = DBConnection.BeginTransaction())
             {
                 string execStr = "dbo.stpLoadUser";
@@ -200,6 +226,10 @@ namespace DiScribe.DatabaseManager
 
         public static Boolean UpdateUser(User user, string lookupEmail)
         {
+
+            if (!initialized)
+                Initialize();
+
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpUpdateUserByEmail";
 
@@ -257,6 +287,10 @@ namespace DiScribe.DatabaseManager
 
         public static Boolean DeleteUser(string email)
         {
+            if (!initialized)
+                Initialize();
+
+
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpDeleteUser";
 
@@ -308,7 +342,7 @@ namespace DiScribe.DatabaseManager
         /// Creates a Meeting record with fields corresponding to the specified meeting params.
         /// </summary>
         /// <returns></returns>
-        public static Meeting CreateMeeting(List<User> users, 
+        public static Meeting CreateMeeting(List<String> userEmails, 
             DateTime meetingStartDateTime,
             DateTime meetingEndDateTime,
             string webExID,
@@ -317,9 +351,16 @@ namespace DiScribe.DatabaseManager
             string meetingFileLocation = "" )
         {
 
-            string userIDString = CreateUserIdString(users);                         //Convert user IDs to a comma-delimited string.
+            if (!initialized)
+                Initialize();
 
 
+
+            var userIDs = GetUserIDsByEmail(userEmails);                                //Load the ids for the specified emails
+
+            string userIDString = CreateUserIdString(userIDs);                         //Convert user IDs to a comma-delimited string.
+
+        
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpCreateMeeting";
 
@@ -393,7 +434,9 @@ namespace DiScribe.DatabaseManager
         /// <returns>True if update is successful, false otherwise</returns>
         public static Boolean UpdateMeeting(Meeting meeting)
         {
-            
+            if (!initialized)
+                Initialize();
+
             SqlTransaction transaction = DBConnection.BeginTransaction();
             string execStr = "dbo.stpUpdateMeeting";
 
@@ -441,7 +484,7 @@ namespace DiScribe.DatabaseManager
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.Write($"Error updating meeting record in database. {ex.Message}");
+                    Console.Error.Write($">\tError updating meeting record in database. {ex.Message}");
                     transaction.Rollback();
                 }
             }
@@ -452,20 +495,57 @@ namespace DiScribe.DatabaseManager
 
 
         /// <summary>
+        /// Get a list of user IDs for the user records with the specified emails
+        /// </summary>
+        /// <param name="emails"></param>
+        /// <returns></returns>
+        public static List<string> GetUserIDsByEmail(List<string> emails)
+        {
+
+            var userIDList = new List<string>();
+
+            try
+            {
+                if (!initialized)
+                    Initialize();
+
+                
+
+                foreach (var email in emails)
+                {
+                    var curUser = LoadUser(email);
+                    userIDList.Add(curUser.UserID.ToString());
+                }
+
+                
+            } catch (Exception ex)
+            {
+                Console.Error.WriteLine($">\tError loading user ids by email. Reason: {ex.Message}");
+            }
+
+            return userIDList;
+
+
+        }
+
+
+        /// <summary>
         /// Create a string containing all user ids in users delimited by commas.
         /// </summary>
         /// <param name="users"></param>
-        private static string CreateUserIdString(List<User> users)
+        private static string CreateUserIdString(List<string> userIDs)
         {
-            if (users.Count == 0)
+
+
+            if (userIDs.Count == 0)
                 return "";
 
             StringBuilder builder = new StringBuilder();
             
             /*Append user ID's to the stringbuilder delimited by commas. Do not add a comma after the last id*/
-            for(int i = 0; i < users.Count; i++)
+            for(int i = 0; i < userIDs.Count; i++)
             {
-                builder.Append((i < users.Count - 1 ? $"{users[i].UserID.ToString()}," : users[i].UserID.ToString()));
+                builder.Append((i < userIDs.Count - 1 ? $"{userIDs[i]}," : userIDs[i]));
             }
 
 

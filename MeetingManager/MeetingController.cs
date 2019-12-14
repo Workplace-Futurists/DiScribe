@@ -75,12 +75,15 @@ namespace DiScribe.Meeting
                     }
                 }
 
-                meetingInfo = MeetingController.CreateWebexMeeting(inviteEvent.Subject, attendeeNames, attendeeEmails,
+                meetingInfo = CreateWebexMeeting(inviteEvent.Subject, attendeeNames, attendeeEmails,
                     meetingStart, meetingDurationStr, meetingInfo.HostInfo, inviteEvent.Organizer.EmailAddress);
             }
 
             return meetingInfo;
         }
+
+
+
 
         /// <summary>
         /// Creates a webex meeting with the specified parameters. Note that duration is in minutes.
@@ -91,7 +94,13 @@ namespace DiScribe.Meeting
         /// <param name="duration"></param>
         /// <param name="hostInfo"></param>
         /// <returns></returns>
-        public static MeetingInfo CreateWebexMeeting(string meetingSubject, List<string> names, List<string> emails, DateTime startTime, string duration, WebexHostInfo hostInfo, Microsoft.Graph.EmailAddress delegateEmail)
+        public static MeetingInfo CreateWebexMeeting(string meetingSubject, 
+            List<string> names, 
+            List<string> emails, 
+            DateTime startTime, 
+            string duration, 
+            WebexHostInfo hostInfo, 
+            Microsoft.Graph.EmailAddress delegateEmail)
         {
             string strXMLServer = "https://companykm.my.webex.com/WBXService/XMLService";
             
@@ -138,17 +147,29 @@ namespace DiScribe.Meeting
             dataStream.Close();
             response.Close();
 
-            var sendGridEmails = EmailListener.parseEmailList(emails);
-
-            
 
             Console.WriteLine("\tMeeting has been successfully created");
-            MeetingInfo mi = new MeetingInfo(meetingSubject, sendGridEmails, startTime, startTime.AddMinutes(Double.Parse(duration)), accessCode, "", hostInfo);
 
-            EmailSender.SendEmailForStartURL(mi, new EmailAddress(delegateEmail.Address, delegateEmail.Name));
+            
+            var endTime = startTime.AddMinutes(double.Parse(duration));
+            var sendGridEmails = EmailListener.parseEmailList(emails);
 
-            return mi;
+            /*Store meeting record in database for the created meeting */            
+            var meeting = DatabaseController.CreateMeeting(emails, startTime, endTime, accessCode, meetingSubject);
+            MeetingInfo meetingInfo = new MeetingInfo(meeting, sendGridEmails, "", hostInfo);
+
+            
+            /*Send an email to allow host or delegates to start the meeting */
+            
+            
+            EmailSender.SendEmailForStartURL(meetingInfo, new EmailAddress(delegateEmail.Address, delegateEmail.Name));
+
+            return meetingInfo;
         }
+
+
+
+
 
         /// <summary>
         /// Sends email to all unregistered users given all the meeting attendees.
@@ -157,14 +178,7 @@ namespace DiScribe.Meeting
         /// <param name="attendees"></param>
         /// <param name="dbConnectionString"></param>
         public static void SendEmailsToAnyUnregisteredUsers(List<EmailAddress> attendees,
-            string dbConnectionString =
-            "Server=tcp:dbcs319discribe.database.windows.net, 1433; " +
-            "Initial Catalog=db_cs319_discribe; " +
-            "Persist Security Info=False;User ID=obiermann; " +
-            "Password=JKm3rQ~t9sBiemann; " +
-            "MultipleActiveResultSets=True; " +
-            "Encrypt=True;TrustServerCertificate=False; " +
-            "Connection Timeout=30")
+            string dbConnectionString)
         {
             try
             {

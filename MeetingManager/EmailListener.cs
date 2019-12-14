@@ -357,6 +357,12 @@ namespace DiScribe.Email
             return sendGridEmails;
         }
 
+
+        /// <summary>
+        /// Get a list of attendee email addresses as strings for the specified Event
+        /// </summary>
+        /// <param name="inviteEvent"></param>
+        /// <returns></returns>
         public static List<string> GetAttendeeEmails(Microsoft.Graph.Event inviteEvent)
         {
             var emails = new List<string>();

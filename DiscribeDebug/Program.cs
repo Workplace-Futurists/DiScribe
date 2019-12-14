@@ -24,7 +24,7 @@ namespace DiScribe.DiScribeDebug
 
             Console.WriteLine($"loaded test users {testUser1.Email} and {testUser2.Email}");
 
-            Meeting tm = DatabaseController.CreateMeeting(testUsers,
+            Meeting tm = DatabaseController.CreateMeeting(new List<string> { testUser1.Email, testUser2.Email },
                 DateTime.Now,
                 DateTime.Now.AddMinutes(45.0),
                 "382688282",
