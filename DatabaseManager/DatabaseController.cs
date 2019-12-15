@@ -514,6 +514,9 @@ namespace DiScribe.DatabaseManager
                 foreach (var email in emails)
                 {
                     var curUser = LoadUser(email);
+                    if (curUser is null)
+                        continue;
+
                     userIDList.Add(curUser.UserID.ToString());
                 }
 

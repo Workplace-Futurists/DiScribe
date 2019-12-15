@@ -120,15 +120,12 @@ namespace DiScribe.Main
             /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
             MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
-            /*Send an email to only meeting host and any delegate enabling Webex meeting start*/
-            //var organizerEmail = inviteEvent.Organizer.EmailAddress;
-            //EmailSender.SendEmailForStartURL(meetingInfo,
-            //    new SendGrid.Helpers.Mail.EmailAddress(organizerEmail.Address, organizerEmail.Name));
+            
 
             Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
             SchedulerController.Schedule(Run,
-                meetingInfo, appConfig, meetingInfo.StartTime).Wait();                    //Schedule dialer-transcriber workflow as separate task
+                meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
         }
 
         /// <summary>

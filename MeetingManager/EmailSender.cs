@@ -108,6 +108,8 @@ namespace DiScribe.Email
                 var defaultURL = RegUrl;
                 var registrationURL = defaultURL + email.Email;
 
+                Console.WriteLine("sending to " + email.Email);
+
                 var htmlContent = "<h2>Please register your voice to Voice Registration Website(Recommend using Chrome)</h2><h4>Link: ";
                 htmlContent += "<a href=\""+ registrationURL + "\">"+ registrationURL + "</a>";
                 htmlContent += "</h4>";
