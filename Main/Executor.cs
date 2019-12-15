@@ -136,7 +136,8 @@ namespace DiScribe.Main
 
                 Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
-                await SchedulerController.Schedule(Run, meetingInfo, appConfig, meetingInfo.StartTime);//Schedule dialer-transcriber workflow as separate task
+                //Kay: According to Oloff, this should not have an "await" in front, otherwise it will wait until the meeting finish before checking the inbox again. 
+                SchedulerController.Schedule(Run, meetingInfo, appConfig, meetingInfo.StartTime);//Schedule dialer-transcriber workflow as separate task
             }
             return meetingInfo;
         }
@@ -152,7 +153,7 @@ namespace DiScribe.Main
                 //if (meetingInfo == null)
                 //{
                     var email = await EmailListener.GetEmailAsync();
-                    meetingInfo = MeetingController.HandleEmail(email.Body.ToString(), email.Subject, "", appConfig);
+                    meetingInfo = MeetingController.HandleEmail(email.Body.Content.ToString(), email.Subject, "", appConfig);
                     await EmailListener.DeleteEmailAsync(email);
                 //}
             }
@@ -173,7 +174,8 @@ namespace DiScribe.Main
 
                 Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
-                await SchedulerController.Schedule(Run, meetingInfo, appConfig, meetingInfo.StartTime);//Schedule dialer-transcriber workflow as separate task
+                //Kay: According to Oloff, this should not have an "await" in front, otherwise it will wait until the meeting finish before checking the inbox again. 
+                SchedulerController.Schedule(Run, meetingInfo, appConfig, meetingInfo.StartTime);//Schedule dialer-transcriber workflow as separate task
             }
 
             return meetingInfo;

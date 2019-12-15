@@ -176,9 +176,18 @@ namespace DiScribe.Email
 
         public static bool IsValidWebexInvitation(string body)
         {
-            return body.Contains("Webex", StringComparison.OrdinalIgnoreCase)
-                 && body.Contains("invites", StringComparison.OrdinalIgnoreCase)
-                 && body.Contains("Meeting number (access code):", StringComparison.OrdinalIgnoreCase);
+            bool webExExist = body.Contains("Webex", StringComparison.OrdinalIgnoreCase);
+            bool inviteExist = body.Contains("invites", StringComparison.OrdinalIgnoreCase);
+            bool accessExist = body.Contains("Meeting number (access code):", StringComparison.OrdinalIgnoreCase);
+
+            if (webExExist && inviteExist && accessExist)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
 
