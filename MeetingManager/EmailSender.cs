@@ -54,9 +54,7 @@ namespace DiScribe.Email
             OfficialEmail = new EmailAddress(appConfig["BOT_MAIL_ACCOUNT"], "DiScribe Bot");
             RegUrl = appConfig["DEFAULT_REG_URL"];
 
-            //string sendGridAPI = "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";
-            //OfficialEmail = new EmailAddress("levana@workplacefupurists.onmicrosoft.com", "DiScribe Bot");
-            //RegUrl = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
+                       
 
             return new SendGridClient(sendGridAPI);
         }
@@ -65,6 +63,8 @@ namespace DiScribe.Email
         {
             SendEmailHelper(OfficialEmail, new List<EmailAddress> { recipient }, subject, htmlContent, file).Wait();
         }
+
+
 
         public static void SendEmail(List<EmailAddress> recipients, string subject, string htmlContent, FileInfo file = null)
         {
@@ -108,7 +108,7 @@ namespace DiScribe.Email
                 var defaultURL = RegUrl;
                 var registrationURL = defaultURL + email.Email;
 
-                Console.WriteLine("sending to " + email.Email);
+                Console.WriteLine(">\t\t-sending to " + email.Email);
 
                 var htmlContent = "<h2>Please register your voice to Voice Registration Website(Recommend using Chrome)</h2><h4>Link: ";
                 htmlContent += "<a href=\""+ registrationURL + "\">"+ registrationURL + "</a>";
@@ -168,6 +168,8 @@ namespace DiScribe.Email
             }
 
             await sendGridClient.SendEmailAsync(msg);
+                      
+
         }
     }
 }

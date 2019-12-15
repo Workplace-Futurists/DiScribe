@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MeetingManager\MeetingManager.csproj" />
     <ProjectReference Include="..\Transcriber\Transcriber.csproj" />
     <ProjectReference Include="..\DatabaseManager\DatabaseManager.csproj" />
     <ProjectReference Include="..\AudioHandling\AudioHandling.csproj" />
