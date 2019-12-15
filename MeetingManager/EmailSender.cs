@@ -42,19 +42,21 @@ namespace DiScribe.Email
 
         private static SendGridClient Initialize()
         {
-            var appConfig = LoadAppSettings();
+            //var appConfig = LoadAppSettings();
 
-            if (appConfig == null)
-            {
-                Console.WriteLine(">\tMissing or invalid appsettings.json!");
-                return null;
-            }
+            //if (appConfig == null)
+            //{
+            //    Console.WriteLine(">\tMissing or invalid appsettings.json!");
+            //    return null;
+            //}
 
-            string sendGridAPI = appConfig["SENDGRID_API_KEY"];
-            OfficialEmail = new EmailAddress(appConfig["BOT_MAIL_ACCOUNT"], "DiScribe Bot");
-            RegUrl = appConfig["DEFAULT_REG_URL"];
+            //string sendGridAPI = appConfig["SENDGRID_API_KEY"];
+            //OfficialEmail = new EmailAddress(appConfig["BOT_MAIL_ACCOUNT"], "DiScribe Bot");
+            //RegUrl = appConfig["DEFAULT_REG_URL"];
 
-                       
+            string sendGridAPI = "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";
+            OfficialEmail = new EmailAddress("discribe_sender@outlook.com", "DiScribe Bot");
+            RegUrl = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
 
             return new SendGridClient(sendGridAPI);
         }
@@ -111,7 +113,8 @@ namespace DiScribe.Email
                 Console.WriteLine(">\t\t-sending to " + email.Email);
 
                 var htmlContent = "<h2>Please register your voice to Voice Registration Website(Recommend using Chrome)</h2><h4>Link: ";
-                htmlContent += "<a href=\""+ registrationURL + "\">"+ registrationURL + "</a>";
+                //htmlContent += "<a href=\""+ registrationURL + "\">"+ registrationURL + "</a>";
+                htmlContent += registrationURL;
                 htmlContent += "</h4>";
                 SendEmail(email, "Voice Registration for Your Upcoming Meeting", htmlContent);
             }
@@ -131,8 +134,9 @@ namespace DiScribe.Email
 
             string startURL = XMLHelper.RetrieveStartUrl(meetingInfo.AccessCode);
 
-            var htmlContent = "<h4>Dear "+ organizer.Name + ": </h4><br/><h2>When it is time, please click on this link to start the meeting: "+ meetingInfo.Subject + "</h2><h4>Link: ";
-            htmlContent += "<a href=\"" + startURL + "\">" + startURL + "</a>";
+            var htmlContent = "<h4>Dear "+ organizer.Name + ": </h4><br/><h2>When it is time, please copy past this link to Chrome to start the meeting: "+ meetingInfo.Subject + "</h2><h4>Link: ";
+            //htmlContent += "<a href=\"" + startURL + "\">" + startURL + "</a>";
+            htmlContent += startURL;
             htmlContent += "</h4>";
             SendEmail(organizer, "Link to Start Your Meeting - "+ meetingInfo.Subject, htmlContent);
             

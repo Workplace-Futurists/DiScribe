@@ -8,6 +8,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
+        <p><b>Note: When schedule here from DiscribeWeb, we currently only support Pacific time zone. However if you schedule from outlook different timezones are supported:</b></p>
         <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -26,20 +27,20 @@
                 <span asp-validation-for="MeetingEndDateTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label>Please enter Meeting Host Name, only one allowed</label>
+                <label>Please enter Meeting Host Name, <b>only one allowed</b></label>
                 <textarea id="HostName" rows="1" cols="100" asp-for="HostName"></textarea>
                 <span asp-validation-for="HostName" class="text-danger"></span>
-                <label>Please enter Meeting Host Email, only one allowed</label>
+                <label>Please enter Meeting Host Email, <b>only one allowed</b></label>
                 <textarea id="HostEmail" rows="1" cols="100" asp-for="HostEmail"></textarea>
                 <span asp-validation-for="HostEmail" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label>Please enter participant names below, separated by commas. Please donot include host name.</label>
-                <textarea id="ParticiNames" rows="3" cols="100" asp-for="ParticiNames"></textarea>
+                <label>Please enter participant names below, separated by commas. <b>Please donot include host name.</b></label>
+                <textarea id="ParticiNames" rows="1" cols="100" asp-for="ParticiNames"></textarea>
                 <span asp-validation-for="ParticiNames" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label>Please enter participant email addresses below, separated by commas. Please donot include host email.</label>
+                <label>Please enter participant email addresses below, separated by commas. <b>Please donot include host email.</b></label>
                 <textarea id="Participants" rows="3" cols="100" asp-for="Participants"></textarea>
                 <span asp-validation-for="Participants" class="text-danger"></span>
             </div>
