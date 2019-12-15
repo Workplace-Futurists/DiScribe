@@ -70,7 +70,11 @@ namespace DiScribe.Main
         {
             while (true)
             {
+                Console.WriteLine($">\tCheck for Graph Events ... ");
                 await CheckForGraphEvents(appConfig);
+
+                Console.WriteLine($">\tCheck for Emails ... ");
+                await CheckForEmails(appConfig);
 
                 await Task.Delay(delayInterval * 1000);                   //Resume listening
             }
@@ -96,7 +100,7 @@ namespace DiScribe.Main
         ///
         /// </summary>
         /// <returns></returns>
-        private static async Task CheckForGraphEvents(IConfigurationRoot appConfig)
+        private static async Task<object?> CheckForGraphEvents(IConfigurationRoot appConfig)
         {
 
             MeetingInfo meetingInfo = null;
@@ -112,41 +116,67 @@ namespace DiScribe.Main
                   Assign the returned meeting info about the scheduled meeting or
                   null if this is not an Outlook invite*/
                   meetingInfo = await MeetingController.HandleInvite(inviteEvent, appConfig);
+                
             }
             catch (Exception ex)
             {
-                throw new Exception($"Could not get any MS Graph events. Reason: {ex.Message}");
+                //throw new Exception($"Could not get any MS Graph events. Reason: {ex.Message}");
+                Console.WriteLine($"Could not get any MS Graph events. Reason: {ex.Message}");
+                return null;
             }
+
+            if (meetingInfo != null)
+            {
+
+                Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
+
+                /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
+                MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
+
+
+                Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
+
+                await SchedulerController.Schedule(Run, meetingInfo, appConfig, meetingInfo.StartTime);//Schedule dialer-transcriber workflow as separate task
+            }
+            return meetingInfo;
+        }
+
+        private static async Task<object?> CheckForEmails(IConfigurationRoot appConfig)
+        {
+            MeetingInfo meetingInfo = null;
 
 
             try
             {
                 /*If there are no graph events, check bot inbox for any webex invites from DiScribe web scheduling */
-                if (meetingInfo == null)
-                {
+                //if (meetingInfo == null)
+                //{
                     var email = await EmailListener.GetEmailAsync();
                     meetingInfo = MeetingController.HandleEmail(email.Body.ToString(), email.Subject, "", appConfig);
                     await EmailListener.DeleteEmailAsync(email);
-                }
-            } catch (Exception emailEx)
+                //}
+            }
+            catch (Exception emailEx)
             {
                 Console.Error.WriteLine($"Could not read bot invite email. Reason: {emailEx.Message}");
+                return null;
             }
-     
+
+            if (meetingInfo != null)
+            {
+
+                Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
+
+                /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
+                MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
 
+                Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
+                await SchedulerController.Schedule(Run, meetingInfo, appConfig, meetingInfo.StartTime);//Schedule dialer-transcriber workflow as separate task
+            }
 
-            Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
-
-            /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
-            MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
-
-            
-            Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
-
-            SchedulerController.Schedule(Run,
-                meetingInfo, appConfig, meetingInfo.StartTime);                    //Schedule dialer-transcriber workflow as separate task
+            return meetingInfo;
         }
 
         /// <summary>

@@ -223,7 +223,7 @@ namespace DiScribe.Email
 
 
 
-        [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
+        //[ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
         public static async Task<bool> DeleteEmailAsync(Message message)
         {
             /*Get all messages for this user in inbox */
