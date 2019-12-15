@@ -168,14 +168,24 @@ namespace DiScribe.Email
             if (inviteEvent is null)
                 throw new Exception("IsValidWebExInvitation: Email Message Received was <NULL>");
 
-            var content = inviteEvent.Body.Content;
-
-            return content.Contains("Webex", StringComparison.OrdinalIgnoreCase)
-                 && content.Contains("invites", StringComparison.OrdinalIgnoreCase)
-                 && content.Contains("Meeting number (access code):", StringComparison.OrdinalIgnoreCase);
+            return IsValidWebexInvitation(inviteEvent.Body.Content);
         }
 
-        [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
+
+
+
+        public static bool IsValidWebexInvitation(string body)
+        {
+            return body.Contains("Webex", StringComparison.OrdinalIgnoreCase)
+                 && body.Contains("invites", StringComparison.OrdinalIgnoreCase)
+                 && body.Contains("Meeting number (access code):", StringComparison.OrdinalIgnoreCase);
+        }
+
+
+        /// <summary>
+        /// Get the latest email for this user
+        /// </summary>
+        /// <returns></returns>
         public static async Task<Message> GetEmailAsync()
         {
             /*Get all messages for this user in inbox */
@@ -211,8 +221,10 @@ namespace DiScribe.Email
             return messages[0];
         }
 
+
+
         [ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
-        private static async Task<bool> DeleteEmailAsync(Message message)
+        public static async Task<bool> DeleteEmailAsync(Message message)
         {
             /*Get all messages for this user in inbox */
             var users = await _graphClient
@@ -390,23 +402,33 @@ namespace DiScribe.Email
             return names;
         }   
 
-        public static Meeting.MeetingInfo GetMeetingInfoFromWebexInvite(Microsoft.Graph.Event inviteEvent, WebexHostInfo hostInfo)
-        {
-            if (inviteEvent is null)
-                throw new Exception("Email Message Received was <NULL>");
 
-            if (!IsValidWebexInvitation(inviteEvent))
+
+        /// <summary>
+        /// Parses an html body email element to create a MeetingInfo object.
+        /// </summary>
+        /// <param name="inviteBody"></param>
+        /// <param name="subject"></param>
+        /// <param name="organizerAddress"></param>
+        /// <param name="hostInfo"></param>
+        /// <returns></returns>
+        public static Meeting.MeetingInfo GetMeetingInfoFromWebexInvite(string inviteBody, string subject, WebexHostInfo hostInfo)
+        {
+            if (inviteBody is null)
+                throw new Exception("Email body was <NULL>");
+
+            if (!IsValidWebexInvitation(inviteBody))
                 throw new Exception("Not a Webex Meeting Invitation Email");
 
-            var meetingInfo = GetMeetingInfoFromWebexHTML(inviteEvent);
+            var meetingInfo = GetMeetingInfoFromWebexHTML(inviteBody, subject);
 
             meetingInfo.HostInfo = hostInfo;
 
             /*Add all other meeting attendees to meetingInfo*/
              meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
 
-            /* Add the host who scheduled meeting as well */
-            meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(inviteEvent.Organizer.EmailAddress.Address));          
+            /* Add the host  as well */
+            meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(hostInfo.Email));          
             meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
 
             foreach (var attendee in meetingInfo.AttendeesEmails)
@@ -417,18 +439,20 @@ namespace DiScribe.Email
             return meetingInfo;
         }
 
-        private static Meeting.MeetingInfo GetMeetingInfoFromWebexHTML(Microsoft.Graph.Event inviteEvent)
+
+
+        private static Meeting.MeetingInfo GetMeetingInfoFromWebexHTML(string htmlBody, string subject)
         {
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(inviteEvent.Body.Content);
+            htmlDoc.LoadHtml(htmlBody);
 
             var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
 
             if (htmlNodes is null)
                 throw new Exception("Email is not in proper format");
 
-            string meeting_Sbj = inviteEvent.Subject;
+            string meeting_Sbj = subject;
             if (!String.IsNullOrEmpty(meeting_Sbj))
             {
                 meeting_Sbj = meeting_Sbj.Replace("Webex meeting invitation:", "");

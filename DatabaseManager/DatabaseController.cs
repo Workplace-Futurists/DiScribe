@@ -285,6 +285,9 @@ namespace DiScribe.DatabaseManager
             return false;
         }
 
+
+
+
         public static Boolean DeleteUser(string email)
         {
             if (!initialized)

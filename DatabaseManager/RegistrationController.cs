@@ -78,9 +78,9 @@ namespace DiScribe.DatabaseManager
                     userProfiles.Add(curUser);
                     Console.WriteLine($"\t-\t[Load Succeeded]\t{email}");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"\t-\t[Load Failed]\t{email}");
+                    Console.Error.WriteLine($"\t-\t[Load Failed]\t{email} Reason: {ex.Message}");
                 }
             }
             return new RegistrationController(userProfiles, enrollmentClient, enrollmentLocale, apiInterval);

@@ -24,31 +24,34 @@ namespace DiScribe.Meeting
 
         /// <summary>
         /// Handles meeting invite and returns a MeetingInfo object representing the meeting.
-        /// Separate cases for a Webex invite event and Outlook invites
+        /// Webex invites are ignored
         /// </summary>
         /// <param name="inviteEvent"></param>
         /// <param name="appConfig"></param>
         /// <returns></returns>
         public static async Task<Meeting.MeetingInfo> HandleInvite(Microsoft.Graph.Event inviteEvent, IConfigurationRoot appConfig)
         {
-            MeetingInfo meetingInfo = new MeetingInfo
-            {
-                HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                 appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"])
-            };
+            
 
-            /*If invite is a Webex from DiScribe website or from Webex website, parse email and use Webex API 
-             to get meeting metadata.*/
+            /*If invite is a Webex invite, ignore the event. We are only interested in Outlook invites */
             if (EmailListener.IsValidWebexInvitation(inviteEvent))
             {
-                meetingInfo = EmailListener.GetMeetingInfoFromWebexInvite(inviteEvent, meetingInfo.HostInfo);
+                return null;
             }
 
-            /*Otherwise, handle invite event as an Outlook invite. Here, a new meeting is created
+
+            /*Here, a new meeting is created
              * at the time requested in the event received. Metadata can be obtained from the event
              in this case.*/
             else
             {
+                MeetingInfo meetingInfo = new MeetingInfo
+                {
+                    HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                     appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"])
+                };
+
+
                 var something = inviteEvent.Start;
 
                 /*Get start and end time in UTC */
@@ -77,9 +80,38 @@ namespace DiScribe.Meeting
 
                 meetingInfo = CreateWebexMeeting(inviteEvent.Subject, attendeeNames, attendeeEmails,
                     meetingStart, meetingDurationStr, meetingInfo.HostInfo, inviteEvent.Organizer.EmailAddress);
+
+                return meetingInfo;
             }
 
-            return meetingInfo;
+            
+        }
+
+
+        /// <summary>
+        /// Handles a Webex invite email. Creates MeetingInfo object
+        /// containing metadata about this meeting.
+        /// </summary>
+        /// <param name="emailBody"></param>
+        /// <param name="appConfig"></param>
+        /// <returns></returns>
+        public static MeetingInfo HandleEmail(string emailBody, string emailSubject, string organizerEmail, IConfigurationRoot appConfig)
+        {
+
+            var hostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                     appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"]);
+
+
+            if (EmailListener.IsValidWebexInvitation(emailBody))
+            {
+               var meetingInfo =  EmailListener.GetMeetingInfoFromWebexInvite(emailBody, emailSubject, hostInfo);
+               meetingInfo.AttendeesEmails = MeetingController.GetAttendeeEmails(meetingInfo);
+            }
+
+
+            return null;
+             
+
         }
 
 
@@ -160,8 +192,6 @@ namespace DiScribe.Meeting
 
             
             /*Send an email to allow host or delegates to start the meeting */
-            
-            
             EmailSender.SendEmailForStartURL(meetingInfo, new EmailAddress(delegateEmail.Address, delegateEmail.Name));
 
             return meetingInfo;

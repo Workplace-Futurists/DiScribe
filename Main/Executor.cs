@@ -59,6 +59,7 @@ namespace DiScribe.Main
             }
         }
 
+
         /// <summary>
         /// Listens for graph events. Exceptions will bubble up to caller.
         /// </summary>
@@ -80,12 +81,14 @@ namespace DiScribe.Main
         /// Listens for a new WebEx invitation to the DiScribe bot email account.
         /// Logic:
         ///     -> Get most recent event
-        ///     -> If invite event is for Webex invite then
-        ///         - Parse email to get Webex access code
-        ///         - Call Webex API to get meeting info using access code and host info
         ///
-        ///    -> Else if invite is an Outlook meeting invite then
+        ///    -> If invite is an Outlook meeting invite then
         ///        - Call Webex API to create a meeting and use the returned meeting info
+        ///        
+        ///    -> Else ignore event then    
+        ///       -  Check bot inbox for any Webex invite emails
+        ///       - If Webex email is detected, parse email to get access code
+        ///       - Call webex API to get meeting metadata
         ///
         ///    -> Send emails to users with no registered voice profile
         ///    -> Send meeting to the organizer (delegated host) to allow them to start meeting
@@ -96,7 +99,7 @@ namespace DiScribe.Main
         private static async Task CheckForGraphEvents(IConfigurationRoot appConfig)
         {
 
-            MeetingInfo meetingInfo;
+            MeetingInfo meetingInfo = null;
             Microsoft.Graph.Event inviteEvent;
 
             try
@@ -105,15 +108,34 @@ namespace DiScribe.Main
                 If there are no events, nothing will be scheduled. */
                 inviteEvent = await EmailListener.GetEventAsync();
                 await EmailListener.DeleteEventAsync(inviteEvent);
+                 /*Handle the invite.
+                  Assign the returned meeting info about the scheduled meeting or
+                  null if this is not an Outlook invite*/
+                  meetingInfo = await MeetingController.HandleInvite(inviteEvent, appConfig);
             }
             catch (Exception ex)
             {
                 throw new Exception($"Could not get any MS Graph events. Reason: {ex.Message}");
             }
 
-            /*Handle the invite.
-              Assign the returned meeting info about the scheduled meeting */
-            meetingInfo = await MeetingController.HandleInvite(inviteEvent, appConfig);
+
+            try
+            {
+                /*If there are no graph events, check bot inbox for any webex invites from DiScribe web scheduling */
+                if (meetingInfo == null)
+                {
+                    var email = await EmailListener.GetEmailAsync();
+                    meetingInfo = MeetingController.HandleEmail(email.Body.ToString(), email.Subject, "", appConfig);
+                    await EmailListener.DeleteEmailAsync(email);
+                }
+            } catch (Exception emailEx)
+            {
+                Console.Error.WriteLine($"Could not read bot invite email. Reason: {emailEx.Message}");
+            }
+     
+
+
+
 
             Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
 
@@ -121,7 +143,6 @@ namespace DiScribe.Main
             MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);
 
             
-
             Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
             SchedulerController.Schedule(Run,
@@ -129,8 +150,10 @@ namespace DiScribe.Main
         }
 
         /// <summary>
-        /// Runs when DiScribe bot dials in to Webex meeting. Performs transcription and speaker
-        /// recognition, and emails meeting transcript to all participants.
+        /// Runs when DiScribe bot dials in to Webex meeting. Dials in to a Webex
+        /// meeting and Performs transcription and speaker
+        /// recognition. Then emails meeting transcript to all participants
+        /// and updates the meeting record in DiScribe DB.
         /// </summary>
         /// <param name="appConfig"></param>
         /// <returns></returns>
@@ -144,7 +167,7 @@ namespace DiScribe.Main
                 var recording = new RecordingController(appConfig).DownloadRecordingAsync(rid).Result;
 
                 /*Make controller for accessing registered user profiles in Azure Speaker Recognition endpoint */
-                var regController = RegistrationController.BuildController(appConfig["dbConnectionString"],
+                var regController = RegistrationController.BuildController(appConfig["DB_CONN_STR"],
                     EmailHelper.FromEmailAddressListToStringList(meetingInfo.AttendeesEmails), appConfig["SPEAKER_RECOGNITION_ID_KEY"]);
 
                 /*initializing the transcribe controller */
@@ -190,7 +213,7 @@ namespace DiScribe.Main
                 try
                 {
                     int max_size = 100;
-                    Console.WriteLine("Recordings in total exceeds"
+                    Console.WriteLine("Recordings in total exceeds "
                         + max_size + "Mb in size. Removing Oldest Recording\n["
                         + DeleteOldestRecordingIfLargerThan(max_size) + "]");
                 }
