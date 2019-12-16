@@ -171,9 +171,6 @@ namespace DiScribe.Email
             return IsValidWebexInvitation(inviteEvent.Body.Content);
         }
 
-
-
-
         public static bool IsValidWebexInvitation(string body)
         {
             bool webExExist = body.Contains("Webex", StringComparison.OrdinalIgnoreCase);
@@ -189,7 +186,6 @@ namespace DiScribe.Email
                 return false;
             }
         }
-
 
         /// <summary>
         /// Get the latest email for this user
@@ -229,8 +225,6 @@ namespace DiScribe.Email
 
             return messages[0];
         }
-
-
 
         //[ObsoleteAttribute("This method is deprecated and does not work in all cases.")]
         public static async Task<bool> DeleteEmailAsync(Message message)
@@ -297,8 +291,6 @@ namespace DiScribe.Email
                  && content.Contains("End Date Time: ", StringComparison.OrdinalIgnoreCase);
         }
 
-
-
         [ObsoleteAttribute("This method is obsolete and is no longer supported.")]
         public static Meeting.MeetingInfo GetMeetingInfoFromOutlookInvite(Message message)
         {
@@ -308,7 +300,6 @@ namespace DiScribe.Email
             var participants = new List<SendGrid.Helpers.Mail.EmailAddress>();
             DateTime startTime = new DateTime();
             DateTime endTime = new DateTime();
-
 
             /*Get the meeting subject and remove the property name for next property from this string*/
             var subjectRegex = new Regex("Subject:.+Participants:");
@@ -335,9 +326,6 @@ namespace DiScribe.Email
 
             var meeting = new DatabaseManager.Data.Meeting(0, subject, "",
                 startTime, endTime);
-
-
-
 
             return new Meeting.MeetingInfo(meeting, participants);
         }
@@ -403,15 +391,11 @@ namespace DiScribe.Email
 
             foreach (var curAttendee in inviteEvent.Attendees)
             {
-
                 names.Add(curAttendee.EmailAddress.Name);
-
             }
 
             return names;
         }
-
-
 
         /// <summary>
         /// Parses an html body email element to create a MeetingInfo object.
@@ -447,8 +431,6 @@ namespace DiScribe.Email
 
             return meetingInfo;
         }
-
-
 
         private static Meeting.MeetingInfo GetMeetingInfoFromWebexHTML(string htmlBody, string subject)
         {
@@ -523,9 +505,10 @@ namespace DiScribe.Email
                     }
                     else if (text.Contains("GMT"))
                     {
-                        timezone = text.Substring(
-                            text.IndexOf("GMT", StringComparison.Ordinal),
-                            text.IndexOf(")", StringComparison.Ordinal))
+                        var start_index = text.IndexOf("GMT", StringComparison.Ordinal);
+                        var end_index = text.IndexOf(")", StringComparison.Ordinal);
+                        timezone = text[
+                            start_index..end_index]
                             .Replace("GMT", "");
                     }
 
