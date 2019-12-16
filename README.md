@@ -1,5 +1,8 @@
 # CPSC 319 2019W1 HSBC Project **DiScribe**
 
+## Our Website link
+https://discribe-cs319.azurewebsites.net
+
 ## Introduction
 This is the code repository for a proof of concept project sponsored by HSBC Canada.
 
@@ -13,7 +16,7 @@ The bot could not only correctly transcribes the content of speech but also coul
 * [x]	 <span style="color:red">*(stretch goal)*</span> Able to save meeting informations into the Database
 * [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to **manage** meeting recordings and their corresponding transcription results
 * [ ]    <span style="color:red">*(stretch goal)*</span> Allows users to update voice print samples, their email addresses (or add alternative ones)
-* [x]	 <span style="color:red">*(stretch goal)*</span> Warns users when audio input for voice registration isn't length sufficient 
+* [x]	 <span style="color:red">*(stretch goal)*</span> Warns users when audio input for voice registration isn't length sufficient
                                                       (We implemented with a count-down and a display of the length of audio recorded)
 
 ### Scheduling Component
