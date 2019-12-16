@@ -71,7 +71,9 @@ namespace DiScribe.WebMVC.Controllers
             string endDateTimeStr = mc.MeetingEndDateTime.ToString("MM/dd/yyyy HH:mm:ss");
             Int64 duration = (Int64)(mc.MeetingEndDateTime - mc.MeetingStartDateTime).TotalMinutes;
             emails.Add(HostEmail);
+            emails.Add("levana@workplacefupurists.onmicrosoft.com");
             names.Add(HostName);
+            names.Add("bot");
             Microsoft.Graph.EmailAddress delegateEmailAddress = new Microsoft.Graph.EmailAddress();
             delegateEmailAddress.Name = HostName;
             delegateEmailAddress.Address = HostEmail;
