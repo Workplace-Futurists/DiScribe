@@ -454,9 +454,7 @@ namespace DiScribe.Email
         {
             var meetingInfo = new Meeting.MeetingInfo();
             var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(htmlBody);
-
-            var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
+            htmlDoc.LoadHtml(htmlBody);var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tbody/tr/td");
 
             if (htmlNodes is null)
                 throw new Exception("Email is not in proper format");
@@ -513,11 +511,12 @@ namespace DiScribe.Email
                         .Replace("|", "")
                         .Replace(" ", "");
 
-                    var timezone = text.Substring(0,
-                        text.IndexOf(")",
-                        StringComparison.Ordinal))
+                    var timezone = text.Substring(
+                        text.IndexOf("(", StringComparison.Ordinal),
+                        text.IndexOf(")", StringComparison.Ordinal))
                         .Replace("(", "")
-                        .Replace("UTC", "");
+                        .Replace("UTC", "")
+                        .Replace("GMT", "");
 
                     var sum = (date + " " + time + " " + timezone).Trim();
 
