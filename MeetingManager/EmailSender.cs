@@ -15,7 +15,7 @@ namespace DiScribe.Email
         private static EmailAddress OfficialEmail;
         private static string RegUrl;
 
-        private static readonly SendGridClient sendGridClient = Initialize();
+        private static SendGridClient sendGridClient;
 
         static IConfigurationRoot LoadAppSettings()
         {
@@ -40,7 +40,7 @@ namespace DiScribe.Email
             return appConfig;
         }
 
-        private static SendGridClient Initialize()
+        public static void Initialize(string BOT_Mail_Sender)
         {
             //var appConfig = LoadAppSettings();
 
@@ -51,14 +51,13 @@ namespace DiScribe.Email
             //}
 
             //string sendGridAPI = appConfig["SENDGRID_API_KEY"];
-            //OfficialEmail = new EmailAddress(appConfig["BOT_MAIL_ACCOUNT"], "DiScribe Bot");
+            OfficialEmail = new EmailAddress(BOT_Mail_Sender, "DiScribe Bot");
             //RegUrl = appConfig["DEFAULT_REG_URL"];
 
             string sendGridAPI = "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";
-            OfficialEmail = new EmailAddress("discribe_sender@outlook.com", "DiScribe Bot");
             RegUrl = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
 
-            return new SendGridClient(sendGridAPI);
+            sendGridClient = new SendGridClient(sendGridAPI);
         }
 
         public static void SendEmail(EmailAddress recipient, string subject, string htmlContent, FileInfo file = null)
