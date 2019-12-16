@@ -22,7 +22,7 @@ namespace DiScribe.Meeting
         }
 
 
-        public MeetingInfo(DatabaseManager.Data.Meeting meeting, List<EmailAddress> attendeesEmails, 
+        public MeetingInfo(DatabaseManager.Data.Meeting meeting, List<EmailAddress> attendeesEmails,
             string password = "", WebexHostInfo hostInfo = null)
 
         {
@@ -53,8 +53,7 @@ namespace DiScribe.Meeting
         /// <returns></returns>
         public bool MissingAccessInfo()
         {
-            return AccessCode == ""
-                || StartTime.Equals(new DateTime());
+            return AccessCode == "" || StartTime == default;
         }
 
 

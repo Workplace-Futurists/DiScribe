@@ -55,15 +55,19 @@ namespace DiScribe.Meeting
                 var something = inviteEvent.Start;
 
                 /*Get start and end time in UTC */
-                DateTime meetingStartUTC = DateTime.Parse(inviteEvent.Start.DateTime);
-                DateTime meetingEndUTC = DateTime.Parse(inviteEvent.End.DateTime);
+                DateTime meetingStartOrigin = DateTime.Parse(inviteEvent.Start.DateTime);
+                DateTime meetingEndOrigin = DateTime.Parse(inviteEvent.End.DateTime);
+                var originTimeZone = inviteEvent.Start.TimeZone;
 
-                /*Convert UTC start and end times to bot local system time */
-                DateTime meetingStart = TimeZoneInfo.ConvertTimeFromUtc(meetingStartUTC, TimeZoneInfo.Local);
-                DateTime meetingEnd = TimeZoneInfo.ConvertTimeFromUtc(meetingEndUTC, TimeZoneInfo.Local);
-
-                var meetingDuration = meetingEnd.Subtract(meetingStart);
+                /*Calculate meeting duration */
+                var meetingDuration = meetingEndOrigin.Subtract(meetingStartOrigin);
                 string meetingDurationStr = meetingDuration.TotalMinutes.ToString();
+
+                /*Convert start and end times to the DiScribe bot's local system time */
+                DateTime webexStartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(meetingStartOrigin, originTimeZone, appConfig["HOST_TIMEZONE"]);
+               
+                               
+                
 
                 var attendeeNames = EmailListener.GetAttendeeNames(inviteEvent);
                 var attendeeEmails = EmailListener.GetAttendeeEmails(inviteEvent).Distinct().ToList();
@@ -77,9 +81,10 @@ namespace DiScribe.Meeting
                         break;
                     }
                 }
-
+                
+                
                 meetingInfo = CreateWebexMeeting(inviteEvent.Subject, attendeeNames, attendeeEmails,
-                    meetingStart, meetingDurationStr, meetingInfo.HostInfo, inviteEvent.Organizer.EmailAddress);
+                    webexStartTime, meetingDurationStr, meetingInfo.HostInfo, inviteEvent.Organizer.EmailAddress);
 
                 return meetingInfo;
             }

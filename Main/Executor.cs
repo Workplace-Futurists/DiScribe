@@ -123,7 +123,7 @@ namespace DiScribe.Main
             catch (Exception ex)
             {
                 //throw new Exception($"Could not get any MS Graph events. Reason: {ex.Message}");
-                Console.WriteLine($"Could not get any MS Graph events. Reason: {ex.Message}");
+                Console.WriteLine($">\tCould not get any MS Graph events. Reason: {ex.Message}");
                 return null;
             }
 
@@ -161,7 +161,7 @@ namespace DiScribe.Main
             }
             catch (Exception emailEx)
             {
-                Console.Error.WriteLine($"Could not read bot invite email. Reason: {emailEx.Message}");
+                Console.Error.WriteLine($">\tCould not read bot invite email. Reason: {emailEx.Message}");
                 return null;
             }
 
@@ -182,6 +182,8 @@ namespace DiScribe.Main
 
             return meetingInfo;
         }
+
+
 
         /// <summary>
         /// Runs when DiScribe bot dials in to Webex meeting. Dials in to a Webex
