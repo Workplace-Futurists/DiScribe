@@ -477,10 +477,10 @@ namespace DiScribe.Email
                 var node = htmlNodes[i];
                 string text = node.InnerText.Trim();
 
-                if (text.Contains("Meeting number (access code): ")
+                if (text.Contains("Meeting number (access code):")
                     && text.Length < 50)
                     meetingInfo.AccessCode = text.Replace(
-                        "Meeting number (access code): ", "")
+                        "Meeting number (access code):", "")
                         .Trim().Replace(" ", "");
 
                 else if (text.Contains("Meeting password: ")

@@ -31,13 +31,13 @@ namespace DiScribe.WebMVC.Controllers
         {
             if (earliestDate == DateTime.MinValue)
             {
-                earliestDate = DateTime.Today.AddDays(-30);
+                earliestDate = DateTime.Today.AddDays(-10);
             }
             if (latestDate == DateTime.MinValue)
             {
-                latestDate = DateTime.Today.AddDays(30);
+                latestDate = DateTime.Today.AddDays(10);
             }
-            if (!String.IsNullOrEmpty(subject.Trim()) && (subject!= "Search Subject..."))
+            if ((!String.IsNullOrEmpty(subject)) && (!String.IsNullOrWhiteSpace(subject)))
             {
                 ViewBag.Subject = subject;
                 ViewBag.EarliestDate = earliestDate.ToString("yyyy-MM-dd");
@@ -46,7 +46,7 @@ namespace DiScribe.WebMVC.Controllers
             }
             else
             {
-                ViewBag.Subject = subject;
+                ViewBag.Subject = "";
                 ViewBag.EarliestDate = earliestDate.ToString("yyyy-MM-dd");
                 ViewBag.LatestDate = latestDate.ToString("yyyy-MM-dd");
                 return View(_amc.Meetings.Where(x => x.MeetingStartDateTime.Date >= earliestDate.Date && x.MeetingStartDateTime.Date <= latestDate.Date).ToList());

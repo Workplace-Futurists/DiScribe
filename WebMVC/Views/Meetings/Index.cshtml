@@ -9,7 +9,7 @@
     @using (Html.BeginForm("Index", "Meetings", FormMethod.Get))
     {
         <b>Search:</b>
-    <p>Note if you don't specify a subject, we will show all subjects. If you don't specify earliest start date, we will set the earliest start date to be 30 days before today. If you donnot specify latest start date, we will set the latest start date to be 30 days after today.</p>
+    <p>Note if you don't specify a subject, we will show all subjects. If you don't specify earliest start date, we will set the earliest start date to be 10 days before today. If you donnot specify latest start date, we will set the latest start date to be 10 days after today.</p>
     <label class="control-label">Meeting Subject</label>
     <input type="text" id="subject" name="subject" value="@(ViewBag.Subject)" />
     <label class="control-label">Earliest Start Date</label>
