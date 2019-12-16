@@ -106,8 +106,10 @@ namespace DiScribe.Meeting
 
             if (EmailListener.IsValidWebexInvitation(emailBody))
             {
-               var meetingInfo =  EmailListener.GetMeetingInfoFromWebexInvite(emailBody, emailSubject, hostInfo);
-               meetingInfo.AttendeesEmails = MeetingController.GetAttendeeEmails(meetingInfo);
+                var meetingInfo =  EmailListener.GetMeetingInfoFromWebexInvite(emailBody, emailSubject, hostInfo);
+                meetingInfo.AttendeesEmails = MeetingController.GetAttendeeEmails(meetingInfo);
+
+                return meetingInfo;
             }
 
 

@@ -150,14 +150,12 @@ namespace DiScribe.Main
 
 
             try
-            {
-                /*If there are no graph events, check bot inbox for any webex invites from DiScribe web scheduling */
-                //if (meetingInfo == null)
-                //{
+            {          
+              
                     var email = await EmailListener.GetEmailAsync();
                     meetingInfo = MeetingController.HandleEmail(email.Body.Content.ToString(), email.Subject, "", appConfig);
                     await EmailListener.DeleteEmailAsync(email);
-                //}
+                
             }
             catch (Exception emailEx)
             {
