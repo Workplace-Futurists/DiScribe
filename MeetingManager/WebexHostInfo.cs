@@ -12,12 +12,13 @@ namespace DiScribe
 
         }
 
-        public WebexHostInfo(string email, string password, string id, string company)
+        public WebexHostInfo(string email, string password, string id, string company, string timeZone = "")
         {
             Email = email;
             Password = password;
             ID = id;
             Company = company;
+            TimeZone = timeZone;
         }
 
         public string Email {get; private set;}
@@ -27,5 +28,7 @@ namespace DiScribe
         public string ID { get; private set; }
 
         public string Company { get; private set; }
+
+        public String TimeZone { get; private set; }
     }
 }

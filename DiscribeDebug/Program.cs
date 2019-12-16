@@ -17,10 +17,22 @@ namespace DiScribe.DiScribeDebug
     {
         static void Main(string[] args)
         {
+
+            //Execute().Wait();
+
+            DatabaseController.Initialize();
+
+            WebexHostInfo hostInfo = new WebexHostInfo("kengqiangmk@gmail.com", "Cs319_APP", "kengqiangmk", "companykm.my", "Pacific Standard Time");
+
+            var msEmail = new Microsoft.Graph.EmailAddress();
+            msEmail.Address = "oloff8@hotmail.com";
+            msEmail.Name = "oloff";
+
+            var meeting = MeetingController.CreateWebexMeeting("something",
+                new List<string> { "someone" }, new List<string> { "oloff8@hotmail.com" }, DateTime.Now, "30", hostInfo, msEmail);
+
+            Console.WriteLine(meeting.StartTime.ToString());
             
-            Execute().Wait();
-            
-
             
 
 
@@ -28,24 +40,6 @@ namespace DiScribe.DiScribeDebug
 
 
 
-
-
-            //var meeting = new DatabaseManager.Data.Meeting(0, "somesubject", "minutessdsadasd", DateTime.Now, DateTime.Now.AddMinutes(30), "", "");
-
-            //var testEmails = new List<SendGrid.Helpers.Mail.EmailAddress>() { new SendGrid.Helpers.Mail.EmailAddress("oloff8@hotmail.com") };
-
-            //var meetingInfo = new MeetingInfo(meeting, testEmails, "", null);
-
-
-
-
-            //EmailSender.SendMinutes(meetingInfo, new FileInfo("test.txt"));
-
-            //Console.WriteLine("testing send...");
-
-            //var email = new SendGrid.Helpers.Mail.EmailAddress("oloff8@hotmail.com");
-
-            //EmailSender.SendEmail(email, "something", "hiii", null);
 
 
 
