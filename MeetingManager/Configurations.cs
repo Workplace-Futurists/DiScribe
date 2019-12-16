@@ -34,13 +34,13 @@ namespace DiScribe.Meeting
             if (string.IsNullOrEmpty(appConfig["appId"])
                 || string.IsNullOrEmpty(appConfig["tenantId"])
                 || string.IsNullOrEmpty(appConfig["clientSecret"])
-                || string.IsNullOrEmpty(appConfig["mailUser"])
-                || string.IsNullOrEmpty(appConfig["mailPass"])
+                || string.IsNullOrEmpty(appConfig["BOT_Inbox"])
+                || string.IsNullOrEmpty(appConfig["BOT_Inbox_Password"])
                 || string.IsNullOrEmpty(appConfig["scopes:0"]) // Make sure there's at least one value in the scopes array
                 || string.IsNullOrEmpty(appConfig["TWILIO_ACCOUNT_SID"])
                 || string.IsNullOrEmpty(appConfig["TWILIO_AUTH_TOKEN"])
                 || string.IsNullOrEmpty(appConfig["SENDGRID_API_KEY"])
-                || string.IsNullOrEmpty(appConfig["BOT_MAIL_ACCOUNT"]))
+                || string.IsNullOrEmpty(appConfig["BOT_Mail_Sender"]))
             {
                 throw new Exception("Warning: one or more the required app settings are missing from appsettings.json");
             }

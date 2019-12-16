@@ -27,10 +27,12 @@ namespace DiScribe.Main
                 appConfig["appId"], //
                 appConfig["tenantId"],
                 appConfig["clientSecret"],
-                appConfig["mailUser"] // bot's email account
+                appConfig["BOT_Inbox"] // bot's email account
                 ).Wait();
 
-            MeetingController.BOT_EMAIL = appConfig["mailUser"];
+            EmailSender.Initialize(appConfig["BOT_Mail_Sender"]);
+
+            MeetingController.BOT_EMAIL = appConfig["BOT_Inbox"];
 
             int graphApiDelayInterval = int.Parse(appConfig["graphApiDelayInterval"]);
 

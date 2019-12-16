@@ -55,9 +55,6 @@ namespace DiScribe.Meeting
             strXML += "<duration>";
             strXML += duration;
             strXML += "</duration>\r\n";
-            strXML += "<timeZoneID>";
-            strXML += "-1";
-            strXML += "</timeZoneID>\r\n";
             strXML += "</schedule>\r\n";
             strXML += "<telephony>\r\n";
             strXML += "<telephonySupport>CALLIN</telephonySupport>\r\n";

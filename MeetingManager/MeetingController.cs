@@ -71,7 +71,7 @@ namespace DiScribe.Meeting
                 /*Remove the bot email, as the bot must not receive another event. */
                 foreach (var curEmail in attendeeEmails)
                 {
-                    if (curEmail.Equals(appConfig["mailUser"], StringComparison.OrdinalIgnoreCase))
+                    if (curEmail.Equals(appConfig["BOT_Inbox"], StringComparison.OrdinalIgnoreCase))
                     {
                         attendeeEmails.Remove(curEmail);
                         break;
@@ -184,7 +184,7 @@ namespace DiScribe.Meeting
 
             
             var endTime = startTime.AddMinutes(double.Parse(duration));
-            var sendGridEmails = EmailListener.parseEmailList(emails);
+            var sendGridEmails = EmailListener.ParseEmailList(emails);
 
             /*Store meeting record in database for the created meeting */            
             var meeting = DatabaseController.CreateMeeting(emails, startTime, endTime, accessCode, meetingSubject);

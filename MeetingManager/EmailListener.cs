@@ -320,7 +320,7 @@ namespace DiScribe.Email
             emailsString = emailsString.Replace("Participants:", "").Replace("Start Date Time:", "");
 
             /*Convert email string to a list of SendGrid.Helpers.Mail.EmailAddress object */
-            participants = parseOutlookEmailsString(emailsString);
+            participants = ParseOutlookEmailsString(emailsString);
 
             /*Attempt to get start time */
             var startTimeRegex = new Regex("Start Date Time:+.End Date Time:");
@@ -343,11 +343,11 @@ namespace DiScribe.Email
         }
 
         /// <summary>
-        /// Converts a string list of email address to a list of SendGrid.Helpers.Mail.EmailAddress objects. 
+        /// Converts a string list of email address to a list of SendGrid.Helpers.Mail.EmailAddress objects.
         /// </summary>
         /// <param name="emailList"></param>
         /// <returns></returns>
-        public static List<SendGrid.Helpers.Mail.EmailAddress> parseOutlookEmailsString(string emailListStr)
+        public static List<SendGrid.Helpers.Mail.EmailAddress> ParseOutlookEmailsString(string emailListStr)
         {
             var emails = emailListStr.Trim().Split(",");
             var sendGridEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
@@ -366,7 +366,7 @@ namespace DiScribe.Email
         /// </summary>
         /// <param name="emailList"></param>
         /// <returns></returns>
-        public static List<SendGrid.Helpers.Mail.EmailAddress> parseEmailList(List<string> emailList)
+        public static List<SendGrid.Helpers.Mail.EmailAddress> ParseEmailList(List<string> emailList)
         {
             var sendGridEmails = new List<SendGrid.Helpers.Mail.EmailAddress>();
 
@@ -388,7 +388,7 @@ namespace DiScribe.Email
         {
             var emails = new List<string>();
 
-            foreach(var curAttendee in inviteEvent.Attendees)
+            foreach (var curAttendee in inviteEvent.Attendees)
             {
                 emails.Add(curAttendee.EmailAddress.Address);
 
@@ -409,7 +409,7 @@ namespace DiScribe.Email
             }
 
             return names;
-        }   
+        }
 
 
 
@@ -434,10 +434,10 @@ namespace DiScribe.Email
             meetingInfo.HostInfo = hostInfo;
 
             /*Add all other meeting attendees to meetingInfo*/
-             meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
+            meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
 
             /* Add the host  as well */
-            meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(hostInfo.Email));          
+            meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(hostInfo.Email));
             meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
 
             foreach (var attendee in meetingInfo.AttendeesEmails)
