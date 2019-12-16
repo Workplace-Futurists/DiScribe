@@ -30,7 +30,7 @@ namespace DiScribe.Main
                 appConfig["BOT_Inbox"] // bot's email account
                 ).Wait();
 
-            EmailSender.Initialize(appConfig["BOT_Mail_Sender"]);
+            
 
             MeetingController.BOT_EMAIL = appConfig["BOT_Inbox"];
 
@@ -130,7 +130,7 @@ namespace DiScribe.Main
             if (meetingInfo != null)
             {
 
-                Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime.ToLocalTime()}");
+                Console.WriteLine($">\tNew Meeting Found at: {meetingInfo.StartTime}");
 
                 /*Send an audio registration email enabling all unregistered users to enroll on DiScribe website */
                 MeetingController.SendEmailsToAnyUnregisteredUsers(meetingInfo.AttendeesEmails, appConfig["DB_CONN_STR"]);

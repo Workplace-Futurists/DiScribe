@@ -15,7 +15,7 @@ namespace DiScribe.Email
         private static EmailAddress OfficialEmail;
         private static string RegUrl;
 
-        private static SendGridClient sendGridClient;
+        private static SendGridClient sendGridClient = Initialize();
 
         static IConfigurationRoot LoadAppSettings()
         {
@@ -40,33 +40,37 @@ namespace DiScribe.Email
             return appConfig;
         }
 
-        public static void Initialize(string BOT_Mail_Sender)
+        private static SendGridClient Initialize()
         {
-            //var appConfig = LoadAppSettings();
-
-            //if (appConfig == null)
-            //{
-            //    Console.WriteLine(">\tMissing or invalid appsettings.json!");
-            //    return null;
-            //}
-
-            //string sendGridAPI = appConfig["SENDGRID_API_KEY"];
-            OfficialEmail = new EmailAddress(BOT_Mail_Sender, "DiScribe Bot");
-            //RegUrl = appConfig["DEFAULT_REG_URL"];
-
+            
             string sendGridAPI = "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";
-            RegUrl = "https://discribe-cs319.westus.cloudapp.azure.com/regaudio/Users/Create/";
+            OfficialEmail = new EmailAddress("discribe_sender@outlook.com", "DiScribe Bot");
+            RegUrl = "https://discribe-cs319.azurewebsites.net/regaudio/Users/Create/";
 
-            sendGridClient = new SendGridClient(sendGridAPI);
+            return new SendGridClient(sendGridAPI);
         }
 
+
+        /// <summary>
+        /// Sends an email to a single recipient with the specified subject, html content and (optional) attachment.
+        /// </summary>
+        /// <param name="recipient"></param>
+        /// <param name="subject"></param>
+        /// <param name="htmlContent"></param>
+        /// <param name="file"></param>
         public static void SendEmail(EmailAddress recipient, string subject, string htmlContent, FileInfo file = null)
         {
             SendEmailHelper(OfficialEmail, new List<EmailAddress> { recipient }, subject, htmlContent, file).Wait();
         }
 
 
-
+        /// <summary>
+        /// Sends an email to a list of recipients with the specified subject, html content, and (optional) attachment
+        /// </summary>
+        /// <param name="recipients"></param>
+        /// <param name="subject"></param>
+        /// <param name="htmlContent"></param>
+        /// <param name="file"></param>
         public static void SendEmail(List<EmailAddress> recipients, string subject, string htmlContent, FileInfo file = null)
         {
             if (recipients.Count > 0)
@@ -76,6 +80,13 @@ namespace DiScribe.Email
         }
 
 
+        /// <summary>
+        /// Sends an email with the specified meeting info, subject, (optional) html content and (optional) attachement
+        /// </summary>
+        /// <param name="meetingInfo"></param>
+        /// <param name="subject"></param>
+        /// <param name="htmlContent"></param>
+        /// <param name="file"></param>
         public static void SendEmail(MeetingInfo meetingInfo, string subject, string htmlContent = "", FileInfo file = null)
         {
             if (htmlContent.Equals(""))
@@ -84,6 +95,11 @@ namespace DiScribe.Email
         }
 
 
+        /// <summary>
+        /// Sends a meeting minutes file to all attendees.
+        /// </summary>
+        /// <param name="meetingInfo"></param>
+        /// <param name="file"></param>
         public static void SendMinutes(MeetingInfo meetingInfo, FileInfo file)
         {
             Console.WriteLine(">\tSending the Transcription Results to users...");
@@ -98,6 +114,11 @@ namespace DiScribe.Email
             SendEmail(meetingInfo.AttendeesEmails, subject, htmlContent, file);
         }
 
+
+        /// <summary>
+        /// Sends an email for voice profile registration to a list of users
+        /// </summary>
+        /// <param name="emails"></param>
         public static void SendEmailForVoiceRegistration(List<EmailAddress> emails)
         {
             Console.WriteLine(">\tSending Emails to Unregistered Users...");
@@ -144,7 +165,19 @@ namespace DiScribe.Email
 
 
 
-
+        /// <summary>
+        /// Makes a call to the Sendgrid API in order to send an email with the specified recipient(s),
+        /// subject, html content, and attachement. If the attachment is null, it is ignored.
+        /// Otherwise a check if performed to ensure that the file exists, and it is attached if it exists.
+        /// Otherwise method returns without sending.
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="recipients"></param>
+        /// <param name="subject"></param>
+        /// <param name="htmlContent"></param>
+        /// <param name="file"></param>
+        /// <returns>Task representing this request to Sendgrid API</returns>
         private static async Task SendEmailHelper(EmailAddress from, List<EmailAddress> recipients,
             string subject, string htmlContent, FileInfo file)
         {

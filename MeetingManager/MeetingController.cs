@@ -32,7 +32,6 @@ namespace DiScribe.Meeting
         public static async Task<Meeting.MeetingInfo> HandleInvite(Microsoft.Graph.Event inviteEvent, IConfigurationRoot appConfig)
         {
             
-
             /*If invite is a Webex invite, ignore the event. We are only interested in Outlook invites */
             if (EmailListener.IsValidWebexInvitation(inviteEvent))
             {
@@ -47,14 +46,13 @@ namespace DiScribe.Meeting
             {
                 MeetingInfo meetingInfo = new MeetingInfo
                 {
-                    HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
-                     appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"])
+                     HostInfo = new WebexHostInfo(appConfig["WEBEX_EMAIL"],
+                     appConfig["WEBEX_PW"], appConfig["WEBEX_ID"], appConfig["WEBEX_COMPANY"], appConfig["HOST_TIMEZONE"])
                 };
 
 
-                var something = inviteEvent.Start;
 
-                /*Get start and end time in UTC */
+                /*Get start and end time in original time zone from the Graph event */
                 DateTime meetingStartOrigin = DateTime.Parse(inviteEvent.Start.DateTime);
                 DateTime meetingEndOrigin = DateTime.Parse(inviteEvent.End.DateTime);
                 var originTimeZone = inviteEvent.Start.TimeZone;
@@ -63,11 +61,10 @@ namespace DiScribe.Meeting
                 var meetingDuration = meetingEndOrigin.Subtract(meetingStartOrigin);
                 string meetingDurationStr = meetingDuration.TotalMinutes.ToString();
 
-                /*Convert start and end times to the DiScribe bot's local system time */
+                /*Convert start time to the WebEx host's time zone */
                 DateTime webexStartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(meetingStartOrigin, originTimeZone, appConfig["HOST_TIMEZONE"]);
                
-                               
-                
+                             
 
                 var attendeeNames = EmailListener.GetAttendeeNames(inviteEvent);
                 var attendeeEmails = EmailListener.GetAttendeeEmails(inviteEvent).Distinct().ToList();
@@ -189,10 +186,15 @@ namespace DiScribe.Meeting
 
             
             var endTime = startTime.AddMinutes(double.Parse(duration));
+
+            /*Convert start time and end time to the DiScribe bot time zone from the Webex host's time zone */
+            var botStartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(startTime, hostInfo.TimeZone, TimeZoneInfo.Local.Id);
+            var botEndTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(endTime, hostInfo.TimeZone, TimeZoneInfo.Local.Id);
+
             var sendGridEmails = EmailListener.ParseEmailList(emails);
 
             /*Store meeting record in database for the created meeting */            
-            var meeting = DatabaseController.CreateMeeting(emails, startTime, endTime, accessCode, meetingSubject);
+            var meeting = DatabaseController.CreateMeeting(emails, botStartTime, botEndTime, accessCode, meetingSubject);
             MeetingInfo meetingInfo = new MeetingInfo(meeting, sendGridEmails, "", hostInfo);
 
             
