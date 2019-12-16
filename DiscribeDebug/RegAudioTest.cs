@@ -17,7 +17,7 @@ namespace DiScribe.DiScribeDebug
             WaveFormat format = new WaveFormat(16000, 16, 1);
             using (WaveFileWriter writer = new WaveFileWriter("test.wav", format))
             {
-                DatabaseController.Initialize("Server = tcp:dbcs319discribe.database.windows.net, 1433; Initial Catalog = db_cs319_discribe; Persist Security Info = False; User ID = obiermann; Password = JKm3rQ~t9sBiemann; MultipleActiveResultSets = True; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30");
+                DatabaseController.Initialize("Server = tcp:dbcs319discribe2.database.windows.net, 1433; Initial Catalog = db_cs319_discribe; Persist Security Info = False; User ID = obiermann; Password = JKm3rQ~t9sBiemann; MultipleActiveResultSets = True; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30");
                 user = DatabaseManager.DatabaseController.LoadUser(userEmail);
 
                 if (user == null)

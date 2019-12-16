@@ -16,7 +16,7 @@ namespace DiScribe.DatabaseManager
         private static SqlConnection DBConnection = null;
         private static Boolean initialized = false;
 
-        public static void Initialize(string connectionStr = "Server=tcp:dbcs319discribe.database.windows.net, 1433; " +
+        public static void Initialize(string connectionStr = "Server=tcp:dbcs319discribe2.database.windows.net, 1433; " +
             "Initial Catalog=db_cs319_discribe; " +
             "Persist Security Info=False;" +
             "User ID=obiermann; " +

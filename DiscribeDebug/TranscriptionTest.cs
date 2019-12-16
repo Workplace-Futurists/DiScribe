@@ -32,7 +32,7 @@ namespace DiScribe.DiScribeDebug
 
             string userEmail = "kengqiangmk@yahoo.ca";
 
-            var regCon = RegistrationController.BuildController("Server=tcp:dbcs319discribe.database.windows.net, 1433; Initial Catalog=db_cs319_discribe; Persist Security Info=False;User ID=obiermann; Password=JKm3rQ~t9sBiemann; MultipleActiveResultSets=True; Encrypt=True;TrustServerCertificate=False; Connection Timeout=30", 
+            var regCon = RegistrationController.BuildController("Server=tcp:dbcs319discribe2.database.windows.net, 1433; Initial Catalog=db_cs319_discribe; Persist Security Info=False;User ID=obiermann; Password=JKm3rQ~t9sBiemann; MultipleActiveResultSets=True; Encrypt=True;TrustServerCertificate=False; Connection Timeout=30", 
                 new List<string>() { userEmail });
 
             var speechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
