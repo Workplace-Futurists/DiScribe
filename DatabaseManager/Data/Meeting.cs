@@ -4,6 +4,12 @@ using System.Text;
 
 namespace DiScribe.DatabaseManager.Data
 {
+
+    /// <summary>
+    /// Represents a Webex Meeting. Contains properties for meeting PK in DB, subject,
+    ///  start time, end time, meeting minutes output, meeting minutes file location,
+    ///  and the associated webex ID.
+    /// </summary>
     public class Meeting : DataElement
     {
         public Meeting()

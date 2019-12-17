@@ -18,20 +18,7 @@ namespace DiScribe.DiScribeDebug
         static void Main(string[] args)
         {
 
-            //Execute().Wait();
-
-            DatabaseController.Initialize();
-
-            WebexHostInfo hostInfo = new WebexHostInfo("kengqiangmk@gmail.com", "Cs319_APP", "kengqiangmk", "companykm.my", "Pacific Standard Time");
-
-            var msEmail = new Microsoft.Graph.EmailAddress();
-            msEmail.Address = "oloff8@hotmail.com";
-            msEmail.Name = "oloff";
-
-            var meeting = MeetingController.CreateWebexMeeting("something",
-                new List<string> { "someone" }, new List<string> { "oloff8@hotmail.com" }, DateTime.Now, "30", hostInfo, msEmail);
-
-            Console.WriteLine(meeting.StartTime.ToString());
+            TrancriptionTest.TestTranscription("MultipleSpeakers.wav");
             
             
 

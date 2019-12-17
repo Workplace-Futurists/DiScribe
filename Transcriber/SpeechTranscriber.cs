@@ -15,12 +15,10 @@ using DiScribe.AudioHandling;
 namespace DiScribe.Transcriber
 {
     /// <summary>
-    /// Provides transcription of a set of an AudioSegment representing meeting audio to create a formatted text file
-    /// of meeting minutes.
-    /// Also supports speaker recognition to output names of meeting participants in meeting minutes.
-    /// <para>See <see cref="Audio.AudioSegment"></see> documentation for more info on AudioSegment.</para>
-    /// <para>Uses the Microsoft Azure Cognitive Services Speech SDK to perform transcription of audio streams
-    /// within each AudioSegment. </para>
+    /// Provides transcription of meeting audio to produce a set of transcription outputs.
+    /// 
+    ///
+    /// <para>Uses the Microsoft Azure Cognitive Services Speech SDK to perform transcription. </para>
     /// </summary>
     class SpeechTranscriber
     {
@@ -43,15 +41,15 @@ namespace DiScribe.Transcriber
         /// </summary>
         private static readonly object _lockObj = new object();
 
+
+
         /// <summary>
-        /// The transcript contains speaker names,
+        /// Creates TranscriptionOutputs a set of TranscriptionOutput objects
+        /// containing speaker names,
         /// timestamps, and the contents of what each speaker said.
         ///
-        /// <para> The transcription follows the the correct order, so that
-        /// the beginning of the meeting is at the start of the file, and the last
-        /// speech around the end of the meeting is at the end of the file.</para>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>SortedList of TranscriptionOutput objects sorted by start offset</returns>
         public async Task DoTranscription()
         {
             /*Transcribe audio to create a set of TransciptionOutputs to represent sentences.
@@ -68,16 +66,18 @@ namespace DiScribe.Transcriber
 
         /// <summary>
         /// Creates a set of TranscriptionOutput objects which contain transcribed sentences
-        /// from MeetingAudio. Also performs speaker recognition using the audio
-        /// within each TranscriptionOutput.
+        /// from MeetingAudio. 
         /// </summary>
         /// <returns>Task for transcription flow</returns>
         private async Task GetTranscriptionOutputs()
         {
             Console.WriteLine(">\tBegin Transcription...");
-            /*Divide audio into sentences which are stored in transcriptOutputs as TranscriptionOutput objects */
+
+            /*Divide audio into sentences which are stored in TranscriptOutputs as TranscriptionOutput objects */
             await RecognitionWithPullAudioStreamAsync();
         }
+
+
 
         private async Task RecognitionWithPullAudioStreamAsync()
         {
@@ -154,7 +154,6 @@ namespace DiScribe.Transcriber
                 stopRecognition.TrySetResult(0);
             };
 
-            //Console.WriteLine(">\tPerforming Initial Transcription Process...");
             // Starts continuous recognition. Uses StopContinuousRecognitionAsync() to stop recognition.
             await speech_recogniser.StartContinuousRecognitionAsync().ConfigureAwait(false);
 
@@ -162,8 +161,7 @@ namespace DiScribe.Transcriber
             // Use Task.WaitAny to keep the task rooted.
             Task.WaitAny(new[] { stopRecognition.Task });
 
-            //Console.WriteLine(">\tTranscription Process About to Stop...");
-
+            
             // Stops recognition.
             await speech_recogniser.StopContinuousRecognitionAsync().ConfigureAwait(false);
         }

@@ -59,11 +59,13 @@ namespace DiScribe.Transcriber
 
         public string Transcription { get; private set; }
 
+
         /// <summary>
         /// Uses Voiceprints to perform speaker recognition while transcribing the audio file MeetingRecording.
         /// Creates a formatted text output file holding the transcription.
+        /// Sets the Transcription property holding string of transcription text
         /// </summary>
-        /// <returns>A FileInfo instance holding information about the transcript file that was created.</returns>
+        /// <returns>Boolean true if success, false otherwise.</returns>
         public Boolean Perform(int lineLength = 120)
         {
             try
@@ -89,6 +91,11 @@ namespace DiScribe.Transcriber
 
 
 
+        /// <summary>
+        /// Writes transcription to location specified in MeetingMinutesFile
+        /// </summary>
+        /// <param name="rid"></param>
+        /// <returns></returns>
         public FileInfo WriteTranscriptionFile(string rid = "")
         {
            
