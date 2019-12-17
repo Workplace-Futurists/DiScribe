@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Text;
 using DiScribe.DatabaseManager.Data;
 
@@ -463,8 +464,8 @@ namespace DiScribe.DatabaseManager
                     var parameters = new List<SqlParameter>
                     {
                         new SqlParameter("@LookupID", meeting.MeetingId),
-                        new SqlParameter("@MeetingStartDateTime", meeting.MeetingStartDateTime),
-                        new SqlParameter("@MeetingEndDateTime", meeting.MeetingEndDateTime),
+                        new SqlParameter("@MeetingStartDateTime", meeting.MeetingStartDateTime == default ? SqlDateTime.MinValue : meeting.MeetingStartDateTime),
+                        new SqlParameter("@MeetingEndDateTime", meeting.MeetingEndDateTime == default ? SqlDateTime.MinValue : meeting.MeetingEndDateTime),
                         new SqlParameter("@WebExID", meeting.WebExID),
                         new SqlParameter("@MeetingSubject", meeting.MeetingSubject),
                         new SqlParameter("@MeetingMinutes", meeting.MeetingMinutes),

@@ -420,8 +420,6 @@ namespace DiScribe.Email
             /*Add all other meeting attendees to meetingInfo*/
             meetingInfo.AttendeesEmails = Meeting.MeetingController.GetAttendeeEmails(meetingInfo);
 
-            /* Add the host  as well */
-            meetingInfo.AttendeesEmails.Add(new SendGrid.Helpers.Mail.EmailAddress(hostInfo.Email));
             meetingInfo.AttendeesEmails = meetingInfo.AttendeesEmails.Distinct().ToList();
 
             foreach (var attendee in meetingInfo.AttendeesEmails)

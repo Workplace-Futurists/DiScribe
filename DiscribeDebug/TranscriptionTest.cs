@@ -23,7 +23,7 @@ namespace DiScribe.DiScribeDebug
         public static void TestTranscription(string audioFileLoc)
         {
             /*Subscription key for Azure SpeakerRecognition service. */
-            var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";
+            var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";           //Free tier key for testing
 
             FileInfo testRecording = new FileInfo(audioFileLoc);
             FileInfo meetingMinutes = new FileInfo(@"../transcript/minutes.txt");

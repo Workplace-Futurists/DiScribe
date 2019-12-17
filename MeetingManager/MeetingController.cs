@@ -284,6 +284,8 @@ namespace DiScribe.Meeting
             return emailAddresses;
         }
 
+
+
         [ObsoleteAttribute("This method is depricated and does not work in all cases.")]
         public static DateTime GetMeetingTimeByXML(string accessCode, WebexHostInfo meetingInfo)
         {

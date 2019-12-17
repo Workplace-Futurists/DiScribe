@@ -19,7 +19,7 @@ namespace DiScribe.Transcriber
         /// <param name="meetingRecording"></param>
         /// <param name="voiceprints"></param>
         public TranscribeController(FileInfo meetingRecording, List<User> voiceprints, 
-            SpeechConfig speechConfig, string speakerIDSubKey = "7fb70665af5b4770a94bb097e15b8ae0")
+            SpeechConfig speechConfig, string speakerIDSubKey = "b140a43050f24bef910532e6628b3484")
         {
             SpeechConfig = speechConfig;
             SpeakerIDSubKey = speakerIDSubKey;
