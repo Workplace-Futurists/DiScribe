@@ -63,8 +63,24 @@ namespace DiScribe.Main
 
 
         /// <summary>
-        /// Listens for graph events. Exceptions will bubble up to caller.
+        /// Listens for a new WebEx invitation to the DiScribe bot email account.
+        /// Logic:
+        ///     -> Get most recent event
+        ///
+        ///    -> If invite is an Outlook meeting invite then
+        ///        - Call Webex API to create a meeting and use the returned meeting info
+        ///        
+        ///    -> Else ignore event then    
+        ///       -  Check bot inbox for any Webex invite emails
+        ///       - If Webex email is detected, parse email to get access code
+        ///       - Call webex API to get meeting metadata
+        ///
+        ///    -> Send emails to users with no registered voice profile
+        ///    -> Send meeting to the organizer (delegated host) to allow them to start meeting
+        ///    -> Schedule the rest of the dialer-transcriber workflow to dial in to meeting at the specified time
+        ///
         /// </summary>
+        /// <returns></returns>
         /// <param name="appConfig"></param>
         /// <param name="delayInterval"></param>
         /// <returns></returns>
@@ -83,24 +99,12 @@ namespace DiScribe.Main
         }
 
 
+
         /// <summary>
-        /// Listens for a new WebEx invitation to the DiScribe bot email account.
-        /// Logic:
-        ///     -> Get most recent event
-        ///
-        ///    -> If invite is an Outlook meeting invite then
-        ///        - Call Webex API to create a meeting and use the returned meeting info
-        ///        
-        ///    -> Else ignore event then    
-        ///       -  Check bot inbox for any Webex invite emails
-        ///       - If Webex email is detected, parse email to get access code
-        ///       - Call webex API to get meeting metadata
-        ///
-        ///    -> Send emails to users with no registered voice profile
-        ///    -> Send meeting to the organizer (delegated host) to allow them to start meeting
-        ///    -> Schedule the rest of the dialer-transcriber workflow to dial in to meeting at the specified time
-        ///
+        /// Listens for MS graph events occuring as a result of a meeting invite from Outlook.
+        /// The bot schedules a Webex meeting if a valid meeting invite event is detected.
         /// </summary>
+        /// <param name="appConfig"></param>
         /// <returns></returns>
         private static async Task<object?> CheckForGraphEvents(IConfigurationRoot appConfig)
         {
@@ -138,12 +142,23 @@ namespace DiScribe.Main
 
                 Console.WriteLine($">\tScheduling dialer to dial in to meeting at {meetingInfo.StartTime}");
 
+                /*Convert start time and end time to the DiScribe bot time zone from the Webex host's time zone */
+                var botStartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(meetingInfo.StartTime, meetingInfo.HostInfo.TimeZone, TimeZoneInfo.Local.Id);
+               
                 //Kay: According to Oloff, this should not have an "await" in front, otherwise it will wait until the meeting finish before checking the inbox again. 
                 SchedulerController.Schedule(Run, meetingInfo, appConfig, meetingInfo.StartTime);//Schedule dialer-transcriber workflow as separate task
             }
             return meetingInfo;
         }
 
+
+
+        /// <summary>
+        /// Check the DiScribe bot email inbox for Webex invite emails created by scheduling
+        /// from Webex.com or from DiScribe web.
+        /// </summary>
+        /// <param name="appConfig"></param>
+        /// <returns></returns>
         private static async Task<object?> CheckForEmails(IConfigurationRoot appConfig)
         {
             MeetingInfo meetingInfo = null;
