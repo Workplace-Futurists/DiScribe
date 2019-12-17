@@ -63,8 +63,7 @@ namespace DiScribe.Meeting
 
                 /*Convert start time to the WebEx host's time zone */
                 DateTime webexStartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(meetingStartOrigin, originTimeZone, appConfig["HOST_TIMEZONE"]);
-               
-                             
+                                            
 
                 var attendeeNames = EmailListener.GetAttendeeNames(inviteEvent);
                 var attendeeEmails = EmailListener.GetAttendeeEmails(inviteEvent).Distinct().ToList();
@@ -188,15 +187,12 @@ namespace DiScribe.Meeting
 
             
             var endTime = startTime.AddMinutes(double.Parse(duration));
-
-            /*Convert start time and end time to the DiScribe bot time zone from the Webex host's time zone */
-            var botStartTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(startTime, hostInfo.TimeZone, TimeZoneInfo.Local.Id);
-            var botEndTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(endTime, hostInfo.TimeZone, TimeZoneInfo.Local.Id);
-
+            
+            /*Convert email list to Sendgrid email objects */
             var sendGridEmails = EmailListener.ParseEmailList(emails);
 
             /*Store meeting record in database for the created meeting */            
-            var meeting = DatabaseController.CreateMeeting(emails, botStartTime, botEndTime, accessCode, meetingSubject);
+            var meeting = DatabaseController.CreateMeeting(emails, startTime, endTime, accessCode, meetingSubject);
             MeetingInfo meetingInfo = new MeetingInfo(meeting, sendGridEmails, "", hostInfo);
 
             

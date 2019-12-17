@@ -74,13 +74,26 @@ namespace DiScribe.WebMVC.Controllers
             emails.Add("levana@workplacefupurists.onmicrosoft.com");
             names.Add(HostName);
             names.Add("bot");
+
+            //emails = emails.Select(s => s.Trim());
+
+            for (int i= 0; i < emails.Count; i++)
+            {
+                emails[i] = emails[i].Trim();
+            }
+
+            for (int i = 0; i < names.Count; i++)
+            {
+                names[i] = names[i].Trim();
+            }
+
             Microsoft.Graph.EmailAddress delegateEmailAddress = new Microsoft.Graph.EmailAddress();
-            delegateEmailAddress.Name = HostName;
-            delegateEmailAddress.Address = HostEmail;
+            delegateEmailAddress.Name = HostName.Trim();
+            delegateEmailAddress.Address = HostEmail.Trim();
             var meetingInfo = MeetingController.CreateWebexMeeting(mc.MeetingSubject, names, emails, mc.MeetingStartDateTime, duration.ToString(), meetingHost, delegateEmailAddress);
             mc.WebExID = meetingInfo.AccessCode;
             /*try
-            {
+            {C:\repos\Final_Successful\cs319-2019w1-hsbc\WebMVC\Views\
                 var attendees = MeetingController.GetAttendeeEmails(access_code, meetingHost);
                 //MeetingController.SendEmailsToAnyUnregisteredUsers(attendees);
                 //EmailSender.SendEmailForStartURL(attendees, access_code, mc.MeetingSubject);
