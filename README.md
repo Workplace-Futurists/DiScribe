@@ -1,14 +1,22 @@
 # CPSC 319 2019W1 HSBC Project **DiScribe**
 
-## Our Website link
-https://discribe-cs319.azurewebsites.net
-
 ## Introduction
 This is the code repository for a proof of concept project sponsored by HSBC Canada.
 
-We aim to building a powerful bot that joins phone calls or web meetings, **record, transcribe, and send the meeting recordings texts** through email.
+We built a powerful bot that joins phone calls or web meetings, **record, transcribe, and send the meeting recordings texts** through email.
 
 The bot could not only correctly transcribes the content of speech but also could recognizes voice differences, characterizes and labels "who spoke what" correctly and efficiently.
+
+Since we ran out of Azure Credits. You probably won't get to see the bot run in real time.
+
+## Things we support
+- Webex Meeting
+- MS Graph or Outlook event scheduling
+- Our designated website
+For meeting scheduling.
+
+## Our Website link
+https://discribe-cs319.azurewebsites.net
 
 ## Main Components
 ### Website Component
