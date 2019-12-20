@@ -1,7 +1,7 @@
 # CPSC 319 2019W1 HSBC Project **DiScribe**
 
 ## Introduction
-This is the code repository for a proof of concept project sponsored by HSBC Canada.
+Hi, we are all **UBC** students who took CPSC 319 *Software Engineering Project* in 2019 Winter Term 1. This is the code repository for a proof of concept project sponsored by HSBC Canada.
 
 We built a powerful bot that joins phone calls or web meetings, **record, transcribe, and send the meeting recordings texts** through email.
 
