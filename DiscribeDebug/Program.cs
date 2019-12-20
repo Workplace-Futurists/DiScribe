@@ -36,15 +36,15 @@ namespace DiScribe.DiScribeDebug
 
         static async Task Execute()
         {
-            var apiKey = "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";
+            var apiKey = "";
             var client = new SendGridClient(apiKey);
 
-            var from = new EmailAddress("discribe_test@outlook.com", "Example User");
+            var from = new EmailAddress("", "Example User");
 
 
             var subject = "Did it work?";
 
-            var to = new EmailAddress("kengqiangmk@gmail.com", "Example User");
+            var to = new EmailAddress("", "Example User");
 
             var plainTextContent = "and easy to do anywhere, even with C#";
             var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";

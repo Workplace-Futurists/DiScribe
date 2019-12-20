@@ -43,8 +43,8 @@ namespace DiScribe.Email
         private static SendGridClient Initialize()
         {
             //Kay: Please donot change it to read from Main appsettings here. Because it conflicts with the web Appsetting reader. 
-            string sendGridAPI = "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";
-            OfficialEmail = new EmailAddress("discribe_sender@outlook.com", "DiScribe Bot");
+            string sendGridAPI = "!!ADD SENDRGID API KEY HERE!!";
+            OfficialEmail = new EmailAddress("!!ADD BOT OUTPUT EMAIL ADDRES HERE!!", "DiScribe Bot");
             RegUrl = "https://discribe-cs319.azurewebsites.net/regaudio/Users/Create/";
 
             return new SendGridClient(sendGridAPI);
