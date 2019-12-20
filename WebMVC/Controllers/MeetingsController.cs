@@ -63,7 +63,7 @@ namespace DiScribe.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(MeetingClass mc, string Participants, string ParticiNames, string HostName, string HostEmail)
         {
-            WebexHostInfo meetingHost = new WebexHostInfo("kengqiangmk@gmail.com", "Cs319_APP", "kengqiangmk", "companykm.my");
+            WebexHostInfo meetingHost = new WebexHostInfo("!!ADD WEBEX HOST EMAIL!!", "!!ADD WEBEX HOST PW!!", "!ADD WEBEX HOST ID!!", "!!ADD WEBEX COMPANY NAME!!");
 
             List<string> emails = new List<string>(Participants.Split(','));
             List<string> names = new List<string>(ParticiNames.Split(','));
@@ -71,7 +71,7 @@ namespace DiScribe.WebMVC.Controllers
             string endDateTimeStr = mc.MeetingEndDateTime.ToString("MM/dd/yyyy HH:mm:ss");
             Int64 duration = (Int64)(mc.MeetingEndDateTime - mc.MeetingStartDateTime).TotalMinutes;
             emails.Add(HostEmail);
-            emails.Add("levana@workplacefupurists.onmicrosoft.com");
+            emails.Add("!!ADD BOT EMAIL ACCOUNT!!");
             names.Add(HostName);
             names.Add("bot");
 
