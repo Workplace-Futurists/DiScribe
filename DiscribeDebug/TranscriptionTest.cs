@@ -23,7 +23,7 @@ namespace DiScribe.DiScribeDebug
         public static void TestTranscription(string audioFileLoc)
         {
             /*Subscription key for Azure SpeakerRecognition service. */
-            var speakerIDKey = "7fb70665af5b4770a94bb097e15b8ae0";           //Free tier key for testing
+            var speakerIDKey = "";           //Free tier key for testing
 
             FileInfo testRecording = new FileInfo(audioFileLoc);
             FileInfo meetingMinutes = new FileInfo(@"../transcript/minutes.txt");
@@ -32,10 +32,10 @@ namespace DiScribe.DiScribeDebug
 
             string userEmail = "kengqiangmk@yahoo.ca";
 
-            var regCon = RegistrationController.BuildController("Server=tcp:dbcs319discribe2.database.windows.net, 1433; Initial Catalog=db_cs319_discribe; Persist Security Info=False;User ID=obiermann; Password=JKm3rQ~t9sBiemann; MultipleActiveResultSets=True; Encrypt=True;TrustServerCertificate=False; Connection Timeout=30", 
+            var regCon = RegistrationController.BuildController("", 
                 new List<string>() { userEmail });
 
-            var speechConfig = SpeechConfig.FromSubscription("1558a08d9f6246ffaa1b31def4c2d85f", "centralus");
+            var speechConfig = SpeechConfig.FromSubscription("", "centralus");
             
             /*Setup the TranscribeController instance which manages the details of the transcription procedure */
             var controller = new TranscribeController(testRecording, regCon.UserProfiles, speechConfig);

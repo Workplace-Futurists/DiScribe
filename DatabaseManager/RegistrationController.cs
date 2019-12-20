@@ -55,7 +55,7 @@ namespace DiScribe.DatabaseManager
         /// <param name="userEmails"></param>
         /// <param name="speakerIDKeySub"></param>
         public static RegistrationController BuildController(string dbConnectionStr, List<string> registeredEmails,
-             string speakerIDSubKey = "b140a43050f24bef910532e6628b3484", string enrollmentLocale = "en-us", 
+             string speakerIDSubKey = "", string enrollmentLocale = "en-us", 
              int apiInterval = SPEAKER_RECOGNITION_API_INTERVAL)
         {
             SpeakerIdentificationServiceClient enrollmentClient = new SpeakerIdentificationServiceClient(speakerIDSubKey);
