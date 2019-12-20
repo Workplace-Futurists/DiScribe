@@ -1,4 +1,4 @@
-# CPSC 319 2019W1 HSBC Project **DiScribe**
+# **DiScribe**
 
 ## Introduction
 Hi, we are all **UBC** students who took CPSC 319 *Software Engineering Project* in 2019 Winter Term 1. This is the code repository for a proof of concept project sponsored by HSBC Canada.
@@ -9,6 +9,8 @@ The bot recognizes your content of speech and who you are correctly, with time s
 
 **And YES.** This whole process runs **silently and autonomously**, handling multiple meetings concurrently with no issue.
 
+**Feel free to read more about our project in our complete [Wiki](https://github.com/Workplace-Futurists/DiScribe/wiki).*
+
 ### Possible Result
 ```
 [Happy Tree]	  0:0:0	  We are the workplace futurists. We are happy to see you.
@@ -18,7 +20,7 @@ The bot recognizes your content of speech and who you are correctly, with time s
 [Amazed Cow]	  0:0:11  So am I. Good bye.
 ```
 
-## Things we support
+### Platforms we support
 - Webex Meeting
 - MS Graph or Outlook event scheduling
 - Our designated website
