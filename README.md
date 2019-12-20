@@ -3,11 +3,20 @@
 ## Introduction
 Hi, we are all **UBC** students who took CPSC 319 *Software Engineering Project* in 2019 Winter Term 1. This is the code repository for a proof of concept project sponsored by HSBC Canada.
 
-We built a powerful bot that joins phone calls or web meetings, **record, transcribe, and send the meeting recordings texts** through email.
+We built a powerful bot that joins phone calls or web meetings, **record, transcribe, and send the meeting transcription texts** to your email.
 
-The bot could not only correctly transcribes the content of speech but also could recognizes voice differences, characterizes and labels "who spoke what" correctly and efficiently.
+The bot recognizes your content of speech and who you are correctly, with time stamps and name of the person.
 
-Since we ran out of Azure Credits. You probably won't get to see the bot run in real time.
+**And YES.** This whole process runs **silently and autonomously**, handling multiple meetings concurrently with no issue.
+
+### Possible Result
+```
+[Happy Tree]	  0:0:0	  We are the workplace futurists. We are happy to see you.
+
+[Excited Duck]	  0:0:8	  Me too. What a great day.
+
+[Amazed Cow]	  0:0:11  So am I. Good bye.
+```
 
 ## Things we support
 - Webex Meeting
@@ -51,4 +60,6 @@ https://discribe-cs319.azurewebsites.net
 ### Emailing Component
 * [x]    **Sends the Email** to meeting attendees upon transcription result is received
 
-****Note that unchecked parts are incomplete***
+***unchecked boxes indicates incompleteness***
+
+*Note that: since we ran out of Azure Credits, you probably won't get to see the bot run in real time.*
