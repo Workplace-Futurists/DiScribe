@@ -64,4 +64,4 @@ https://discribe-cs319.azurewebsites.net
 
 ***unchecked boxes indicates incompleteness***
 
-*Note that: since we ran out of Azure Credits, you probably won't get to see the bot run in real time.*
+
