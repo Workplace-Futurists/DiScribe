@@ -9,7 +9,7 @@ The bot recognizes your content of speech and who you are correctly, with time s
 
 **And YES.** This whole process runs **silently and autonomously**, handling multiple meetings concurrently with no issue.
 
-**Feel free to read more about our project in our complete [Wiki](https://github.com/Workplace-Futurists/DiScribe/wiki).*
+**Feel free to read more about our project in our complete [Wiki](https://github.com/Workplace-Futurists/DiScribe/wiki).**
 
 ### Possible Result
 ```
