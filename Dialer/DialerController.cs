@@ -48,7 +48,7 @@ namespace DiScribe.Dialer
 
             // call in number and call from number
             const string vancouverTollNum = "+14084189388";
-            const string twilioAccNum = "+15046366992";
+            const string twilioAccNum = "+17784021592";
             
             // this is the webex call vancouver toll number
             var to = new PhoneNumber(vancouverTollNum);
@@ -59,13 +59,14 @@ namespace DiScribe.Dialer
             Console.WriteLine(">\tCalling In...");
             // makes the call resource to send
             var call = CallResource.Create(to, from,
+                twiml: "<Response>" +
+                "<Record timeout = \"0\" maxLength = \"9999\" />" +
+                "</Response>",
                 //method: Twilio.Http.HttpMethod.Get,
                 sendDigits: FormatDigits(mNum) + "wwww#",
                 // Records the outgoing call
-                record: true,
-                // default message that plays from the url
-                url: new Uri("http://lonelycompany.ca/test.xml")
-             
+                record: true
+                             
              );
 
             var callSid = call.Sid;
