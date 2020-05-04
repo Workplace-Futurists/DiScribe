@@ -20,11 +20,10 @@ The bot recognizes your content of speech and who you are correctly, with time s
 [Amazed Cow]	  0:0:11  So am I. Good bye.
 ```
 
-### Platforms we support
-- Webex Meeting
-- MS Graph or Outlook event scheduling
-- Our designated website
-For meeting scheduling.
+### Platforms we support for meeting scheduling
+- Cisco Webex Meeting 
+- MS Outlook
+- DiScribe Web meeting scheduling.
 
 ## Our Website link
 https://discribe-cs319.azurewebsites.net
