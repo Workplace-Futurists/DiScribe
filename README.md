@@ -25,9 +25,6 @@ The bot recognizes your content of speech and who you are correctly, with time s
 - MS Outlook
 - DiScribe Web meeting scheduling.
 
-## Our Website link
-https://discribe-cs319.azurewebsites.net
-
 ## Main Components
 ### Website Component
 * [x]    Allows unregistered users to **register in the voice print** database with their email
